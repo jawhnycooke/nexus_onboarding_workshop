@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 02 · Probabilities and persistence</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+    /* Borrower A vs B comparison cards — scoped to this deck */
+    .cmp-wrap    { position: absolute; top: 290px; left: 96px; right: 96px; bottom: 260px;
+                   display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .cmp-card    { border-radius: 18px; padding: 38px 40px; background: #FFFFFF;
+                   border: 1px solid #E2E8F0; }
+    .cmp-card--a { border-top: 6px solid #DC2626; }
+    .cmp-card--b { border-top: 6px solid #059669; }
+    .cmp-eb      { font-size: 13px; font-weight: 700; letter-spacing: 0.09em;
+                   text-transform: uppercase; color: #64748B; margin-bottom: 10px; }
+    .cmp-h       { font-family: inherit; font-size: 42px; font-weight: 600;
+                   color: #1E293B; margin: 0 0 24px 0; line-height: 1.1; }
+    .cmp-row     { display: flex; align-items: baseline; gap: 16px; margin-bottom: 10px; font-size: 20px; }
+    .cmp-row-k   { color: #64748B; min-width: 180px; font-size: 16px;
+                   text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+    .cmp-row-v   { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                   font-size: 24px; color: #1E293B; }
+    .cmp-body    { color: #475569; font-size: 19px; line-height: 1.55; margin-top: 22px; }
+    .cmp-foot    { position: absolute; left: 96px; right: 96px; bottom: 160px;
+                   text-align: center;
+                   font-size: 26px; color: #1E293B; line-height: 1.4; font-style: italic; }
+    .cmp-foot em { font-style: normal; color: #6D28D9; font-weight: 600; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Learners arrive with a model from Module 01. Their first reaction is often 'I got predictions, now what?' This module answers five questions that come after predict(). Keep it moving.",
+    "Agenda — 2-card. Two arcs: the shift from labels to scores, then the decisions you make with those scores. Flag that four concepts land here — pace matters.",
+    "Learning objectives. Three. Each maps to a verb they will add to their toolkit: reload, score, tune. Mode selection is part of objective C — choose with evidence.",
+    "Part 01 divider. The tonal shift: Module 01 gave them labels. Module 02 gives them scores. Pause before moving.",
+    "Key concept. Read slowly. A probability is three things at once — ranking signal, threshold knob, confidence. The rest of the module unpacks each.",
+    "Two-column — persistence. Anchor on the phrase 'the whole trained model is a string.' The reload is one call — load_model(id) on a fresh estimator returns it ready to predict, no retraining. Run the reload cell live if timing allows — two lines, and their Module 01 model is back.",
+    "Two borrowers. This is the motivating example. Borrower A has p=0.48 and gets labelled 0. Borrower B has p=0.12 and also gets labelled 0. Same label, very different risk. If you only had predict(), those two go into the same bucket. predict_proba() preserves the gap that predict() threw away.",
+    "Code — predict_proba. Two shapes: predict returns (n,), predict_proba returns (n, 2). Column 1 is the default probability. Emphasize 'use column 1' — the most common first mistake is averaging both.",
+    "Part 02 divider. Shift from scoring to deciding. The 0.5 default is the hill to die on here — it is not a business decision.",
+    "Code — threshold sweep. Walk the loop once. Then ask: if a missed default costs 10× a false alarm, would you pick the F1-optimal threshold? The answer is usually no.",
+    "Two-column — mode selection. Speed vs quality is a workflow question, not a model-quality question. Use the ROC comparison — when the gap is small, ship speed. When it is large, pay for quality.",
+    "ROC chart. Schematic — the shapes are honest, the exact AUCs vary by dataset. Point to the gap. Quality is consistently above speed; on this sort of curve the decision is 'ship quality, iterate with speed.' The real numbers from their training runs belong in the exercise cell, not on this slide.",
+    "Exercise. Most learners gravitate to whatever threshold maximizes F1 — it feels objective. Push back: F1 weights precision and recall equally, and credit risk does not. If a miss costs ten times a false alarm, their threshold should land well below the F1 peak. On the ROC overlay, the AUC gap between quality and speed is usually large enough that production scoring is worth the quality training time — even when speed is tempting during iteration.",
+    "Takeaways. Three. Read aloud. Leave a breath of silence after the third.",
+    "Closing. Segue to Module 03. Mention the dataset jumps from 4 features to many — and gets messier. Questions go in the notebook issue tracker."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 02</div>
+  <h1 class="cov-title">Probabilities<br>and <em>persistence.</em></h1>
+  <div class="cov-big-n">02 / 08</div>
+  <div class="cov-meta">100&#8209;level intro &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE SHIFT</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">From labels to scores</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Your trained model is a string</div><div class="ag-row-b">Reload last week's model in two lines. No retraining, no file transfers.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">predict_proba() &mdash; scores, not labels</div><div class="ag-row-b">A number per class. A ranking you can tier.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Rank borrowers by risk</div><div class="ag-row-b">One sort. The queue that real credit teams actually operate.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>THE DECISIONS</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Tune the cutoff you ship</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Sweep the threshold</div><div class="ag-row-b">0.5 is a math convention. Your threshold is a business decision.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Read the ROC curve</div><div class="ag-row-b">Every threshold at once. One number &mdash; AUC &mdash; summarizes it.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; speed vs quality</div><div class="ag-row-b">Compare two modes on overlaid ROCs. Pick one, with a reason.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Reload a trained model by ID</h3>
+        <p class="lo-b">Call load_model(MODEL_ID) on a fresh estimator and predict immediately &mdash; no retraining, no data upload, any session, any machine.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Score borrowers, then tune the threshold</h3>
+        <p class="lo-b">Use predict_proba() for probabilities, rank a holdout set by default risk, and sweep the cutoff until precision and recall match your business cost.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Choose quality or speed &mdash; with evidence</h3>
+        <p class="lo-b">Train both modes on the same data, overlay the ROC curves, and defend your pick with AUC &mdash; not folklore.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/stargazer.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">From <em>labels</em>,<br>to <em>scores.</em></h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title">A probability is a <em>ranking signal</em>, a <em>threshold knob</em>, and a <em>confidence</em> you can defend &mdash; all in one number.</h2>
+  </div>
+  <div class="kc-cite">Fig. 02 &middot; The module in one sentence</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     06  TWO-COLUMN — Persistence
+     ============================================================ -->
+<section data-screen-label="06 Persistence">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">PERSISTENCE</div>
+      <h2 class="tc-title">A trained model is <em>a string</em></h2>
+      <p class="tc-body">When fit() returns, NEXUS hands you a <em>trained_model_id_</em>. That string is the whole model. The weights live in Fundamental's registry; you carry the id.</p>
+      <p class="tc-body">Reload it in any session. Call load_model(id) on a fresh estimator and predict() &mdash; no data upload, no retraining, no file transfer. The model your teammate trained Tuesday is your model today.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">IN THE NOTEBOOK</div>
+      <h3 class="tc-right-h">Two lines,<br>and last week's model<br>is back</h3>
+      <p class="tc-right-b">Paste the id, call load_model(id), and predict. The session you left three days ago picks up exactly where it stopped.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">2 lines</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">to reload &mdash; no retrain,<br>no upload, any session.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     07  TWO BORROWERS — Motivating example                       [NEW]
+     ============================================================ -->
+<section data-screen-label="07 Two Borrowers">
+  <h2 class="ch-title">Two borrowers. <em>Same label.</em> Different risk.</h2>
+  <div class="ch-eb">Why the 0 or 1 from <em>predict()</em> throws away information you need.</div>
+  <div class="cmp-wrap">
+    <div class="cmp-card cmp-card--a">
+      <div class="cmp-eb">BORROWER A</div>
+      <h3 class="cmp-h">Quietly risky.</h3>
+      <div class="cmp-row"><span class="cmp-row-k">P(default)</span><span class="cmp-row-v">0.48</span></div>
+      <div class="cmp-row"><span class="cmp-row-k">predict() label</span><span class="cmp-row-v">0 &middot; no default</span></div>
+      <p class="cmp-body">Just below the conventional 0.5 cutoff. A nudge in features, a retraining, a different seed &mdash; any of those flips the label. The risk is <em>right there</em> in the 0.48 that the label hides.</p>
+    </div>
+    <div class="cmp-card cmp-card--b">
+      <div class="cmp-eb">BORROWER B</div>
+      <h3 class="cmp-h">Genuinely safe.</h3>
+      <div class="cmp-row"><span class="cmp-row-k">P(default)</span><span class="cmp-row-v">0.12</span></div>
+      <div class="cmp-row"><span class="cmp-row-k">predict() label</span><span class="cmp-row-v">0 &middot; no default</span></div>
+      <p class="cmp-body">Deep in the safe zone. A retraining or seed change will not push this one past 0.5. The label and the score agree.</p>
+    </div>
+  </div>
+  <div class="cmp-foot">Both labelled <strong>0</strong>. Only one is genuinely safe.<br><em>predict_proba()</em> preserves the order that <em>predict()</em> erased.</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     08  CODE SNIPPET — predict_proba()
+     ============================================================ -->
+<section data-screen-label="08 Code predict_proba">
+  <h2 class="code-title"><em>predict_proba()</em> reads confidence.</h2>
+  <div class="code-sub">Same interface. A score per class, not a label.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_02_probabilities_and_persistence.ipynb &middot; cell 11</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># reload the Module 01 model &mdash; two lines</span>
+nexus_quality = <span class="c-fn">NEXUSClassifier</span>()
+nexus_quality.load_model(MODEL_ID)
+
+<span class="c-com"># scores, not labels</span>
+probas = nexus_quality.<span class="c-fn">predict_proba</span>(X_holdout)
+<span class="c-com"># &rarr; shape (n_rows, 2)</span>
+<span class="c-com">#   col 0 = P(no default)</span>
+<span class="c-com">#   col 1 = P(default)  &larr; use this one</span>
+
+default_prob = probas[:, <span class="c-str">1</span>]
+<span class="c-fn">print</span>(<span class="c-str">f"range: [</span>{default_prob.<span class="c-fn">min</span>():.<span class="c-str">4</span>f}<span class="c-str">, </span>{default_prob.<span class="c-fn">max</span>():.<span class="c-str">4</span>f}<span class="c-str">]"</span>)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">0.78 is <em>not just a 1</em>.</h3>
+      <p class="code-note-b">A label erases ordering. A score preserves it. 0.78 is riskier than 0.51 &mdash; which is riskier than 0.12. That order is the queue real credit teams operate. Rank first. Decide second.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     09  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="09 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; THE DECISIONS</div>
+  <h2 class="div-title">0.5 is a math convention.<br>Your <em>threshold is a business call</em>.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     10  CODE SNIPPET — Threshold sweep
+     ============================================================ -->
+<section data-screen-label="10 Code threshold sweep">
+  <h2 class="code-title">Sweep it. <em>Pick yours.</em></h2>
+  <div class="code-sub">One loop. Precision, recall, F1 across the range.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_02_probabilities_and_persistence.ipynb &middot; cell 16</span>
+      </div>
+<pre class="code-pre" style="font-size:20.5px"><span class="c-key">from</span> sklearn.metrics <span class="c-key">import</span> precision_score, recall_score, f1_score
+
+thresholds = np.<span class="c-fn">arange</span>(<span class="c-str">0.05</span>, <span class="c-str">0.66</span>, <span class="c-str">0.05</span>)
+rows = []
+
+<span class="c-key">for</span> t <span class="c-key">in</span> thresholds:
+    preds_t = (default_prob &gt;= t).<span class="c-fn">astype</span>(<span class="c-fn">int</span>)
+    rows.<span class="c-fn">append</span>({
+        <span class="c-str">"threshold"</span>: <span class="c-fn">round</span>(t, <span class="c-str">2</span>),
+        <span class="c-str">"precision"</span>: <span class="c-fn">precision_score</span>(y_holdout, preds_t, zero_division=<span class="c-str">0</span>),
+        <span class="c-str">"recall"</span>:    <span class="c-fn">recall_score</span>(y_holdout, preds_t, zero_division=<span class="c-str">0</span>),
+        <span class="c-str">"f1"</span>:        <span class="c-fn">f1_score</span>(y_holdout, preds_t),
+    })
+
+sweep = pd.<span class="c-fn">DataFrame</span>(rows)
+<span class="c-fn">print</span>(sweep.<span class="c-fn">to_string</span>(index=<span class="c-str">False</span>))
+<span class="c-com"># &rarr; the threshold that maximizes F1 is rarely the one you ship</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">A <em>missed default</em> costs more than a false alarm.</h3>
+      <p class="code-note-b">F1 treats precision and recall as equal weights. Credit risk does not. If a loan loss costs ten times a declined good borrower, let that asymmetry pick the number &mdash; not the math.</p>
+      <p class="code-note-b"><em>Typical shape</em>: at threshold 0.15 recall is high (~0.85) and precision is low (~0.31); at 0.35 they cross near F1's peak (~0.54); at 0.55 precision climbs (~0.79) as recall collapses. The threshold that <em>ships</em> is rarely the F1 peak.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     11  TWO-COLUMN — Mode selection
+     ============================================================ -->
+<section data-screen-label="11 Mode Selection">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">MODE SELECTION</div>
+      <h2 class="tc-title">Speed <em>explores</em>. Quality <em>ships</em>.</h2>
+      <p class="tc-body">NEXUS ships two training modes behind one interface. <em>Speed</em> is the right choice during feature engineering, iteration, and anything you will throw away.</p>
+      <p class="tc-body"><em>Quality</em> is the full quality pass. It is what you train before you call anything production-ready. Compare them on overlaid ROC curves. The AUC gap tells you whether the extra time is worth it.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">WHEN TO SWITCH</div>
+      <h3 class="tc-right-h">One interface,<br>two training<br>budgets</h3>
+      <p class="tc-right-b">Same fit(X, y). Same predict_proba(). The only difference is the mode flag &mdash; and the wait you pay for better separation. Ship speed when the gap is small; pay for quality when it is not.</p>
+      <div class="tc-stat">
+        <div class="tc-stat-n">one flag</div>
+        <div class="tc-stat-l">picks the training budget &mdash;<br>same API surface either way.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     12  CHART — ROC overlay, quality vs speed                    [NEW]
+     ============================================================ -->
+<section data-screen-label="12 ROC Overlay">
+  <h2 class="ch-title">Quality vs speed &mdash; <em>on the same holdout</em>.</h2>
+  <div class="ch-eb">Overlay both ROC curves. The gap between them is your decision &mdash; ship quality when it matters.</div>
+  <div style="position: absolute; top: 300px; left: 96px; right: 96px; bottom: 140px;
+              display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center;">
+    <div>
+      <img src="roc_quality_vs_speed.png"
+           alt="Schematic ROC curves. Quality (solid blue) sits above speed (dashed orange); random baseline is the diagonal."
+           style="width: 100%; height: auto; display: block; border-radius: 8px; box-shadow: 0 2px 18px rgba(15, 23, 42, 0.08);">
+    </div>
+    <div>
+      <div class="tc-eb" style="color:#1D4ED8;">READING THE OVERLAY</div>
+      <h3 class="tc-right-h" style="margin-top: 10px;">Closer to the<br>top-left is<br>better separation</h3>
+      <p class="tc-body" style="margin-top: 18px;">Both curves sit above the diagonal &mdash; both models do better than chance. Quality sits <em>above</em> speed across the whole range, which is what the AUC gap summarizes in one number.</p>
+      <p class="tc-body">When the gap is small, ship speed and move on. When it is the size you see here, the extra training time is cheap insurance.</p>
+      <div class="tc-stat" style="margin-top: 24px;">
+        <div class="tc-stat-n">schematic</div>
+        <div class="tc-stat-l">the exact AUCs come<br>from your notebook run.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     13  EXERCISE — Threshold + mode
+     ============================================================ -->
+<section data-screen-label="13 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">02</div>
+      <h3 class="ex-side-h">Pick your<br>threshold.<br>Defend it.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">The notebook, your Module 01 model id</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">A chosen threshold and one-sentence defence</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Starter &middot; <span style="opacity:.5;">&#9679;&#9679;</span>&#9675;<span style="opacity:.5;">&#9675;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">You have a quality model and a holdout set.<br>Pick the threshold <em>you would ship</em> &mdash; and say why.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Run the sweep cell. Read precision, recall, and F1 across thresholds from <em>0.05 to 0.65</em>.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Pick a threshold based on a <em>business premise</em>: a missed default costs ten times a declined good borrower.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Train a speed model on the same training data. Score the holdout. Overlay both ROC curves.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">In one sentence: which model, which threshold, why. Paste your answer in the notebook's <em>Your call</em> cell.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">13</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     14  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="14 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">load_model(id) makes training a <em>one-time cost</em></h3>
+      <p class="tk-card-b">The id is the model. Reload it in any session, on any machine, in two lines &mdash; no retraining, no file transfers.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Scores replace <em>yes/no</em> &mdash; and unlock your threshold</h3>
+      <p class="tk-card-b">predict_proba() returns ranking signal. The cutoff that separates approve from decline is a business decision, not 0.5.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Speed to <em>explore</em>. Quality to <em>ship</em>.</h3>
+      <p class="tk-card-b">Two modes, one interface. The ROC overlay shows the AUC gap &mdash; that is what tells you whether the extra training time is worth it.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">14</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     15  CLOSING
+     ============================================================ -->
+<section data-screen-label="15 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/skyline-dusk.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>smarter features.</em></h1>
+  <div class="closing-meta">Module 03 &middot; Categorical data, joins, messy columns &middot; 200&#8209;level</div>
+  <div class="closing-cta">Same verbs. More columns. Real-world mess &mdash; and how NEXUS handles it.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Runtime artifacts created while running the notebooks (the bootstrap chdir's
+# here, so generated files land in this folder). None of these should be committed.
+_workshop_state.json
+
+# Cross-module registries the notebooks (re)create at runtime
+module_05_task_registry.json
+module_06_registry.json
+
+# Diagnostics logs written by module 07's diagnose()
+logs/
+
+# Charts the notebooks regenerate via savefig
+module_03_roc_comparison.png
+module_04_feature_importance.png
+module_04_cumulative_importance.png
+module_04_feature_selection.png
+scatter_and_fit.png
+roc_quality_vs_speed.png
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
+
+# Capstone registry written at runtime (bootstrap chdirs to the workshop root)
+module_08_capstone_registry.json

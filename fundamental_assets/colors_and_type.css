@@ -1,0 +1,647 @@
+/* ============================================================
+   Fundamental — Colors & Type tokens
+   The single source of truth for brand foundations.
+   ============================================================ */
+
+/* ---------- Fonts ---------- */
+@font-face {
+  font-family: "Druk Wide";
+  src: url("../fonts/druk-wide/DrukWide-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Reckless";
+  src: url("../fonts/reckless/RecklessStandardS-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless";
+  src: url("../fonts/reckless/RecklessStandardS-LightItalic.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless";
+  src: url("../fonts/reckless/RecklessStandardS-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless";
+  src: url("../fonts/reckless/RecklessStandardS-RegularItalic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless";
+  src: url("../fonts/reckless/RecklessStandardS-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Reckless Display — optical "M" cut, tuned for headline sizes (≥60px).
+   Different designed-size than Reckless Standard S: M has slightly wider
+   apertures, stronger contrast, a more dramatic italic. Body text stays
+   on Reckless (S) for finer spacing; headlines lean on Reckless Display. */
+@font-face {
+  font-family: "Reckless Standard M-TRIAL";
+  src: url("../fonts/reckless/RecklessStandardM-TRIAL-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless Standard M-TRIAL";
+  src: url("../fonts/reckless/RecklessStandardM-TRIAL-RegularItalic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless Standard M-TRIAL";
+  src: url("../fonts/reckless/RecklessStandardM-TRIAL-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Reckless Standard M-TRIAL";
+  src: url("../fonts/reckless/RecklessStandardM-TRIAL-MediumItalic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roobert";
+  src: url("../fonts/roobert/Roobert-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Roobert";
+  src: url("../fonts/roobert/Roobert-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Roobert";
+  src: url("../fonts/roobert/Roobert-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Roobert Mono";
+  src: url("../fonts/roobert-mono/RoobertMono-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
+   Tokens
+   ============================================================ */
+:root {
+  /* ---------- Font families ----------
+     Reckless is the hero typeface — it sets body, headings, titles, quotes.
+     Italic is the primary rhythm (accent words pulled indigo).
+     Druk Wide is reserved for the "NEXUS" wordmark and nothing else.
+     Roobert is a utility typeface for data labels, chart axes, small UI
+     chrome — anywhere Reckless would be too editorial. */
+  --font-display: "Reckless Standard M-TRIAL", "Reckless", Georgia, serif;   /* hero — M optical cut */
+  --font-serif:   "Reckless", "Canela", "Tiempos Headline", Georgia, serif;   /* default */
+  --font-body:    "Reckless", Georgia, serif;                                 /* body copy */
+  --font-wordmark:"Druk Wide", "Impact", "Haas Grot Disp", sans-serif;        /* NEXUS only */
+  --font-ui:      "Roobert", "Inter", "Neue Haas Grotesk", system-ui, sans-serif;  /* small labels */
+  --font-sans:    "Roobert", "Inter", "Neue Haas Grotesk", system-ui, sans-serif;  /* back-compat alias */
+  --font-mono:    "Roobert Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* ---------- Core brand palette ----------
+     Sampled directly from the Conoco + Mazda decks.
+       • Paper is PURE WHITE — that is the default slide background
+       • Ink is near-black for body + headings
+       • The sole accent family is VIOLET/PURPLE (not indigo-blue),
+         running from deep #2B2358 through #6B5EB0 to pale-lavender #C096C3
+       • Cards are pale lavender #EDE9F5; pink variant is #F6EAF0
+       • Hero accent motion is the violet→mauve→pink gradient, seen on
+         the Agenda right card, NEXUS pill, and data-table header row */
+  --ink:          #1A1A1A;   /* near-black — primary ink */
+  --ink-soft:     #3F3F46;   /* slightly softer ink for secondary body */
+  --paper:        #FFFFFF;   /* DEFAULT slide + preview background */
+  --paper-alt:    #FAFAFC;
+  --paper-card:   #EDE9F5;   /* pale lavender — the signature card fill */
+  --paper-card-3: #F4F1FA;   /* lightest lavender wash */
+  --paper-pink:   #F6EAF0;   /* pale pink card (RMSE column) */
+  --white:        #FFFFFF;
+
+  /* New neutral + functional tokens (design-system v2) */
+  --card-hover:    #E0DAED;   /* card hover fill (replaces paper-card-2) */
+  --hairline:      #E7E2F0;   /* hairline rule */
+  --hairline-soft: #C9C0E4;   /* stronger hairline */
+  --subtle-lilac:  #B5AED6;   /* subtle text-rule lilac */
+  --text-muted:    #8A82A6;   /* muted body / captions */
+  --lavender-wash: var(--paper-card-3);   /* alias of paper-card-3 */
+  --dusk-night:    #1E1746;   /* dark-canvas variant */
+  --table-green:   #2F8446;   /* data-table positive */
+
+  /* Neutral scale — cool gray tilting toward lavender/indigo.
+     Used for body hierarchy, hairlines, disabled states. */
+  --n-950: #0A0A0F;
+  --n-900: #1A1A1A;      /* ink */
+  --n-800: #2A2A2A;
+  --n-700: #3F3F46;
+  --n-600: #5A5A66;
+  --n-500: #7C7C8C;
+  --n-400: #A2A2B3;
+  --n-300: #C7C4D4;
+  --n-200: #DDD9E6;
+  --n-100: #ECEAF3;
+  --n-50:  #F4F2F8;
+  --n-25:  #FAF9FC;
+
+  /* ---------- The violet accent ----------
+     There is ONE accent family: VIOLET/PURPLE, used as:
+       • Italicized display words inside near-black headlines
+       • Numerals "01 / 02 / 03" on content cards
+       • NEXUS wordmark (gradient violet → mauve → pink)
+       • Eyebrows, sub-labels, hairline rules on cards
+     NEVER use it as a flat UI button fill — it appears as text,
+     pills (gradient), or card washes only. */
+  --violet-deep:  #1A1333;   /* "Deep" — deepest indigo, card row titles */
+  --violet-ink:   #3D2F75;   /* "Indigo" — card headlines, "01" numerals */
+  --violet:       #5A4A9A;   /* "Indigo Soft" — signature accent */
+  --violet-soft:  #7D5FB8;   /* "Violet" — subhead colour */
+  --violet-pale:  #B8A5D9;   /* "Lavender" — pale UI fill */
+  --lav-soft:     #D4C4EA;   /* "Soft" — lavender wash */
+  --lav-light:    #EADDF5;   /* "Light" — paler lavender */
+  --lav-mist:     #F1EDF7;   /* "Mist" — palest lavender wash */
+  --magenta-ink:  #A04080;   /* deep magenta pull (pink-panel copy) */
+
+  /* Legacy aliases — kept so existing slide CSS keeps working.
+     New work should reference the --violet-* tokens above. */
+  --indigo:       var(--violet);
+  --indigo-deep:  var(--violet-ink);
+  --indigo-soft:  var(--violet-soft);
+
+  /* ---------- Violet→pink brand gradient ----------
+     The single hero gradient, seen on the Agenda right card, NEXUS pill,
+     data-table header row, and NEXUS vertical bars. */
+  --grad-violet:  linear-gradient(100deg, #7D6EBD 0%, #9B87CC 50%, #C096C3 100%);
+  --grad-card:    linear-gradient(135deg, #7D6EBD 0%, #9B87CC 50%, #C096C3 100%);
+  --grad-pill:    linear-gradient(100deg, #8172BE 0%, #A58FCC 45%, #D3A3C3 100%);
+  --grad-sme:     #D9D4E8;   /* flat pale lavender bar */
+  --grad-sme-pink:#EAD9E2;   /* flat pale pink bar */
+  --grad-wordmark:linear-gradient(90deg, #6B5EB0 0%, #9B87CC 45%, #C096C3 100%); /* NEXUS wordmark */
+
+  /* legacy aliases */
+  --grad-nexus:   var(--grad-card);
+  --grad-nexus-v2:var(--grad-pill);
+
+  /* ---------- Sunset illustration palette ----------
+     These appear ONLY in the full-bleed illustration library for
+     section dividers / covers. They are NOT available as UI tokens. */
+  --sunset-night:  #1A1343;
+  --sunset-dusk:   #3A2660;
+  --sunset-violet: #6B3B8C;
+  --sunset-magenta:#C8408C;
+  --sunset-pink:   #F06090;
+  --sunset-rose:   #F47B8C;
+  --sunset-coral:  #FA8560;
+  --sunset-amber:  #F9A94F;
+  --sunset-gold:   #FBC96A;
+
+  /* Semantic accent aliases (use sparingly) */
+  --accent:        var(--indigo);
+  --accent-deep:   var(--indigo-deep);
+  --accent-soft:   var(--indigo-soft);
+  --accent-magenta:var(--magenta-ink);
+
+  /* ---------- Semantic (UI states) ---------- */
+  --ok:       #2F7A3A;
+  --warn:     #C27A0E;
+  --error:    #B3321C;
+  --info:     #2A5F8F;
+
+  /* ---------- Foreground / background aliases ---------- */
+  --bg:       var(--paper);
+  --bg-alt:   var(--paper-alt);
+  --bg-card:  var(--paper-card);
+  --bg-ink:   var(--ink);
+  --fg:       var(--ink);
+  --fg-1:     var(--ink);
+  --fg-2:     var(--n-700);
+  --fg-3:     var(--n-500);
+  --fg-4:     var(--n-400);
+  --fg-inv:   #FFFFFF;
+
+  --rule:     var(--hairline);       /* design-system v2 — explicit hairline token */
+  --rule-soft:var(--hairline);
+  --rule-inv: #FFFFFF24;
+
+  /* ---------- Spacing (4px base; 80px slide margin) ---------- */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+
+  /* ---------- Radii ----------
+     Brand is square — radii are rationed.
+     r-1 hairline detail, r-2 micro-cards, r-3 only on cards over imagery,
+     r-pill for tags. No r-4. */
+  --r-0:   0px;
+  --r-1:   2px;
+  --r-2:   4px;
+  --r-3:   8px;            /* cards on imagery */
+  --r-pill:999px;          /* tags only */
+
+  /* ---------- Shadow (extremely restrained — none default, shadow-2 app UI, shadow-ink modals only) ---------- */
+  --shadow-2:   0 2px 8px #0000001a;
+  --shadow-ink: 0 8px 30px #00000040;
+
+  /* ---------- Type scale (deck-first: 1920×1080) ----------
+     Display: 88 / 96 / 128 / 180.
+     Per-role ranges (h1/h2) carry several stops the deck composer
+     can pick from depending on slide density. */
+  --t-display-xs: 88px;
+  --t-display-m:  96px;
+  --t-display-l:  128px;
+  --t-display-xl: 180px;
+
+  /* Heading ranges */
+  --t-h1-min: 60px;   --t-h1-mid: 72px;   --t-h1-max: 96px;
+  --t-h2-min: 44px;   --t-h2-mid: 56px;   --t-h2-max: 72px;
+  --t-h3-card:    32px;  --t-h3-card-l: 36px;     /* italic card titles */
+
+  /* Legacy aliases — kept so existing slide CSS keeps working */
+  --t-serif-xl:   128px;
+  --t-serif-l:    var(--t-h1-max);
+  --t-serif-m:    var(--t-h2-mid);
+  --t-serif-s:    56px;
+
+  --t-title:      36px;    /* default; range 32–36 */
+  --t-title-s:    32px;
+  --t-subtitle:   26px;    /* italic */
+  --t-subtitle-s: 20px;
+
+  --t-body-l:     28px;
+  --t-body:       18px;
+  --t-body-s:     16px;
+  --t-caption:    14px;
+  --t-micro:      12px;
+  --t-label:      11px;    /* uppercase tracked eyebrow */
+
+  /* line-heights */
+  --lh-tight:  0.92;
+  --lh-snug:   1.04;
+  --lh-normal: 1.28;
+  --lh-body:   1.44;       /* 26/18 */
+  --lh-prose:  1.55;
+
+  /* tracking */
+  /* Editorial Reckless calls for a subtly tight set — tighter at display,
+     closing up nicely at body, still open on uppercase eyebrows. */
+  --tr-display: -0.028em;
+  --tr-title:   -0.022em;
+  --tr-body:    -0.008em;
+  --tr-label:   0.12em;
+  --tr-wide:    0.22em;
+
+  /* ---------- Motion ----------
+     Minimal animation. Short, eased, no bounce. */
+  --dur-fast: 120ms;
+  --dur-med:  220ms;
+  --dur-slow: 420ms;
+  --ease:     cubic-bezier(0.2, 0.6, 0.2, 1);
+
+  /* ---------- Grid / layout ---------- */
+  --slide-w:  1920px;
+  --slide-h:  1080px;
+  --slide-margin: 80px;     /* safe area on 1920 */
+  --slide-gutter: 48px;
+}
+
+/* ============================================================
+   Global baseline — every Reckless surface inherits tight tracking
+   ============================================================ */
+html { font-feature-settings: "kern" 1, "liga" 1; }
+body { letter-spacing: var(--tr-body); }
+
+/* ============================================================
+   Semantic element styles
+   ============================================================ */
+/* ============================================================
+   Semantic element styles — Reckless-first, italic-as-rhythm
+   ============================================================ */
+
+/* Display headline (e.g. "Every enterprise workflow is a predictive decision")
+   Reckless Light/Regular. Italic accent words get color: var(--indigo). */
+.fd-display, .fd-h0 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-display-l);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-title);
+  color: var(--fg-1);
+}
+.fd-display em, .fd-h0 em { font-style: italic; font-weight: 400; color: var(--indigo); }
+
+/* Slide headline */
+.fd-h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-serif-l);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-title);
+  color: var(--fg-1);
+}
+.fd-h1 em { font-style: italic; font-weight: 400; color: var(--indigo); }
+
+/* Section title on content cards (e.g. "Use Case", "Model Architecture") */
+.fd-h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: var(--t-serif-m);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-title);
+  color: var(--indigo);
+}
+
+/* Small card title (e.g. "Role", "Next Step") */
+.fd-h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 36px;
+  line-height: var(--lh-snug);
+  color: var(--indigo);
+}
+
+/* Standalone mid title */
+.fd-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-title);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-title);
+  color: var(--fg-1);
+}
+.fd-title em { font-style: italic; color: var(--indigo); }
+
+.fd-subtitle {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: var(--t-subtitle);
+  line-height: var(--lh-normal);
+  color: var(--indigo);
+}
+
+.fd-body {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+}
+.fd-body em { font-style: italic; color: var(--indigo); }
+.fd-body-l {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-body-l);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+}
+.fd-body-l em { font-style: italic; color: var(--indigo); }
+.fd-body-s {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-body-s);
+  line-height: var(--lh-body);
+  color: var(--fg-2);
+}
+
+.fd-quote {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: var(--t-serif-m);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-title);
+  color: var(--fg-1);
+}
+.fd-caption {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--t-caption);
+  line-height: var(--lh-body);
+  color: var(--fg-3);
+}
+
+/* Small indigo italic eyebrow (the brand's signature small-label treatment) */
+.fd-label {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--indigo);
+}
+
+/* Tracked uppercase (used sparingly — table column headers, tiny tags) */
+.fd-eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--t-caption);
+  line-height: 1;
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+/* Monospace eyebrow — agenda labels, tag captions like "HEALTHCARE".
+   Retuned in v2: smaller, tighter tracked set, indigo-deep. */
+.fd-mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--violet-deep);
+}
+/* Chart footnotes / figure captions */
+.fd-mono--caption {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+/* Use-case column labels */
+.fd-mono--column {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+/* Stat pill: rounded capsule, pale lavender fill, italic indigo text.
+   Used for "72% More Precise"-style calls. */
+.fd-pill {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--indigo);
+  background: var(--paper-card);
+  padding: 18px 36px;
+  border-radius: var(--r-pill);
+}
+.fd-pill--magenta  { color: var(--magenta-ink); background: var(--paper-pink); }
+.fd-pill--gradient { color: #FFFFFF; background: var(--grad-pill); }   /* signature call-out */
+.fd-pill--mauve    { color: #FFFFFF; background: linear-gradient(100deg, #A87BB8 0%, #C698B5 50%, #D7A5B0 100%); }
+
+/* NEXUS wordmark — the only place Druk Wide appears.
+   Optional gradient fill for "hero" occurrences of the name. */
+.fd-nexus {
+  font-family: var(--font-wordmark);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--indigo);
+}
+.fd-nexus--gradient {
+  background: var(--grad-wordmark);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================
+   Buttons & pills (design-system v2)
+   The brand's action language is Reckless-italic on pill shapes —
+   not boxed buttons. Primary = violet→pink gradient; secondary =
+   lavender wash; tertiary = underlined violet Roobert. No black.
+   ============================================================ */
+.fd-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1;
+  padding: 16px 32px;
+  border: 0;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter var(--dur-fast) var(--ease),
+              background var(--dur-fast) var(--ease);
+}
+.fd-btn--primary {
+  color: #FFFFFF;
+  background: var(--grad-pill);            /* keeps the warm mauve-pink endpoint */
+}
+.fd-btn--primary:hover { filter: brightness(0.95); }
+
+.fd-btn--secondary {
+  color: var(--violet-ink);
+  background: var(--paper-card);           /* lavender wash */
+}
+.fd-btn--secondary:hover { background: var(--card-hover); }
+
+.fd-btn--tertiary {
+  color: var(--violet-ink);
+  background: transparent;
+  padding: 4px 0;
+  border-radius: 0;
+  border-bottom: 1px solid currentColor;
+  font-style: normal;                      /* tertiary breaks the italic rule */
+  font-family: var(--font-ui);
+  font-size: 18px;
+}
+
+/* Tag chips — Roobert Mono in lavender pill, with a dark-violet "active" variant */
+.fd-tag-chip {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--violet-deep);
+  background: var(--paper-card);
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+}
+.fd-tag-chip--active {
+  color: #FFFFFF;
+  background: var(--violet-deep);
+}
+
+/* Stat card — Reckless italic numerals on lavender / gradient / pink */
+.fd-stat-card {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-8);
+  background: var(--paper-card);
+  border-radius: var(--r-3);
+}
+.fd-stat-card--gradient { background: var(--grad-card); color: #FFFFFF; }
+.fd-stat-card--pink     { background: var(--paper-pink); }
+
+.fd-stat-num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 96px;
+  line-height: var(--lh-tight);
+  color: var(--violet-ink);
+}
+.fd-stat-card--pink     .fd-stat-num { color: var(--magenta-ink); }
+.fd-stat-card--gradient .fd-stat-num { color: #FFFFFF; }
+
+/* NEXUS size variants — see colors_and_type.css for base .fd-nexus */
+.fd-nexus--hero   { font-size: 64px; letter-spacing: 0.02em; }
+.fd-nexus--mid    { font-size: 52px; }
+.fd-nexus--small  { font-size: 48px; }
+.fd-nexus--inline { font-size: 1em; color: var(--violet-deep); }
+.fd-nexus--bar    { font-size: 14px; letter-spacing: 0.18em; }
+
+/* ---------- Utilities ---------- */
+.fd-rule    { border: 0; border-top: 1px solid var(--rule); height: 0; }
+.fd-rule-hair { border: 0; border-top: 1px solid var(--rule-soft); height: 0; }
+.fd-inv  { color: var(--fg-inv); }
+.fd-inv  .fd-rule { border-color: currentColor; }
+
+/* Wireframe grid overlay — the signature brand motif from the illustrations.
+   Apply to a box with position:relative; it paints a subtle grid INSIDE. */
+.fd-wireframe {
+  position: relative;
+}
+.fd-wireframe::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right,  currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 56px 40px;
+  opacity: 0.10;
+  mix-blend-mode: normal;
+}
+.fd-wireframe--subtle::after { opacity: 0.06; background-size: 80px 48px; }
+.fd-wireframe--dense::after  { opacity: 0.12; background-size: 40px 28px; }

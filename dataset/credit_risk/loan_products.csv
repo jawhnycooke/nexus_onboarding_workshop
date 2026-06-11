@@ -1,0 +1,27 @@
+product_id,loan_product,risk_tier,segment_id,standard_term_months
+PRD001,Commercial Credit Facility,4,SEG01,60
+PRD002,Small Business Term Loan,1,SEG02,60
+PRD003,Business Innovation Loan,2,SEG02,84
+PRD004,Business Innovation Loan,1,SEG02,84
+PRD005,Growth Capital Loan,3,SEG02,120
+PRD006,Small Business Term Loan,2,SEG02,60
+PRD007,Home Equity Line of Credit,2,SEG03,120
+PRD008,Equipment Finance Loan,2,SEG02,60
+PRD009,Commercial Credit Facility,3,SEG02,60
+PRD010,Healthcare Practice Loan,2,SEG02,84
+PRD011,Growth Capital Loan,4,SEG02,120
+PRD012,Auto Loan,1,SEG03,60
+PRD013,Auto Loan,2,SEG03,60
+PRD014,Commercial Credit Facility,1,SEG01,60
+PRD015,Home Equity Line of Credit,3,SEG03,120
+PRD016,Healthcare Practice Loan,4,SEG02,84
+PRD017,Commercial Credit Facility,2,SEG01,60
+PRD018,Commercial Credit Facility,5,SEG02,60
+PRD019,Growth Capital Loan,5,SEG02,120
+PRD020,Equipment Finance Loan,3,SEG02,60
+PRD021,Commercial Credit Facility,3,SEG01,60
+PRD022,Equipment Finance Loan,4,SEG02,60
+PRD023,Healthcare Practice Loan,3,SEG02,84
+PRD024,Small Business Term Loan,3,SEG02,60
+PRD025,Home Equity Line of Credit,4,SEG03,120
+PRD026,Business Innovation Loan,3,SEG02,84

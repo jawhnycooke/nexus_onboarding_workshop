@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 05 · Async patterns</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Learners arrive having seen one async call (submit_feature_importance_task in Module 04). This module scales the pattern to the two most expensive operations — fit and predict — and adds parallelism plus cross-session portability.",
+    "Agenda — 2-card. Two arcs: the async surface itself (train, predict, predict_proba) and the operational payoffs (parallel jobs, portable task ids). Flag the 48-hour lifetime — that is what makes cross-session workflows possible.",
+    "Learning objectives. Three. A is the API surface. B is the wall-clock payoff (parallel). C is the cross-session move that production pipelines need.",
+    "Part 01 divider. Pause. Frame the shift: the sync fit() you have been using blocks for minutes. Async fit() returns in about a second. The work happens the same way — but your process is free.",
+    "Why async exists. Name the pain points out loud. Sync blocks a Python process. If the network drops you lose the job. You cannot run two experiments at once. You cannot start training before a meeting and score the model after. Every one of those is a real production constraint, and every one of them is what async solves.",
+    "Key concept. Read slowly. Task ids are strings. That is the whole idea — a string you can save, pass, or email, and poll against from anywhere within 48 hours.",
+    "Code — submit_fit_task + poll_fit_result. Walk once. Point to POLL_INTERVAL = 20 — that is the tunable. Then point to trained_model_id_ — by the end of the loop, the estimator is fitted in place.",
+    "Code — predict and predict_proba async. Two submits, one shared poll. submit_predict_task and submit_predict_proba_task both feed poll_predict_result; the call returns class labels for one and a probability matrix for the other. The number-one mistake to flag: assuming there is a separate poll_predict_proba_result. There is not.",
+    "Part 02 divider. Shift from API surface to operational payoff. The next two slides are the reason anyone writes async code at all.",
+    "Code — parallel. Submit both jobs before polling either. That is the whole trick. One shared loop polls both. Wall-clock collapses to the duration of the longest job.",
+    "Parallel wall-clock payoff. This is the empirical slide — name the numbers from the room's own run. Two training runs at about one minute each cost roughly two minutes sequentially, but submitted in parallel they finish in about one minute total. Live-run insight from this dataset: the two configurations land close (latest run: top-15/quality 0.943 vs full/speed 0.938), and the winner can flip run to run — feature richness and mode trade off, so measure rather than assume mode='quality' always wins. N experiments for the price of the slowest is the key mental model to hand the room.",
+    "Two-column — portability. The submission and polling sides share nothing but the task id string. Production pipelines submit at end-of-day and poll in the morning — from a different script, on a different machine.",
+    "Task id vs trained_model_id_. The single operational distinction that trips up teams. task_id is a 48-hour handle on an in-flight job. trained_model_id_ is a permanent handle on the weights. The moment a poll returns, save both — but save the model id with more care, because that is the one you need in a week, a month, a year.",
+    "Exercise. Learners submit a slim-features quality model and a full-features speed model in parallel. While jobs run, they write a fallback note for what to do if a job times out. The fallback matters more than the AUC. Push them to think operationally: ship the completed model anyway, resubmit with a different mode, fall back to the previous production model, or abort the pipeline run? There is no universal answer — but an answer is required. Teams that have never written one tend to discover their missing fallback at 3 AM. The fallback-note prompt and a budgeted-polling demo now live in the notebook after Part 4.",
+    "Takeaways. Three. Read aloud. Leave a breath after 'portable strings.' That is the mental model that unlocks the rest of the course.",
+    "Closing. Segue to Module 06 — resilient pipelines. Async gives you scale. Resilience keeps it working when the network does not."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 05</div>
+  <h1 class="cov-title">Async<br><em>patterns.</em></h1>
+  <div class="cov-big-n">05 / 08</div>
+  <div class="cov-meta">200&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE SURFACE</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Submit, then poll</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Async training &mdash; submit_fit_task</div><div class="ag-row-b">Same arguments as fit(). Returns in about a second with a task id.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Async prediction &mdash; two submits, one poll</div><div class="ag-row-b">submit_predict_task for labels, submit_predict_proba_task for scores. Both share poll_predict_result.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Matching polls &mdash; fit, predict, proba, feature importance</div><div class="ag-row-b">Four submit verbs, three poll methods &mdash; predict and predict_proba share poll_predict_result.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>THE PAYOFFS</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Parallel, portable, persistent</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Parallel jobs &mdash; one shared poll loop</div><div class="ag-row-b">Submit N before polling any. Wall-clock is the longest job, not the sum.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">48-hour task ids &mdash; portable strings</div><div class="ag-row-b">Save the id, poll from a different session, a different script, a different machine.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; slim vs full, in parallel</div><div class="ag-row-b">Two jobs, one wait. Compare AUC. Write the fallback note.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Train and predict <em>without blocking</em></h3>
+        <p class="lo-b">submit_fit_task returns a task id in about a second. poll_fit_result returns Self when the model is ready. predict and predict_proba have matching submit/poll pairs.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Run N jobs <em>in parallel</em></h3>
+        <p class="lo-b">Submit multiple experiments before polling any of them. One shared loop checks each. Wall-clock time equals the longest job, not the sum.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Resume work <em>across sessions</em></h3>
+        <p class="lo-b">Task ids are strings, valid for 48 hours. Save them to disk or a database, poll from any new NEXUSClassifier instance &mdash; no shared state required.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/night-ride.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft"><em>Submit.</em><br>Don't <em>wait.</em></h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  TWO-COLUMN — Why async exists                            [NEW]
+     ============================================================ -->
+<section data-screen-label="05 Why Async Exists">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE PAIN</div>
+      <h2 class="tc-title">Sync blocks. Async <em>frees</em> your process.</h2>
+      <p class="tc-body">Call sync <em>fit()</em> and your Python process is tied up for minutes. If the network drops, you lose the job. You cannot run two experiments in parallel. You cannot kick off training before a meeting and score the model after.</p>
+      <p class="tc-body">Every production integration hits these walls eventually. Async is how you walk through them instead.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">WHAT ASYNC DELIVERS</div>
+      <h3 class="tc-right-h">Fire and<br>forget.<br>Check back<br>when ready.</h3>
+      <p class="tc-right-b"><em>submit_fit_task</em> returns in about a second with a task id. Training runs on Fundamental's infrastructure. Your process is free &mdash; run other jobs in between, or close the laptop and come back tomorrow.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">seconds &rarr; minutes</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">submit_fit_task returns in about<br>a second &mdash; the training minutes<br>are not yours to wait.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     06  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="06 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title">A <em>task id is a string</em> &mdash; save it, pass it, poll it, for 48 hours, from any session.</h2>
+  </div>
+  <div class="kc-cite">Fig. 05 &middot; Submit is the order. task_id is the ticket. Poll is "come back when it's ready."</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     07  CODE — submit_fit_task + poll_fit_result
+     ============================================================ -->
+<section data-screen-label="07 Code async training">
+  <h2 class="code-title">Async <em>training</em>.</h2>
+  <div class="code-sub">submit returns in about a second. poll returns Self when done.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_05_async_patterns.ipynb &middot; cells 8 &amp; 10</span>
+      </div>
+<pre class="code-pre" style="font-size:20.5px">nexus_async = <span class="c-fn">NEXUSClassifier</span>(mode=<span class="c-str">"quality"</span>)
+
+<span class="c-com"># submit &mdash; returns a task id immediately</span>
+fit_task_id = nexus_async.<span class="c-fn">submit_fit_task</span>(
+    X_train_slim, y_train,
+)
+<span class="c-fn">print</span>(<span class="c-str">f"submitted: {fit_task_id}"</span>)  <span class="c-com"># save this</span>
+
+<span class="c-com"># poll &mdash; returns Self when done, None if still running</span>
+POLL_INTERVAL = <span class="c-str">20</span>
+fitted = nexus_async.<span class="c-fn">poll_fit_result</span>(fit_task_id)
+<span class="c-key">while</span> fitted <span class="c-key">is</span> <span class="c-str">None</span>:
+    time.<span class="c-fn">sleep</span>(POLL_INTERVAL)
+    fitted = nexus_async.<span class="c-fn">poll_fit_result</span>(fit_task_id)
+
+<span class="c-com"># nexus_async is now fitted &mdash; ready for predict, proba, feature importance</span>
+<span class="c-fn">print</span>(nexus_async.trained_model_id_)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Your process is <em>free</em> immediately.</h3>
+      <p class="code-note-b">The training job runs on Fundamental's infrastructure. submit returns in about a second. Everything between submit and the final poll is yours &mdash; other work, other jobs, or nothing at all.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     08  CODE — async predict / predict_proba
+     ============================================================ -->
+<section data-screen-label="08 Code async prediction">
+  <h2 class="code-title">Predict and <em>proba</em>, async.</h2>
+  <div class="code-sub">Two submits. One shared poll method.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_05_async_patterns.ipynb &middot; cells 13 &amp; 15</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># async probability prediction</span>
+proba_task = nexus_async.<span class="c-fn">submit_predict_proba_task</span>(X_holdout_slim)
+proba = nexus_async.<span class="c-fn">poll_predict_result</span>(proba_task)
+<span class="c-key">while</span> proba <span class="c-key">is</span> <span class="c-str">None</span>:
+    time.<span class="c-fn">sleep</span>(<span class="c-str">10</span>)
+    proba = nexus_async.<span class="c-fn">poll_predict_result</span>(proba_task)
+<span class="c-com"># &rarr; np.ndarray shape (n_samples, n_classes)</span>
+
+<span class="c-com"># async class-label prediction &mdash; same poll method</span>
+labels_task = nexus_async.<span class="c-fn">submit_predict_task</span>(X_holdout_slim)
+labels = nexus_async.<span class="c-fn">poll_predict_result</span>(labels_task)
+<span class="c-key">while</span> labels <span class="c-key">is</span> <span class="c-str">None</span>:
+    time.<span class="c-fn">sleep</span>(<span class="c-str">10</span>)
+    labels = nexus_async.<span class="c-fn">poll_predict_result</span>(labels_task)
+<span class="c-com"># &rarr; np.ndarray of int labels</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">One poll, two <em>results</em>.</h3>
+      <p class="code-note-b">Four submit verbs &mdash; fit, predict, predict_proba, feature importance &mdash; map to three poll methods. predict and predict_proba both retrieve through poll_predict_result: it returns class labels for a predict task and a probability matrix for a predict_proba task.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     09  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="09 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; THE PAYOFFS</div>
+  <h2 class="div-title">Two jobs.<br><em>One wait.</em></h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     10  CODE — Parallel fit tasks
+     ============================================================ -->
+<section data-screen-label="10 Code parallel">
+  <h2 class="code-title">Submit both. <em>Poll once.</em></h2>
+  <div class="code-sub">N experiments. Wall-clock time of the longest.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_05_async_patterns.ipynb &middot; cells 17 &amp; 18</span>
+      </div>
+<pre class="code-pre" style="font-size:21.5px">nexus_A = <span class="c-fn">NEXUSClassifier</span>(mode=<span class="c-str">"quality"</span>)
+nexus_B = <span class="c-fn">NEXUSClassifier</span>(mode=<span class="c-str">"speed"</span>)
+
+<span class="c-com"># submit both before polling either &mdash; neither blocks</span>
+task_A = nexus_A.<span class="c-fn">submit_fit_task</span>(X_train_slim, y_train)
+task_B = nexus_B.<span class="c-fn">submit_fit_task</span>(X_train_full, y_train)
+
+<span class="c-com"># one shared loop &mdash; checks each until done</span>
+done = {<span class="c-str">"A"</span>: <span class="c-str">False</span>, <span class="c-str">"B"</span>: <span class="c-str">False</span>}
+<span class="c-key">while</span> <span class="c-key">not</span> <span class="c-fn">all</span>(done.<span class="c-fn">values</span>()):
+    <span class="c-key">if</span> <span class="c-key">not</span> done[<span class="c-str">"A"</span>] <span class="c-key">and</span> nexus_A.<span class="c-fn">poll_fit_result</span>(task_A) <span class="c-key">is</span> <span class="c-key">not</span> <span class="c-str">None</span>:
+        done[<span class="c-str">"A"</span>] = <span class="c-str">True</span>
+    <span class="c-key">if</span> <span class="c-key">not</span> done[<span class="c-str">"B"</span>] <span class="c-key">and</span> nexus_B.<span class="c-fn">poll_fit_result</span>(task_B) <span class="c-key">is</span> <span class="c-key">not</span> <span class="c-str">None</span>:
+        done[<span class="c-str">"B"</span>] = <span class="c-str">True</span>
+    <span class="c-key">if</span> <span class="c-key">not</span> <span class="c-fn">all</span>(done.<span class="c-fn">values</span>()):
+        time.<span class="c-fn">sleep</span>(<span class="c-str">20</span>)
+<span class="c-com"># both fitted once the loop exits &mdash; no sequencing required</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">The real <em>multiplier</em>.</h3>
+      <p class="code-note-b">Sequential, two training runs cost two wall-clocks. Parallel, they cost one. The only ceiling is the number of concurrent jobs your API tier supports &mdash; run as many experiments as you can submit.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     11  TWO-COLUMN — Parallel wall-clock payoff                  [NEW]
+     ============================================================ -->
+<section data-screen-label="11 Parallel Wall Clock">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE MULTIPLIER</div>
+      <h2 class="tc-title">Two jobs. <em>One</em> wall-clock.</h2>
+      <p class="tc-body">Sequential training runs cost you <em>two</em> wall-clocks. Parallel training &mdash; when you submit both jobs before polling either &mdash; costs you the <em>longer</em> of the two. N experiments for the price of the slowest.</p>
+      <p class="tc-body">Both jobs run on Fundamental's infra simultaneously; your shared poll loop just checks each. There is no orchestration to write on your side.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">A TYPICAL RUN</div>
+      <h3 class="tc-right-h">~60s each,<br>still ~60s<br>in parallel</h3>
+      <p class="tc-right-b">Module 05's exercise runs Model A (top-15, quality) and Model B (full, speed). Each takes roughly a minute. In parallel they finish together; sequential, it is twice that &mdash; and every added experiment widens the gap.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">N &rarr; 1 wait</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">the longest job is the<br>whole budget, no matter<br>how many you submit.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     12  TWO-COLUMN — Task portability
+     ============================================================ -->
+<section data-screen-label="12 Task Portability">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">TASK PORTABILITY</div>
+      <h2 class="tc-title">Submit at <em>night</em>. Poll in the <em>morning</em>.</h2>
+      <p class="tc-body">The submission and polling sides share nothing but the task id. A data pipeline at 11 PM submits training and saves the id. An evaluation script at 7 AM loads the id, creates a fresh NEXUSClassifier, and polls &mdash; on a different machine, in a different process, with no shared memory.</p>
+      <p class="tc-body">Once a job completes, its trained_model_id_ is the permanent handle. Pass it to load_model() on any estimator to reload the model &mdash; the same verb you learned in Module 02.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE LIFETIME</div>
+      <h3 class="tc-right-h">The task id<br>is valid for<br>48 hours</h3>
+      <p class="tc-right-b">After that, the job is evicted from the task registry. If you need the model beyond 48h, save the trained_model_id_ &mdash; that one is permanent.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">48 h</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">task id lifetime &mdash; portable<br>across sessions and scripts.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     13  TWO-COLUMN — task_id vs trained_model_id_                [NEW]
+     ============================================================ -->
+<section data-screen-label="13 Task vs Model Id">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">TWO IDS, TWO LIFETIMES</div>
+      <h2 class="tc-title">Save them <em>both</em>. Trust them differently.</h2>
+      <p class="tc-body"><code>task_id</code> is the handle on an <em>in-flight job</em>. Use it to poll, to resume from another session, to pass between teams. After 48 hours it is evicted from the task registry &mdash; the job itself is long finished, but the handle is gone.</p>
+      <p class="tc-body"><code>trained_model_id_</code> is the handle on the <em>weights</em>. It lives in the model registry <em>permanently</em>. Every future session that wants to predict starts by setting this id on a fresh estimator.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE OPERATIONAL KEY</div>
+      <h3 class="tc-right-h">task_id:<br>48 hours<br>trained_model_id_:<br><em>forever</em></h3>
+      <p class="tc-right-b">The moment a poll returns, you have both. Save the <em>trained_model_id_</em> with care &mdash; that is what Modules 02 and 06 reload. The task id has done its job.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">48h &rarr; &#8734;</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">one id fades,<br>the other stays.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     14  EXERCISE — Parallel fit
+     ============================================================ -->
+<section data-screen-label="14 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">05</div>
+      <h3 class="ex-side-h">Two jobs.<br>One wait.<br>One fallback<br>note.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">Slim and full feature frames from Module 04</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">Two model ids + AUCs, and a one-paragraph fallback plan</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Intermediate &middot; <span style="opacity:.5;">&#9679;&#9679;&#9679;</span>&#9675;</div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">Submit two training jobs <em>in parallel</em>. Poll them in one shared loop.<br>Then write the fallback plan for when <em>one of them fails</em>.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Submit <em>model A</em> on the slim (top-15) frame in quality mode, and <em>model B</em> on the full frame in speed mode.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Poll both in a shared loop. Record each task id and trained_model_id_ as the jobs complete.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Score the holdout with each model. Note which AUC is higher and by how much.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">Write one paragraph: if one job never completes within an hour, what is your fallback &mdash; and why.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">14</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     15  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="15 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Submit returns <em>immediately</em></h3>
+      <p class="tk-card-b">submit_fit_task, submit_predict_task, submit_predict_proba_task. Each returns a task id in about a second. Match each submit to its matching poll &mdash; don't cross the wires.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Parallel <em>collapses</em> wall-clock time</h3>
+      <p class="tk-card-b">Submit N before polling any. One shared loop checks each. N experiments cost the duration of the longest one, not the sum.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Task ids are <em>portable strings</em></h3>
+      <p class="tk-card-b">Valid for 48 hours. Save to a file, a database, or an email. Poll from any estimator, on any machine &mdash; no shared state required.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">15</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     16  CLOSING
+     ============================================================ -->
+<section data-screen-label="16 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/research-hero.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>resilient pipelines.</em></h1>
+  <div class="closing-meta">Module 06 &middot; Exception hierarchy, retries, timeouts &middot; 300&#8209;level</div>
+  <div class="closing-cta">Async gave you <em>scale</em>. Resilience keeps the pipeline running when the network does not.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

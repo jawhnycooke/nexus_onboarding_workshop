@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 00 · What is prediction?</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Set expectations: this module is the on-ramp for learners with no ML background. Frame the idea first — do not open a laptop yet.",
+    "Agenda — 2-card. Two arcs: the idea, then the code. Tell them the second arc is short — two lines of NEXUS — so they lean into the first.",
+    "Learning objectives. Three, no more. If a learner cannot do these three things by the end, the module has failed. Say that out loud.",
+    "Part 01 divider. Transition slide. Stay on it for a beat before moving — the silence sets the tone.",
+    "Key concept. Read the sentence slowly. Three nouns, three beats: past data, a pattern, a prediction. That is the whole workshop compressed.",
+    "Dataset two-column. Anchor on the number: 545. One feature, one target, one question. If anyone asks about the other columns in the CSV, defer to Module 03.",
+    "Relationship two-column. Describe the cloud in words. The chart itself comes on the next slide — hold the reveal for one beat so the verbal setup lands first.",
+    "The pattern chart. Point to the left panel: every dot is a real sale. Then the right panel: the line is what fit() returns. The line is not the data — it is the shape the model pulled out of the data. That distinction is the teaching moment.",
+    "Part 02 divider. Tonal shift from intuition to mechanics. Keep the transition crisp.",
+    "fit() code. Point to the two lines that matter: NEXUSRegressor(mode='speed') and fit(X, y). Everything above is data. Everything below is housekeeping.",
+    "predict() code. Emphasize that 6000 sq ft is a value the model never saw. Interpolation, not memorization. Point back to the line on the pattern slide — that is what predict() reads off.",
+    "Exercise. The training data stops at 16,200 sq ft. Most learners drag straight to the slider's max and ask whether that number is right — it isn't wrong, it is just the model working at the edge of what it saw. If the room skips the in-range step, walk them back. The point of the slider is to feel the shape of the data, not to beat the model.",
+    "Takeaways. Three. Read them aloud, then close the laptop. Leave silence for a breath.",
+    "Closing. Segue to Module 01. No Q&A here — questions go in the notebook's issue tracker or the next session."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 00</div>
+  <h1 class="cov-title">What is<br><em>prediction?</em></h1>
+  <div class="cov-big-n">00 / 08</div>
+  <div class="cov-meta">100&#8209;level intro &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE IDEA</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">What prediction actually means</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Past data, a pattern, a prediction</div><div class="ag-row-b">The one-sentence definition that carries the rest of the workshop.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">The dataset &mdash; 545 home sales</div><div class="ag-row-b">Square footage in, price out. One feature, one question.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Bigger homes cost more &mdash; usually</div><div class="ag-row-b">The pattern is real. It is also noisy. Both matter.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>THE CODE</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Two lines of NEXUS, end to end</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">fit() &mdash; learn the pattern</div><div class="ag-row-b">Two lines. NEXUS handles everything between them.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">predict() &mdash; apply the pattern</div><div class="ag-row-b">A trained model, an unseen home, a number back.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; your own square footage</div><div class="ag-row-b">An interactive slider. Find the number you trust.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Say what prediction is, in one sentence</h3>
+        <p class="lo-b">Past data, a pattern, an estimate for something you haven't seen. That is the whole idea, before any code.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Train a model with two lines of NEXUS</h3>
+        <p class="lo-b">NEXUSRegressor(), then fit(X, y). Data upload, training, and the trained-model handle come back in seconds.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Predict a price for a home that isn't in the data</h3>
+        <p class="lo-b">Slide to any square footage between 1,000 and 20,000 and read the model's estimate live in the notebook.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/suburbs.png);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">The <em>idea</em>,<br>before the <em>code</em></h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title">Prediction is <em>past data</em>, a <em>pattern a model finds</em>, and <em>an estimate</em> for something you haven't seen.</h2>
+  </div>
+  <div class="kc-cite">Fig. 00 &middot; You already do this when you shop for a house &mdash; you notice bigger ones cost more, and you use that pattern to guess the price of one you haven't seen.</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     06  TWO-COLUMN — The dataset
+     ============================================================ -->
+<section data-screen-label="06 The Dataset">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE DATASET</div>
+      <h2 class="tc-title">545 real home sales, and <em>one question</em></h2>
+      <p class="tc-body">Each row records a home &mdash; square footage, bedrooms, parking, price. For this module we ignore everything except <em>area</em> and <em>price</em>.</p>
+      <p class="tc-body">One feature in. One number out. If you can predict price from size alone, the idea of prediction is on the table. Everything after Module 00 just adds columns.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">AT A GLANCE</div>
+      <h3 class="tc-right-h">Area&nbsp;&rarr;&nbsp;price,<br>in one CSV</h3>
+      <p class="tc-right-b">Square feet on the x-axis, Indian rupees on the y-axis. One feature, one target, nothing else yet.</p>
+      <div class="tc-stat">
+        <div class="tc-stat-n">545</div>
+        <div class="tc-stat-l">homes, one feature,<br>one target column.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     07  TWO-COLUMN — The relationship
+     ============================================================ -->
+<section data-screen-label="07 The Relationship">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE RELATIONSHIP</div>
+      <h2 class="tc-title">Bigger homes cost more &mdash; <em>usually</em></h2>
+      <p class="tc-body">Plot every home as a dot and the cloud leans upward from left to right. That lean is the <em>pattern</em>. It is the whole thing the model has to find.</p>
+      <p class="tc-body">The dots are also scattered. A 5,000 sq ft home might sell for &#8377;3M or &#8377;7M depending on what we haven't measured. Price depends on <em>more than size</em>.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">NEXT SLIDE</div>
+      <h3 class="tc-right-h">The scatter,<br>and what<br>the model<br>pulls out of it</h3>
+      <p class="tc-right-b">Two panels. On the left, every real sale. On the right, the shape <em>fit()</em> returns &mdash; one line summarizing 545 dots. The line is not the data; it is the pattern <em>inside</em> the data.</p>
+      <div class="tc-stat">
+        <div class="tc-stat-n">1,650&ndash;16,200</div>
+        <div class="tc-stat-l">square feet covered<br>by the training data.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     08  CHART — scatter + fitted line (two panels)               [NEW]
+     ============================================================ -->
+<section data-screen-label="08 The Pattern Chart">
+  <h2 class="ch-title">The pattern, and what <em>fit()</em> finds.</h2>
+  <div class="ch-eb">Left: 545 real sales. Right: the shape the model returns from those dots.</div>
+  <div style="position: absolute; top: 300px; left: 96px; right: 96px; bottom: 140px;
+              display: flex; justify-content: center; align-items: center;">
+    <img src="scatter_and_fit.png"
+         alt="Two-panel chart: left shows a scatter of 545 home sales by area and price; right shows the same scatter with a fitted prediction line overlaid."
+         style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; border-radius: 8px; box-shadow: 0 2px 18px rgba(15, 23, 42, 0.08);">
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     09  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="09 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; FIT AND PREDICT</div>
+  <h2 class="div-title">Two verbs.<br>The <em>whole</em> interface.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     10  CODE SNIPPET — fit()
+     ============================================================ -->
+<section data-screen-label="10 Code fit">
+  <h2 class="code-title"><em>fit()</em> learns the pattern.</h2>
+  <div class="code-sub">Two lines of NEXUS. Everything else is housekeeping.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_00_what_is_prediction.ipynb &middot; cell 15</span>
+      </div>
+<pre class="code-pre"><span class="c-key">from</span> fundamental <span class="c-key">import</span> NEXUSRegressor
+
+<span class="c-com"># feature: square footage.  target: sale price.</span>
+X = df[[<span class="c-str">"area"</span>]]
+y = df[<span class="c-str">"price"</span>].values
+
+nexus = <span class="c-fn">NEXUSRegressor</span>(mode=<span class="c-str">"speed"</span>)
+nexus.<span class="c-fn">fit</span>(X, y)
+
+<span class="c-fn">print</span>(nexus.trained_model_id_)
+<span class="c-com"># &rarr; your permanent model handle</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">The handle is the <em>artifact</em>.</h3>
+      <p class="code-note-b">NEXUS uploads the data, trains the model, and returns an id. That id is what you carry forward &mdash; persist it, reload it, hand it to the next module. The cloud keeps the weights; you keep the string.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     11  CODE SNIPPET — predict()
+     ============================================================ -->
+<section data-screen-label="11 Code predict">
+  <h2 class="code-title"><em>predict()</em> applies the pattern.</h2>
+  <div class="code-sub">The same interface, for any square footage &mdash; in the data or out of it.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_00_what_is_prediction.ipynb &middot; cell 17</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># one home the model never saw</span>
+nexus.<span class="c-fn">predict</span>(pd.<span class="c-fn">DataFrame</span>({<span class="c-str">"area"</span>: [<span class="c-str">6000</span>]}))
+
+<span class="c-com"># a full sweep &mdash; one call, ten predictions</span>
+area_range = np.<span class="c-fn">linspace</span>(<span class="c-str">1000</span>, <span class="c-str">12000</span>, <span class="c-str">10</span>)
+X_range    = pd.<span class="c-fn">DataFrame</span>({<span class="c-str">"area"</span>: area_range})
+
+preds = nexus.<span class="c-fn">predict</span>(X_range)
+<span class="c-com"># &rarr; an array of prices, one per square-foot value</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">6,000 sq ft is <em>interpolation</em>, not memorization.</h3>
+      <p class="code-note-b">The model never saw a 6,000 sq ft home at exactly &#8377;X. It saw 545 neighbours and learned the shape. When it predicts, it is reading off the line from slide 8 &mdash; which is why the same interface works for every row in Modules 01 through 08.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     12  EXERCISE — Interactive slider
+     ============================================================ -->
+<section data-screen-label="12 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">01</div>
+      <h3 class="ex-side-h">Drive the<br>slider.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">The notebook, open to the slider cell</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">One prediction you trust, one you don't</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Starter &middot; <span style="opacity:.5;">&#9679;</span>&#9675;&#9675;<span style="opacity:.5;">&#9675;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">You have one trained model and a slider from 1,000 to 20,000 sq ft.<br>Find the prediction <em>you trust</em> &mdash; and find one <em>you don't</em>.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Run the cell labelled <em>Your turn</em>. The slider renders below it with the scatter plot.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Drag to a square footage <em>inside</em> the training range &mdash; say, 5,000 sq ft. Note the red dot where the prediction lands.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Drag to a square footage <em>outside</em> the range &mdash; try 19,000 sq ft. Watch what the prediction does.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">In one sentence, explain which prediction you would ship &mdash; and why you would hesitate on the other.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">12</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     13  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="13 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Prediction is past data, a pattern, a number back</h3>
+      <p class="tk-card-b">NEXUS found the price-vs-area pattern in 545 sales. Now it estimates prices for homes that were <em>never in the dataset</em>.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Two verbs run the workshop: fit, then predict</h3>
+      <p class="tk-card-b">fit() learns. predict() applies. The interface <em>does not change</em> across the next eight modules, even as the data gets harder.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">One feature is the floor, not the ceiling</h3>
+      <p class="tk-card-b">Square footage alone leaves most of the price variance unexplained. Module 01 adds real features &mdash; and a <em>real problem</em>: credit default.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 14</div>
+</section>
+
+<!-- ============================================================
+     14  CLOSING
+     ============================================================ -->
+<section data-screen-label="14 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/nexus-sees-future.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>credit risk.</em></h1>
+  <div class="closing-meta">Module 01 &middot; Your first credit risk model &middot; 100&#8209;level</div>
+  <div class="closing-cta">Same two verbs. A real dataset. Four numeric features, one binary outcome.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

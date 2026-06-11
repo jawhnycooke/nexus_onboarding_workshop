@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 03 · Smarter features and the benchmark</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. This is the first 200-level module. Learners have a four-feature classifier and they know how to score it. Now they earn the full signal that lives in the other columns and other tables.",
+    "Agenda — 2-card. Two arcs: the richer model (categoricals, joins, messy data) and the honest fight (NEXUS vs XGBoost on the same enriched frame). Flag the benchmark at the top — that is the payoff slide the room is here for.",
+    "Learning objectives. Three. The first rolls Part 1, Part 2, Part 3 together because they share one idea: pass the categoricals to NEXUS as-is — no encoder, no imputation — derive one numeric tenure feature from the date, then let cleaning and joins lift accuracy on top. The benchmark stands alone.",
+    "Part 01 divider. Transition. Say it out loud: we are moving from four numeric columns to every column, plus three joined tables. Let the shift land before the next slide.",
+    "Key concept. Read slowly. Strings, missing values, three joined tables — one fit() call; the date becomes one numeric feature first. That is the sentence to remember.",
+    "Why mixed types work. NEXUS handles mixed types natively — that is the one-line version. You pass categorical strings as-is and it encodes them automatically; the one exception is datetime, so the date becomes a numeric tenure feature with one line of arithmetic. The point to land: the encoding and imputation work simply is not on the learner's plate.",
+    "Two-column — categoricals. Anchor on 'passed as-is — no encoder.' The teaching point is that the preprocessing surface shrinks to almost nothing: the categoricals go to NEXUS unchanged and the date becomes one numeric tenure column, no ColumnTransformer needed. Cleaning and joins are the optional lift on top.",
+    "Three tables, three signals. Name each one out loud. Borrower = who they are. Financial snapshots = what the money looks like. Credit assessments = how underwriters score them. Payment events = how they actually pay. Each table covers a dimension of risk the others cannot.",
+    "Code — enrich(). Three left joins. No magic. Sort by date, drop duplicates, merge. The pandas idiom every learner already knows, applied straight.",
+    "Messy data tolerance. The numbers matter — 0.8611 on raw messy (passed as-is), 0.9040 with a light clean first. The +0.0429 delta is the teaching point: NEXUS reads 'Divorced' and 'DIVORCED' as two different categories, so casing variants split the signal, and .str.title() is what consolidates them back into one. Cleaning is not required — it concentrates the signal.",
+    "Part 02 divider. Tonal shift. Every data scientist in the room is thinking 'yes but XGBoost.' Address it head-on on the next slide.",
+    "Code — XGBoost prep. Walk through the imports. Count the lines aloud: OrdinalEncoder, SimpleImputer, Pipeline, ColumnTransformer, plus the unknown-value guard. Compare to the ~10-line preprocessing pass for NEXUS.",
+    "Same frame, different ceremony. Pause here. Both models now train on the identical 22-column frame — including account_tenure_days. The asymmetry is the pipeline: XGBoost needs the encode-and-impute ColumnTransformer reproduced on every inference request; NEXUS took the same frame with none of it.",
+    "Two-column — benchmark results. Lead with the AUC gap. Then pivot to what AUC alone does not capture — preprocessing code, tuning time, the inference-time pipeline that has to be reproduced.",
+    "Benchmark ROC overlay. Schematic — the shapes are honest, exact numbers from the notebook. Point at the low-FPR region (left edge of the curve): that is where credit-risk teams actually operate, and that is where the gap between NEXUS and XGBoost shows the most. AUC summarizes this across the whole range; the curve shows where the gap lives.",
+    "Exercise. The grid search can run long on laptop hardware — if the room is tight, have learners skip step 2 and compare XGBoost defaults vs NEXUS only. The honest verdict rarely turns on AUC alone; push them to weigh preprocessing effort and inference fragility (unknown category values) alongside the score. When NEXUS wins on AUC and on effort, that is not a coincidence — it is the thesis of the module. The notebook now labels Part 4 as an optional deep dive with the results summarized up front, so skipping is a first-class path.",
+    "Takeaways. Three. Each maps to one side of the comparison: mixed types with a small preprocessing footprint, joins move AUC, the benchmark is honest.",
+    "Closing. Segue to Module 04 — feature importance. The natural next question after 'this model is better' is 'which columns are doing the work.'"
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 03</div>
+  <h1 class="cov-title">Smarter features,<br><em>honest</em> benchmark.</h1>
+  <div class="cov-big-n">03 / 08</div>
+  <div class="cov-meta">200&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE RICHER MODEL</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Every column. Every table.</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Categoricals as-is &mdash; the date becomes one number</div><div class="ag-row-b">gender, marital status, education, occupation, secondary_income_flag pass straight through; account_open_date becomes account_tenure_days. Cleaning and joins add signal.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Three left joins, one feature frame</div><div class="ag-row-b">Financial snapshots. Credit assessments. Payment events. Merged on borrower_id.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Messy data &mdash; clean lightly</div><div class="ag-row-b">Case drift, type drift, typos. NEXUS tolerates them. Clean for hygiene, not because you have to.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>THE HONEST FIGHT</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">NEXUS vs XGBoost, same frame</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Same data, same holdout, same metric</div><div class="ag-row-b">An optional deep dive &mdash; the rules of a fair fight, stated out loud before any training begins.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">~30 lines of XGBoost preprocessing</div><div class="ag-row-b">OrdinalEncoder, SimpleImputer, ColumnTransformer. Shown in full &mdash; nothing hidden.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; overlay the ROCs</div><div class="ag-row-b">Three curves on one chart. Pick the model you would ship &mdash; and say why.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Enrich a feature frame with <em>mixed types</em></h3>
+        <p class="lo-b">Pass categoricals to NEXUS as-is &mdash; no encoder. Derive one numeric tenure feature from the date (datetime is the one type NEXUS does not take). Then add cleaning and joins that lift accuracy. NEXUS handles NaNs natively and tolerates light mess in the source.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Join three tables onto one borrower record</h3>
+        <p class="lo-b">Sort by date, drop duplicates, left merge. Financial snapshots, credit assessments, and payment aggregates land as new columns &mdash; and move the AUC.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Benchmark NEXUS against <em>tuned XGBoost</em></h3>
+        <p class="lo-b">Same data, same split, same metric. Compare AUC, preprocessing lines, and tuning time &mdash; then read the ROC overlay for the full picture.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/highland.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">From four <em>columns</em>,<br>to every <em>column</em>.</h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title">Strings, nulls, <em>three joined tables</em> &mdash; one fit() call. The date? One line of arithmetic.</h2>
+  </div>
+  <div class="kc-cite">Fig. 03 &middot; The module in one sentence</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     06  TWO-COLUMN — Why mixed types work (native handling)     [NEW]
+     ============================================================ -->
+<section data-screen-label="06 Why Mixed Types Work">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">WHY IT WORKS</div>
+      <h2 class="tc-title">Mixed types, <em>handled natively</em>.</h2>
+      <p class="tc-body">NEXUS handles mixed-type tables natively. You pass categorical strings as-is &mdash; no encoder &mdash; and it encodes them automatically. The one exception is datetime: the date becomes a numeric tenure feature with one line of arithmetic. It already understands how features interact and how a missing value differs from a zero.</p>
+      <p class="tc-body">NEXUS adapts to your data on the fit() call. You hand it the raw frame, and it represents the columns for you &mdash; the work you would otherwise spend encoding and imputing is simply not on your plate.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">WHAT THAT MEANS</div>
+      <h3 class="tc-right-h">Pass the frame<br>as-is, and<br>NEXUS adapts<br>to your data</h3>
+      <p class="tc-right-b">No ColumnTransformer. No imputation pipeline. No encoder for the categoricals &mdash; one line of date arithmetic, and NEXUS adapts to the frame on fit().</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">as-is</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">not <em>encode &middot; impute &middot;<br>grid-search</em>.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     07  TWO-COLUMN — Categoricals and dates
+     ============================================================ -->
+<section data-screen-label="07 Categoricals and Dates">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">CATEGORICALS AND DATES</div>
+      <h2 class="tc-title">Passed <em>as-is.</em></h2>
+      <p class="tc-body">NEXUS takes categoricals as-is. You pass <em>Single</em>, <em>Married</em>, and <em>Bachelor's</em> straight through &mdash; no encoder. The date is the one exception: <code>account_open_date</code> becomes the numeric <code>account_tenure_days</code> with one line of arithmetic. Cleaning and joins add signal: less feature engineering, not zero.</p>
+      <p class="tc-body">For the borrower table that means five new feature types join the four numerics from Module 01 &mdash; no encoder, no ColumnTransformer.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">NEW IN MODULE 03</div>
+      <h3 class="tc-right-h">Five new<br>feature types,<br>passed as-is</h3>
+      <p class="tc-right-b">gender, marital_status, education_level, occupation_sector pass as-is &mdash; plus account_tenure_days, derived from the date in one line.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">no encoder</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">categoricals read directly &mdash;<br>one line for the date, no pipeline.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     08  THREE-CARD — Three tables, three signals                 [NEW]
+     ============================================================ -->
+<section data-screen-label="08 Three Tables Three Signals">
+  <h2 class="tk-title">Three tables. <em>Three signals.</em></h2>
+  <div class="tk-sub">Each join adds a column set NEXUS trains on &mdash; a different dimension of risk the others cannot cover.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h"><em>Financial</em> snapshots</h3>
+      <p class="tk-card-b">monthly_income, income_growth, collateral_score, secondary_income_flag. Latest snapshot per borrower &mdash; what their finances look like <em>now</em>.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Credit <em>assessments</em></h3>
+      <p class="tk-card-b">Six analyst-scored dimensions of creditworthiness. How underwriters <em>judge</em> the borrower today &mdash; a distilled expert signal.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Payment <em>events</em></h3>
+      <p class="tk-card-b">total_payments, on_time_rate, avg_payment_usd. Summary stats, not rolling windows &mdash; NEXUS learns the pattern from the aggregates.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     09  CODE SNIPPET — enrich() with three joins
+     ============================================================ -->
+<section data-screen-label="09 Code enrich">
+  <h2 class="code-title"><em>enrich()</em> &mdash; three joins, one frame.</h2>
+  <div class="code-sub">Sort by date. Drop duplicates. Left merge. Standard pandas, applied straight.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_03_smarter_features.ipynb &middot; cell 23</span>
+      </div>
+<pre class="code-pre" style="font-size:20.5px"><span class="c-com"># latest snapshot per borrower, latest assessment, aggregated payments</span>
+<span class="c-com"># &mdash; each prepared upstream; here we just join them on.</span>
+
+<span class="c-key">def</span> <span class="c-fn">enrich</span>(df):
+    out = df.<span class="c-fn">copy</span>()
+    out = out.<span class="c-fn">merge</span>(snapshots_latest,   on=<span class="c-str">"borrower_id"</span>, how=<span class="c-str">"left"</span>)
+    out = out.<span class="c-fn">merge</span>(assessments_latest, on=<span class="c-str">"borrower_id"</span>, how=<span class="c-str">"left"</span>)
+    out = out.<span class="c-fn">merge</span>(payment_agg,        on=<span class="c-str">"borrower_id"</span>, how=<span class="c-str">"left"</span>)
+    <span class="c-key">return</span> out
+
+train_enriched   = <span class="c-fn">enrich</span>(train_raw)
+holdout_enriched = <span class="c-fn">enrich</span>(holdout_raw)
+
+<span class="c-com"># missing values from failed joins stay NaN &mdash; NEXUS handles them natively.</span>
+<span class="c-com"># auto-imputation would bake in assumptions we have not checked.</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Three joins, <em>zero pipelines</em>.</h3>
+      <p class="code-note-b">Sort by date. <code>drop_duplicates(keep="first")</code>. <code>merge(..., how="left")</code>. Idiomatic pandas, nothing bespoke. NEXUS trains on the result directly &mdash; no <code>ColumnTransformer</code>, no fit/transform split, no inference-time preprocessing to reproduce.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     10  TWO-COLUMN — Messy data tolerance                        [NEW]
+     ============================================================ -->
+<section data-screen-label="10 Messy Data Tolerance">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE TEST</div>
+      <h2 class="tc-title">Messy data? <em>NEXUS still trains.</em></h2>
+      <p class="tc-body">We fed the enriched frame to NEXUS <em>without</em> cleanup. Case drift (<code>DIVORCED</code> vs <code>Divorced</code>), typos (<code>Maale</code>, <code>Femle</code>), floats where ints belong. No pipeline, no fix-up.</p>
+      <p class="tc-body">AUC on the messy frame passed as-is: <strong>0.8611</strong>. The model still learns &mdash; but case variants and typos eat into the signal.</p>
+      <p class="tc-body">A light cleanup first &mdash; <code>.str.title()</code>, typo fixes, int casts &mdash; not imputation, not binning &mdash; lifts AUC to <strong>0.9040</strong> (+0.0429). NEXUS reads <code>Divorced</code> and <code>DIVORCED</code> as two categories; consistent casing consolidates them into one.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE HABIT</div>
+      <h3 class="tc-right-h">Clean lightly,<br>not because<br>the model<br>breaks</h3>
+      <p class="tc-right-b">Standardize casing, fix obvious typos, cast dtypes. Skip imputation, binning, and transformations unless a domain reason says otherwise. You clean for <em>hygiene</em>, not because the pipeline demands it.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">+0.04 AUC</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">from a two-line cleanup &mdash;<br>not from deep imputation.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     11  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="11 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; THE HONEST FIGHT</div>
+  <h2 class="div-title">Now the <em>benchmark</em>.<br>Same data. Same split. Same metric.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     12  CODE SNIPPET — XGBoost preprocessing
+     ============================================================ -->
+<section data-screen-label="12 Code XGBoost prep">
+  <h2 class="code-title">What XGBoost <em>needs first</em>.</h2>
+  <div class="code-sub">Every line NEXUS does not.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_03_smarter_features.ipynb &middot; cell 40</span>
+      </div>
+<pre class="code-pre" style="font-size:20.5px"><span class="c-key">from</span> sklearn.preprocessing <span class="c-key">import</span> OrdinalEncoder
+<span class="c-key">from</span> sklearn.pipeline <span class="c-key">import</span> Pipeline
+<span class="c-key">from</span> sklearn.compose <span class="c-key">import</span> ColumnTransformer
+<span class="c-key">from</span> sklearn.impute <span class="c-key">import</span> SimpleImputer
+<span class="c-com"># column types must be identified by hand</span>
+cat_cols = [<span class="c-str">"gender"</span>, <span class="c-str">"marital_status"</span>, <span class="c-str">"education_level"</span>,
+            <span class="c-str">"occupation_sector"</span>, <span class="c-str">"secondary_income_flag"</span>]
+num_cols = [c <span class="c-key">for</span> c <span class="c-key">in</span> features
+            <span class="c-key">if</span> c <span class="c-key">not in</span> cat_cols]
+cat_pipe = <span class="c-fn">Pipeline</span>([
+    (<span class="c-str">"impute"</span>, <span class="c-fn">SimpleImputer</span>(strategy=<span class="c-str">"most_frequent"</span>)),
+    (<span class="c-str">"encode"</span>, <span class="c-fn">OrdinalEncoder</span>(handle_unknown=<span class="c-str">"use_encoded_value"</span>,
+                               unknown_value=-<span class="c-str">1</span>)),
+])
+preprocessor = <span class="c-fn">ColumnTransformer</span>([
+    (<span class="c-str">"num"</span>, <span class="c-fn">SimpleImputer</span>(strategy=<span class="c-str">"median"</span>), num_cols),
+    (<span class="c-str">"cat"</span>, cat_pipe, cat_cols),
+])  <span class="c-com"># the same 22-column frame NEXUS trained on</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Shape the frame, <em>then</em> train.</h3>
+      <p class="code-note-b">Before XGBoost ever sees a row: identify numeric and categorical columns by hand, impute strategies that are implicit domain choices, ordinal-encode strings with an unknown-value guard. None of this goes away at inference &mdash; it has to be reproduced on every new request.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     13  TWO-COLUMN — Same frame, different ceremony
+     ============================================================ -->
+<section data-screen-label="13 Same Frame Different Ceremony">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE GAP</div>
+      <h2 class="tc-title">Same frame. <em>Different ceremony.</em></h2>
+      <p class="tc-body">Both models train on the identical 22-column frame &mdash; the cleaned categoricals plus the numeric <code>account_tenure_days</code> feature derived in Part 1. Nothing is hidden from either side of the benchmark.</p>
+      <p class="tc-body">The asymmetry is what each model demands first. NEXUS took the frame as-is. XGBoost needed the encode-and-impute pipeline on the previous slide &mdash; and every line of it has to run again, identically, on every inference request.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE POINT</div>
+      <h3 class="tc-right-h">The pipeline is<br>code you own<br>forever</h3>
+      <p class="tc-right-b">NEXUS has no encoder to version, test, or reproduce at inference. XGBoost's preprocessing is yours to maintain &mdash; one unseen category value or imputation drift at inference, and the model degrades quietly.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">0 lines</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">of preprocessing to reproduce<br>at NEXUS inference time.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     14  TWO-COLUMN — Benchmark results
+     ============================================================ -->
+<section data-screen-label="14 Benchmark Results">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE NUMBERS</div>
+      <h2 class="tc-title">Three models. <em>One honest table.</em></h2>
+      <p class="tc-body">XGBoost (defaults) is the baseline &mdash; ~30 lines of preprocessing, no tuning, typical AUC around <strong>0.91</strong>. XGBoost (tuned) adds a GridSearchCV pass &mdash; <strong>~0.92</strong>, a small bump for meaningful wall-clock cost. NEXUS (quality) lands around <strong>0.94</strong> on the same frame, no encoding and no tuning.</p>
+      <p class="tc-body">On raw, cleaned data NEXUS leads. Give XGBoost the same feature engineering and the gap narrows &mdash; NEXUS's edge is largest before the feature work. AUC is one dimension; preprocessing lines, tuning time, and the inference pipeline belong in the same sentence as the number. The next slide shows the curves.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">WHAT AUC MISSES</div>
+      <h3 class="tc-right-h">The code you<br>did not write<br>counts too</h3>
+      <p class="tc-right-b">XGBoost preprocessing breaks on new category values at inference. Grid search scales badly with dataset size. NEXUS needs no grid search and carries a far smaller preprocessing surface.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">+0.02 AUC</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">NEXUS over tuned XGBoost on<br>raw data &mdash; gap narrows with<br>equal feature engineering.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">14</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     15  CHART — Benchmark ROC overlay (3 curves)                 [NEW P2]
+     ============================================================ -->
+<section data-screen-label="15 Benchmark ROC">
+  <h2 class="ch-title">The <em>overlay</em>.</h2>
+  <div class="ch-eb">Three curves, one holdout &mdash; the shape of the gap, not just the number.</div>
+  <div style="position: absolute; top: 300px; left: 96px; right: 96px; bottom: 140px;
+              display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center;">
+    <div>
+      <img src="module_03_roc_comparison.png"
+           alt="Schematic ROC curves. NEXUS quality (solid blue) sits above XGBoost tuned (dashed orange) and XGBoost defaults (dotted gray); random baseline is the diagonal."
+           style="width: 100%; height: auto; display: block; border-radius: 8px; box-shadow: 0 2px 18px rgba(15, 23, 42, 0.08);">
+    </div>
+    <div>
+      <div class="tc-eb" style="color:#1D4ED8;">READING THE OVERLAY</div>
+      <h3 class="tc-right-h" style="margin-top: 10px;">The gap is<br>consistent across<br>the whole<br>threshold range</h3>
+      <p class="tc-body" style="margin-top: 18px;">NEXUS sits above XGBoost at nearly every operating point &mdash; not just the one the AUC summary captures. That matters in credit risk, where you often operate at low false-positive rates and the curve there decides ship-or-not.</p>
+      <div class="tc-stat" style="margin-top: 24px;">
+        <div class="tc-stat-n">schematic</div>
+        <div class="tc-stat-l">exact numbers come<br>from your notebook run.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">15</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     15  EXERCISE — Run the benchmark
+     ============================================================ -->
+<section data-screen-label="16 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">03</div>
+      <h3 class="ex-side-h">Overlay<br>the ROCs.<br>Defend<br>your pick.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">Enriched train and holdout frames</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">Three-curve ROC + one-sentence verdict</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Intermediate &middot; <span style="opacity:.5;">&#9679;&#9679;&#9679;</span>&#9675;</div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">Train three candidates on the same enriched frame.<br>Pick the model <em>you would ship</em> &mdash; and say why.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Run the XGBoost <em>defaults</em> cell. Note AUC and wall-clock time.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Run the <em>GridSearchCV</em> cell. While it runs, count the preprocessing lines NEXUS did not need.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Generate the overlaid ROC chart. Compare the three curves visually &mdash; not just by AUC.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">In one sentence: which model ships, and what you traded to pick it. Paste into the notebook's <em>Your call</em> cell.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">16</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     17  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="17 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Mixed types, <em>passed as-is</em></h3>
+      <p class="tk-card-b">NEXUS takes categoricals as-is &mdash; no encoder, no ColumnTransformer, no imputation. The date becomes one numeric tenure feature. Cleaning and joins are additive: less feature engineering, not zero.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Joins <em>move the AUC</em></h3>
+      <p class="tk-card-b">Financial snapshots, credit assessments, payment aggregates. Three left merges on borrower_id &mdash; each adds a column worth training on.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">The benchmark is <em>honest</em></h3>
+      <p class="tk-card-b">AUC is one dimension. Preprocessing lines, tuning time, and features silently excluded belong in the same comparison.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">17</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     18  CLOSING
+     ============================================================ -->
+<section data-screen-label="18 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/stargaze-car.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>which features matter.</em></h1>
+  <div class="closing-meta">Module 04 &middot; Feature importance, trimming, selection tests &middot; 200&#8209;level</div>
+  <div class="closing-cta">The model works. Now you find out <em>which columns are doing the work</em> &mdash; and which you can drop.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

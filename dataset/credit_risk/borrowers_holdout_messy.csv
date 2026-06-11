@@ -1,0 +1,1150 @@
+borrower_id,first_name,last_name,age,gender,marital_status,distance_from_branch_miles,education_level,occupation_sector,num_previous_lenders,total_employment_years,account_open_date,default_flag
+2,Charles,Davis,31.0,Male,Married,21.0,bachelor's,Medical,1.0,14.0,2009-12-31,0
+12,Anthony,Davis,33.0,Maale,Married,15.0,No Degree,Medical,7.0,15.0,2016-12-31,0
+15,David,Wilson,55.0,Male,Married,18.0,Master's,Medical,3.0,18.7,2016-01-01,1
+27,Daniel,Jackson,31.0,Male,Divorced,10.0,Doctoral/Professional,Marketing,0.0,10.0,2015-01-01,0
+32,Matthew,Rodriguez,36.0,Male,Divorced,3.0,Some College,Life Sciences,6.0,13.0,2019-01-01,0
+37,Kenneth,Garcia,53.0,Male,Maried,18.0,Master's,Medical,3.0,17.0,2016-01-01,1
+43,Joseph,Johnson,28.0,Male,Single,7.0,No Degree,Marketing,0.0,4.4,2020-12-31,1
+53,Emily,Wilson,41.0,Female,Single,2.0,Master's,Other,2.0,10.0,2016-01-01,0
+74,Donna,Miller,43.0,Female,Divorcd,1.0,Master's,Medical,3.0,8.0,2019-01-01,0
+77,Steven,Smith,51.0,Male,Marrid,8.0,Master's,life sciences,,17.6,2014-01-01,0
+79,Donald,Smith,37.0,Male,Divorced,6.0,Bachleors,Medical,4.0,14.3,2016-12-31,0
+80,Michael,Lopez,41.0,Male,Divorced,27.0,Bachelar's,Technical Degree,5.0,8.8,2017-12-31,0
+89,Steven,Martin,25.0,MALE,Married,2.0,No Degree,Medical,9.0,6.0,2022-01-01,0
+93,Daniel,Anderson,27.0,Mail,married,4.0,Bachelor's,Life Sciences,1.0,,2017-12-31,0
+96,Jessica,Williams,38.0,Female,Single,,Doctoral/Professional,Life Sciences,1.0,10.0,2014-01-01,0
+100,Joseph,Smith,34.0,Male,Singel,2.0,Master,Medical,4.0,17.6,2012-12-31,0
+112,Linda,Wilson,36.0,Female,Married,24.0,Master's,Life Sciences,7.0,11.0,2015-01-01,0
+114,Anthony,Anderson,42.0,Male,Marriied,5.0,SOME COLLEGE,Oter,4.0,8.0,2022-01-01,0
+115,Patricia,Brown,54.0,Female,Married,22.0,Doctoral/Professional,Medical,3.0,36.0,2014-01-01,0
+118,Joseph,Miller,24.0,Male,Single,1.0,Some College,Life Sciences,1.0,4.0,2020-01-01,0
+126,Kimberly,Smith,40.0,Female,Marriied,1.0,Some College,Life Sciences,9.0,8.0,2020-01-01,0
+131,John,Garcia,,Male,Married,1.0,Some College,Life Sciences,,,2015-01-01,0
+137,Susan,Martinez,51.0,Female,Single,,Some College,Medical,,,,0
+138,Richard,Johnson,40.0,Male,Divorced,24.0,some college,Technical Degree,1.0,9.0,2015-01-01,0
+146,David,Williams,37.0,Male,Single,18.0,Some college,Life Sciences,0.0,9.0,2016-01-01,1
+149,Linda,Jackson,46.0,Female,Maried,18.0,No Degree,Medical,5.0,28.0,2022-01-01,0
+156,Susan,Hernandez,44.0,F,Married,18.0,No Degree,Medical,5.0,28.0,2022-01-01,0
+157,Joseph,Rodriguez,53.0,Male,Divorced,8.0,No Degree,Medical,1.0,37.4,,0
+166,William,Lopez,43.0,MALE,Divorced,,bachelors,Life Sciences,2.0,25.0,2023-01-01,0
+172,James,Moore,29.0,male,Divorced,3.0,Master's,Medical,9.0,,2022-01-01,0
+173,Thomas,Brown,36.0,Male,Married,18.0,Master's,Life Sciences,4.0,4.0,2023-01-01,0
+177,Sarah,Martinez,43.0,female,Single,9.0,Bachelor's,Marketing,8.0,7.0,2020-01-01,1
+189,James,Brown,53.0,M,Single,6.0,Bachelor's,Life Sciences,2.0,20.9,2022-01-01,0
+192,Daniel,Jackson,41.0,Male,Single,6.0,Bachelor's,Medical,6.0,8.0,2019-01-01,0
+193,Paul,Jones,41.0,Male,single,2.0,Master's,Life Sciences,1.0,22.0,2001-12-31,0
+198,Joseph,Brown,42.0,Male,Single,2.0,No Degree,Medical,5.0,16.0,2022-01-01,0
+200,Anthony,Martin,33.0,Male,Married,16.0,Bachelor's,Medical,0.0,6.6,2019-01-01,0
+219,Michael,Rodriguez,39.0,Male,divorced,10.0,bachelors,Life Sciences,4.0,21.0,2016-12-31,0
+225,Donna,Taylor,39.0,FEMALE,Single,4.0,Bachelor's,Medical,0.0,10.0,2015-01-01,0
+229,Margaret,Smith,38.0,Female,Married,4.0,Some college,Medical,7.0,7.0,2024-01-01,0
+236,Karen,Wilson,39.0,Female,Single,,Master's,Technical Degree,0.0,20.0,2004-12-31,0
+240,Anthony,Gonzalez,33.0,Male,Single,10.0,master's,Marketing,1.0,11.0,2014-01-01,0
+262,Matthew,Thomas,34.0,Male,Single,11.0,Bachelor's,LifeSciences,1.0,6.0,2017-12-31,0
+263,Matthew,Davis,36.0,mAle,single,8.0,Masteer,LifeSciences,1.0,11.0,2014-01-01,0
+270,Sandra,Jones,52.0,Female,Single,20.0,Master's,Life Sciences,3.0,22.0,2020-01-01,1
+276,Mark,Garcia,38.0,Maale,Married,1.0,Bachelor's,Human Resources,1.0,,2016-12-31,0
+282,Jennifer,Martinez,39.0,Female,Married,3.0,Some College,Medicall,,12.0,2023-01-01,1
+290,Margaret,Hernandez,47.0,Female,Maried,20.0,Master's,Medical,1.0,17.6,2008-12-31,0
+296,Matthew,Thomas,37.0,Male,Single,23.0,Bachelor's,Medical,0.0,6.0,2019-01-01,1
+307,William,Martin,42.0,Mail,Married,10.0,Master's,Other,2.0,9.9,2020-01-01,0
+310,Andrew,Smith,27.0,Male,Married,20.0,No Degree,Medical,1.0,,2012-12-31,0
+323,Jennifer,Johnson,37.0,Female,married,1.0,Some College,Medical,2.0,17.0,2020-12-31,0
+334,Thomas,Brown,60.0,mAle,Single,16.0,Master's,Marketing,8.0,11.0,2022-01-01,0
+337,Betty,Gonzalez,29.0,feMALE,Single,1.0,Doctoral/Professional,Life Sciences,1.0,10.0,2014-01-01,1
+343,Daniel,Moore,30.0,Male,Married,19.0,Bachelor's,Life Sciences,3.0,11.0,2020-01-01,0
+351,David,Taylor,32.0,Male,Married,1.0,Bachelor's,Life Sciences,1.0,10.0,2014-01-01,0
+356,Christopher,Davis,36.0,Maale,divored,15.0,masters,Marketing,1.0,15.0,2008-12-31,0
+358,Mark,Davis,23.0,MALE,Divorced,7.0,Bachleors,Life Sciences,1.0,3.3,2020-12-31,1
+360,Kenneth,Gonzalez,29.0,Male,Single,1.0,Bachelor's,Life Sciences,8.0,10.0,2020-12-31,0
+364,Susan,Lopez,51.0,Female,Married,2.0,Master,Life Sciences,2.0,34.1,1999-01-01,0
+368,James,Taylor,42.0,Male,SINGLE,4.0,Bachelor's,Medical,9.0,11.0,2019-01-01,1
+382,Daniel,Anderson,32.0,Male,Married,5.0,Some College,Life Sciences,1.0,11.0,2014-01-01,0
+386,Lisa,Brown,23.0,Female,Singel,4.0,Some College,Life Sciences,1.0,,2019-01-01,0
+387,Paul,Garcia,39.0,Male,SINGLE,,Some College,Life Sciences,3.0,21.0,2022-01-01,0
+398,John,Moore,32.0,Male,Single,2.0,Bachelor's,Other,1.0,6.6,2017-12-31,0
+401,Mary,Jackson,28.0,Femaale,Married,25.0,Some College,Technical Degree,7.0,4.4,2022-01-01,0
+408,Ashley,Williams,51.0,Female,Single,23.0,Master's,Life Sciences,6.0,36.3,2012-01-01,0
+410,William,Jones,32.0,Male,Single,2.0,Master's,Life Sciences,1.0,1.0,2023-01-01,1
+412,Jennifer,Davis,,feMALE,Divorced,23.0,Bachelor's,Human Resources,9.0,12.1,2020-12-31,1
+419,Andrew,Wilson,50.0,Male,Married,1.0,Bachelor's,Medical,2.0,5.5,2020-12-31,0
+421,Donna,Johnson,34.0,Female,Single,27.0,Some college,Medical,2.0,9.0,2020-12-31,0
+422,Donna,Brown,32.0,FEMALE,Married,2.0,Master's,Marketing,,,2020-01-01,1
+424,Sarah,Williams,44.0,feMALE,MARRIED,2.0,Bachelor's,Marketing,8.0,28.0,1998-01-01,0
+433,Mark,Williams,35.0,Male,Single,19.0,Some College,Medical,1.0,,2014-01-01,0
+442,Emily,Martinez,43.0,Female,Divorced,10.0,Master's,Life Sciences,1.0,9.9,2015-01-01,0
+445,Matthew,Rodriguez,41.0,Male,Married,1.0,Bachelor's,Life Sciences,3.0,13.2,2019-01-01,0
+446,Dorothy,Moore,30.0,Female,Married,22.0,Master's,Other,0.0,11.0,2015-01-01,0
+448,Robert,Martin,30.0,Male,Married,10.0,BACHELOR'S,Life Sciences,6.0,10.0,2019-01-01,0
+449,Patricia,Wilson,46.0,Female,Married,10.0,Bachelor's,Life Sciences,5.0,15.4,2016-01-01,0
+457,Steven,Anderson,30.0,Male,single,2.0,Bachelor's,Technical Degree,1.0,4.4,2020-01-01,0
+462,Anthony,Hernandez,39.0,Male,Married,6.0,No Degree,Medical,4.0,9.0,2016-12-31,1
+464,Elizabeth,Hernandez,54.0,Female,Married,14.0,Master's,Life Sciences,9.0,7.0,2019-01-01,1
+477,Mark,Johnson,34.0,Male,singled,10.0,Master's,Medical,1.0,11.0,2014-01-01,0
+485,James,Moore,24.0,M,Divorced,9.0,Bachelor's,Life Sciences,1.0,1.0,2023-01-01,0
+488,Mark,Brown,45.0,Male,Divorced,7.0,Bachelor's,Life Sciences,2.0,27.5,2023-01-01,0
+496,Kenneth,Taylor,36.0,Male,Married,1.0,Some College,Life Sciences,1.0,,2006-01-01,0
+497,Barbara,Williams,24.0,Female,Married,7.0,BACHELOR'S,Life Sciences,1.0,6.6,2017-12-31,0
+506,Lisa,Moore,37.0,Female,Single,2.0,Master's,Technical Degree,0.0,22.0,2004-12-31,0
+510,Andrew,Gonzalez,25.0,Male,Divorced,5.0,No Degree,Technical Degree,1.0,9.9,2015-01-01,0
+515,Donald,Johnson,33.0,Male,singled,25.0,Some college,Other,4.0,9.0,2020-12-31,0
+526,Christopher,Moore,26.0,Male,MARRIED,26.0,bachelor's,Life Sciences,1.0,5.5,2019-01-01,0
+529,Patricia,Martin,56.0,Female,Marrid,21.0,Bachelor's,Life Sciences,4.0,29.0,2023-01-01,0
+530,Robert,Davis,35.0,Male,Marrid,17.0,Master's,Life Sciences,3.0,,2016-12-31,0
+541,Anthony,Jackson,49.0,Male,Maried,7.0,Master's,medical,2.0,10.0,2023-01-01,0
+542,Elizabeth,Garcia,44.0,Female,Married,2.0,Bachelor's,MARKETING,8.0,30.8,1998-01-01,0
+547,Barbara,Davis,31.0,Female,Divorced,16.0,Bachelor's,Life Sciences,1.0,7.0,2017-12-31,0
+551,Thomas,Moore,28.0,MALE,Divorced,9.0,Bachelor's,Medicall,1.0,13.2,2012-01-01,0
+552,Elizabeth,Williams,20.0,Female,Single,15.0,Bachelor's,Medical,1.0,1.0,2024-01-01,0
+554,Andrew,Martinez,46.0,Male,Divorced,2.0,Bachelor's,Life Sciences,4.0,14.3,2014-01-01,0
+555,Anthony,Rodriguez,22.0,Male,Married,2.0,No Degree,Technical Degree,0.0,,2022-01-01,0
+560,Andrew,Lopez,40.0,Male,Single,6.0,Some College,Medical,1.0,23.1,2003-01-01,0
+562,Karen,Smith,39.0,Female,Single,6.0,Bachelor,Life Sciences,3.0,16.0,2023-01-01,0
+567,Joseph,Martin,58.0,Male,Divorced,2.0,Bachelor's,Medical,4.0,40.7,2008-01-01,0
+572,Karen,Anderson,40.0,Female,Single,23.0,Doctoral/Professional,Life Sciences,2.0,16.0,2023-01-01,0
+573,Patricia,Jackson,48.0,Female,Married,7.0,Some College,Medical,2.0,19.0,2015-01-01,1
+575,Robert,Martinez,48.0,Mail,Divorced,2.0,Master's,Life Sciences,1.0,34.1,1992-12-31,0
+579,Daniel,Taylor,44.0,Male,Married,3.0,Master's,Other,4.0,26.0,2022-01-01,0
+582,Donald,Martinez,35.0,Male,Divorced,1.0,Master's,Life Sciences,1.0,7.7,2016-12-31,0
+587,Daniel,Williams,53.0,mAle,Married,2.0,No Degree,Life Sciences,,25.3,2020-12-31,0
+592,Emily,Gonzalez,28.0,feMALE,Divorced,5.0,Bachelor's,Marketing,1.0,10.0,2014-01-01,1
+597,Donna,Davis,50.0,Female,DIVORCED,1.0,Master's,Medical,3.0,35.2,2016-12-31,0
+601,John,Johnson,25.0,Male,Married,1.0,No Degree,Technical Degree,5.0,6.6,2022-01-01,0
+602,Karen,Thomas,39.0,Female,Married,3.0,Some Collge,MEDICAL,4.0,13.2,2023-01-01,1
+605,William,Gonzalez,33.0,MALE,Single,10.0,Bachelar's,Marketing,3.0,9.9,2016-12-31,0
+614,Mark,Davis,39.0,Male,singled,2.0,Doctoral,Life Sciences,,9.9,2016-01-01,0
+628,Joseph,Hernandez,32.0,Male,Sngle,1.0,Bachelor's,Life Sciences,0.0,,2020-12-31,1
+642,Donald,Anderson,30.0,Male,Single,2.0,Master's,Mrketing,7.0,7.0,2022-01-01,1
+643,Daniel,Taylor,46.0,Male,Married,1.0,Bachelor's,Medical,2.0,21.0,2014-01-01,1
+649,James,Johnson,34.0,Male,Single,2.0,Mastr's,Medical,,16.0,2012-12-31,0
+660,Steven,Martinez,,Male,Divorced,14.0,Bachelor's,LIFE SCIENCES,4.0,13.0,2015-01-01,0
+662,Kenneth,Wilson,43.0,Male,Married,17.0,Bachelor's,TECHNICAL DEGREE,9.0,6.0,2023-01-01,1
+668,Matthew,Wilson,26.0,male,Married,2.0,Bachelor's,Life Sciences,1.0,2.0,2022-01-01,0
+671,Sarah,Lopez,36.0,Female,Married,2.0,Some College,Medical,3.0,,2019-01-01,0
+702,William,Smith,37.0,Male,Divorced,3.0,Some College,Medical,0.0,12.1,2014-01-01,0
+705,Margaret,Anderson,48.0,Female,Marriied,2.0,Bachelor's,Medicale,2.0,35.2,2022-01-01,0
+711,Elizabeth,Martin,43.0,Female,Married,7.0,Bachelor's,Medical,4.0,,2020-12-31,0
+715,Kenneth,Anderson,48.0,Male,Married,2.0,Masteer,Medical,2.0,29.0,2016-01-01,0
+716,Margaret,Rodriguez,,Female,divored,,Some College,Medical,1.0,5.0,2020-01-01,0
+719,Margaret,Brown,44.0,Female,Single,2.0,Masteer,Marketing,3.0,22.0,2022-01-01,0
+733,Joseph,Taylor,48.0,Male,Divorced,4.0,No Degree,Life Sciences,3.0,28.0,2014-01-01,0
+740,Emily,Gonzalez,46.0,Female,Married,18.0,No Degree,Medical,5.0,30.8,2022-01-01,0
+741,Margaret,Martinez,40.0,Female,Divorced,21.0,Some College,medical,,12.1,2019-01-01,0
+749,Matthew,Taylor,20.0,Male,Married,19.0,No Degree,Medicale,1.0,2.2,2022-01-01,0
+757,Daniel,Jones,25.0,Male,Marriied,3.0,Bachelor's,Medical,1.0,0.0,2024-01-01,0
+759,Barbara,Rodriguez,20.0,Female,Single,2.0,Bachelor's,Medical,1.0,2.2,2022-01-01,1
+767,Lisa,Jones,32.0,Female,Single,2.0,Master's,Medical,1.0,6.0,2017-12-31,0
+769,Donald,Anderson,41.0,Male,MARRIED,2.0,Master's,Life Sciences,1.0,7.0,2016-12-31,0
+777,Robert,Williams,27.0,Male,Single,3.0,No degree,Medical,1.0,11.0,2014-01-01,0
+780,Mark,Jackson,,Male,Married,7.0,Bachelor's,Medical,0.0,5.5,2020-01-01,0
+798,Robert,Hernandez,18.0,MALE,Single,21.0,Bachelor's,Marketing,1.0,2.0,2022-01-01,1
+800,Matthew,Martinez,28.0,Male,Single,5.0,Bachelor's,Medical,0.0,6.6,2019-01-01,0
+802,Barbara,Hernandez,,Female,Divorced,1.0,bachelor's,Technical Degree,2.0,17.0,2016-12-31,0
+804,William,Lopez,43.0,Male,divored,12.0,Bachelor's,Life Sciences,1.0,27.5,1999-01-01,0
+809,Lisa,Jones,33.0,Female,Marrid,25.0,Bachelor's,Medical,1.0,11.0,2014-01-01,0
+810,Steven,Williams,50.0,M,Married,28.0,No Degree,Medical,1.0,20.0,2004-01-01,0
+815,Christopher,Thomas,,Male,Single,13.0,masters,Mrketing,6.0,24.0,2004-12-31,1
+818,Robert,Martinez,33.0,Male,SINGLE,1.0,Bachelor's,Medical,1.0,6.0,,1
+823,Kenneth,Gonzalez,33.0,Male,Single,2.0,Bachelor's,medical,4.0,7.7,2023-01-01,0
+845,Jennifer,Garcia,41.0,Female,Married,12.0,Bachelor's,Technical Degree,,23.0,2001-12-31,1
+846,Charles,Anderson,34.0,Male,Single,7.0,Bachelor,Life Sciences,2.0,16.5,2020-01-01,0
+849,Jessica,Anderson,51.0,FEMALE,Single,23.0,Master's,Life Sciences,6.0,33.0,2012-01-01,0
+850,Nancy,Smith,45.0,Female,Married,2.0,Master's,Life Sciences,4.0,11.0,2016-01-01,0
+853,Daniel,Davis,34.0,Male,Married,2.0,Master's,Life Sciences,6.0,13.0,2012-12-31,0
+877,William,Martinez,30.0,Male,Single,1.0,No Degree,Life Sciences,1.0,12.0,2012-12-31,0
+878,Margaret,Smith,25.0,Female,singled,17.0,master's,Life Sciences,1.0,8.0,2016-01-01,0
+880,Joseph,Jackson,22.0,Male,Married,8.0,no degree,Life Sciences,1.0,4.4,2020-01-01,0
+883,Daniel,Williams,59.0,male,Single,18.0,Master's,Medical,6.0,27.5,2015-01-01,0
+884,Steven,Moore,35.0,Male,singled,2.0,Some College,Other,6.0,7.7,2024-01-01,1
+885,Dorothy,Taylor,31.0,Female,Divorced,1.0,Doctoral/Professional,Medical,4.0,11.0,2017-12-31,0
+887,Matthew,Thomas,39.0,Male,Married,10.0,Doctoral/Professional,Medical,2.0,10.0,2016-12-31,0
+888,John,Gonzalez,24.0,MALE,Married,2.0,Some College,Medical,1.0,8.8,2016-01-01,0
+889,Daniel,Rodriguez,28.0,Male,DIVORCED,24.0,No Degree,Life Sciences,1.0,1.0,2023-01-01,0
+890,James,Lopez,26.0,mAle,Divorcd,29.0,Some College,Medical,5.0,8.8,2024-01-01,0
+897,Mark,Thomas,30.0,Male,Single,6.0,Doctoral/Professional,Life Sciences,3.0,8.8,2019-01-01,0
+899,Robert,Anderson,43.0,Male,Married,29.0,Bachelor's,Technical Degree,4.0,10.0,2020-12-31,0
+906,Sarah,Johnson,24.0,Female,Divorced,17.0,No Degree,Medical,1.0,5.5,2020-01-01,0
+913,Christopher,Garcia,26.0,M,Married,2.0,Bachelar's,Life Sciences,1.0,2.2,2022-01-01,0
+916,Charles,Williams,44.0,Male,Married,1.0,Some College,Medical,9.0,24.0,2004-01-01,1
+917,Margaret,Williams,42.0,Female,Married,26.0,Doctoral/Professional,Medical,3.0,20.0,2023-01-01,0
+931,Daniel,Taylor,,Male,Single,24.0,Some College,Technical Degree,1.0,10.0,2014-01-01,1
+934,Mark,Johnson,40.0,mAle,Married,1.0,No Degree,Life Sciences,1.0,20.0,2004-01-01,0
+935,William,Williams,26.0,Mail,Single,1.0,Bachelor's,TECHNICAL DEGREE,2.0,,2020-12-31,0
+948,Donald,Taylor,23.0,Mail,Divorced,2.0,No Degree,Tech Degree,3.0,3.0,2024-01-01,0
+950,Michael,Rodriguez,34.0,Male,DIVORCED,6.0,Some college,Medical,6.0,7.7,2020-12-31,0
+963,Steven,Davis,48.0,Male,Married,10.0,Bachelor's,Life Sciences,4.0,29.0,2001-12-31,0
+964,Michael,Miller,35.0,Male,Married,1.0,Master's,Life Sciences,5.0,17.0,2009-12-31,1
+970,William,Martin,38.0,Male,Married,20.0,Master's,Technical Degree,4.0,15.4,2012-12-31,0
+985,Thomas,Garcia,30.0,male,MARRIED,8.0,Bachelor's,Medical,1.0,11.0,2014-01-01,0
+995,Andrew,Jackson,28.0,mAle,Divorced,23.0,Bachelor's,Life Sciences,1.0,11.0,2014-01-01,1
+1000,Jennifer,Johnson,53.0,Female,Maried,2.0,Some College,Medical,4.0,25.3,2004-12-31,0
+1004,Mary,Thomas,18.0,Female,Single,,Bachelor's,Life Sciences,1.0,1.0,2023-01-01,0
+1007,Joseph,Gonzalez,39.0,male,SINGLE,2.0,Master's,Life Sciences,1.0,24.2,2001-12-31,0
+1028,Christopher,Miller,58.0,Male,Single,2.0,Master's,Life Sciences,7.0,44.0,1992-12-31,0
+1033,Robert,Gonzalez,28.0,Male,Divorcd,7.0,Bachelor's,Technical degree,1.0,1.0,2023-01-01,0
+1034,Steven,Anderson,,Male,Single,10.0,Bachelor's,Medical,9.0,8.0,,0
+1038,Thomas,Thomas,41.0,mAle,divorced,6.0,Master's,Other,4.0,21.0,2023-01-01,0
+1039,Kenneth,Thomas,39.0,M,Sngle,18.0,Som College,Life Sciences,0.0,9.0,2016-01-01,1
+1043,Sarah,Lopez,36.0,Female,Single,16.0,Master's,LifeSciences,1.0,18.0,2007-01-01,0
+1045,John,Gonzalez,56.0,Male,Married,9.0,Bachelor's,Medical,7.0,30.0,2014-01-01,0
+1057,Daniel,Jones,27.0,Male,SINGLE,2.0,No Degree,Life Sciences,3.0,8.0,2017-12-31,0
+1062,Barbara,Hernandez,27.0,FEMALE,singled,9.0,Bachelor's,Medical,1.0,7.0,,0
+1069,Donna,Martinez,,Female,Single,12.0,Doctoral/Professional,Medical,0.0,,2009-12-31,0
+1076,Michael,Wilson,23.0,Male,married,9.0,No Degree,Medical,1.0,5.0,2020-01-01,0
+1080,Andrew,Jackson,49.0,Maale,Marrid,1.0,Bachelor's,LifeSciences,1.0,1.1,2023-01-01,0
+1087,Michael,Miller,45.0,Male,Married,1.0,Bachelor's,Technical Degree,7.0,17.0,2017-12-31,0
+1105,Thomas,Davis,42.0,Male,married,2.0,Doctoral/Professional,Medical,,11.0,2020-01-01,0
+1113,Matthew,Lopez,,Male,singled,10.0,Some College,Medical,,19.0,2004-12-31,0
+1116,Robert,Lopez,31.0,Maale,married,,Some college,MEDICAL,1.0,6.6,2017-12-31,1
+1119,Richard,Moore,32.0,Male,Single,5.0,Master's,Life Siences,8.0,8.0,2023-01-01,0
+1129,Linda,Jones,44.0,Femaale,Divorcd,3.0,Bachelor's,Technical Degree,2.0,,2004-12-31,0
+1133,Richard,Martinez,42.0,Male,Married,9.0,Some College,Life Sciences,1.0,8.8,2016-01-01,0
+1138,Elizabeth,Wilson,23.0,Female,Divorced,8.0,Some College,Other,0.0,6.6,2019-01-01,0
+1148,Barbara,Taylor,,Female,Married,21.0,Some College,Medical,4.0,13.0,2015-01-01,1
+1154,Christopher,Martinez,43.0,Male,DIVORCED,20.0,Bachelor's,Medical,2.0,24.0,,1
+1165,Mark,Rodriguez,58.0,MALE,Divorced,1.0,Master's,Medical,3.0,19.0,2023-01-01,0
+1166,Christopher,Martinez,,Male,Married,1.0,Bachelor's,Life Sciences,1.0,1.0,2023-01-01,0
+1167,Emily,Jackson,31.0,Female,Married,5.0,Master,Life Sciences,6.0,13.2,2014-01-01,0
+1172,David,Gonzalez,49.0,Male,Single,,Bachelor's,Life Sciences,7.0,,2004-01-01,0
+1173,Steven,Martinez,37.0,Mail,Divorced,1.0,No Degree,Life Sciences,1.0,21.0,2003-01-01,0
+1180,Margaret,Moore,21.0,Female,Single,1.0,No degree,Technical Degree,1.0,2.2,2022-01-01,0
+1181,Donald,Moore,32.0,Male,Married,1.0,Master's,Life Sciences,9.0,9.9,2022-01-01,0
+1182,Susan,Davis,39.0,Female,Married,1.0,No Degree,Life Sciences,1.0,23.1,2003-01-01,0
+1190,Kimberly,Jones,28.0,Female,Single,10.0,Bachelor's,Medical,9.0,9.0,2016-12-31,0
+1196,Mark,Johnson,29.0,Male,Divorced,29.0,No Degree,Life Sciences,8.0,11.0,2016-12-31,0
+1198,Steven,Wilson,29.0,Male,Married,20.0,No Degree,Medical,1.0,12.1,2012-12-31,0
+1203,Sarah,Smith,29.0,female,Divorced,1.0,Bachelor's,life sciences,1.0,3.0,2020-12-31,0
+1209,Donald,Johnson,40.0,Male,Married,5.0,Some College,Other,4.0,8.0,2022-01-01,0
+1215,Robert,Moore,28.0,Mail,Married,9.0,bachelor's,Medical,1.0,5.5,2019-01-01,0
+1220,Joseph,Smith,29.0,Male,Married,1.0,master's,Medical,0.0,6.0,2019-01-01,0
+1225,Jessica,Anderson,25.0,Female,Single,20.0,Bachelor's,Life Sciences,,7.0,2016-12-31,0
+1226,Daniel,Jones,32.0,M,Married,1.0,MASTER'S,Technical Degree,4.0,9.0,2017-12-31,0
+1233,Patricia,Anderson,44.0,Femaale,Marriied,,Bachelor's,Technical Degree,3.0,30.8,2016-12-31,0
+1244,Karen,Jones,28.0,Female,Married,12.0,No Degree,Life Sciences,1.0,1.1,2023-01-01,1
+1252,Matthew,Taylor,21.0,Mail,Married,9.0,No Degree,Medical,1.0,5.0,2020-01-01,0
+1253,Christopher,Wilson,56.0,Male,Divorced,2.0,No Degree,Life Sciences,,3.0,2023-01-01,0
+1257,Donald,Davis,41.0,Male,Married,5.0,Doctoral/Professional,Medicall,2.0,7.0,2020-01-01,0
+1259,Barbara,Anderson,25.0,Femle,Single,2.0,Som College,Medical,0.0,9.9,2016-01-01,0
+1263,William,Gonzalez,36.0,Male,Married,6.0,Master's,Life Sciences,2.0,11.0,2016-01-01,0
+1266,Jennifer,Anderson,30.0,Female,Divorced,4.0,Some College,Medical,1.0,11.0,2012-12-31,0
+1269,Patricia,Rodriguez,31.0,Female,Married,4.0,Master's,Medical,6.0,7.0,2020-12-31,0
+1273,Andrew,Moore,35.0,Male,Single,4.0,Bachelor's,Tech Degree,0.0,9.0,2016-01-01,1
+1281,Jessica,Moore,49.0,Female,Divorced,16.0,Bachelor's,Medical,4.0,18.7,2022-01-01,0
+1288,Michael,Thomas,,MALE,Married,15.0,No Degree,medical,7.0,16.5,2016-12-31,1
+1292,Andrew,Davis,50.0,Male,Married,2.0,Bachelor's,Medical,5.0,30.0,2020-01-01,0
+1294,Sarah,Moore,20.0,Female,Single,6.0,Bachelor's,Life Sciences,1.0,1.0,2023-01-01,1
+1295,Andrew,Jackson,42.0,Male,DIVORCED,19.0,Bachelor's,Medical,6.0,7.0,2022-01-01,1
+1300,Joseph,Thomas,37.0,Male,Divorced,10.0,bachelor's,Medical,6.0,17.0,2023-01-01,1
+1305,David,Jones,37.0,Male,Divorced,1.0,BACHELOR'S,Medical,,19.0,2006-01-01,0
+1307,David,Moore,43.0,Male,Single,2.0,Bachelor's,Life Sciences,0.0,10.0,2015-01-01,0
+1309,John,Williams,35.0,Male,Single,6.0,Master's,Life Sciences,1.0,18.7,2007-01-01,0
+1310,John,Smith,46.0,Male,Single,13.0,Master's,Life Sciences,6.0,,2014-01-01,1
+1312,Jessica,Williams,33.0,F,Married,2.0,Some Collge,Life Siences,7.0,14.3,2015-01-01,1
+1313,William,Smith,29.0,Male,Married,2.0,Some College,Life Sciences,0.0,,2022-01-01,1
+1317,Kenneth,Thomas,37.0,Male,Marriied,25.0,some college,Life Sciences,,14.3,2017-12-31,0
+1322,Dorothy,Rodriguez,54.0,female,Married,1.0,Some College,Life Sciences,2.0,5.0,2020-12-31,0
+1326,Linda,Brown,45.0,Female,Single,2.0,Master's,Life Sciences,1.0,3.0,2020-12-31,1
+1330,Charles,Lopez,29.0,Male,Married,5.0,Master's,Technical Degree,,6.6,2019-01-01,0
+1345,John,Davis,32.0,MALE,Divorcd,1.0,Master's,Other,5.0,11.0,2020-01-01,0
+1353,Andrew,Jones,25.0,Maale,Sngle,24.0,No Degree,Life Sciences,1.0,1.1,2023-01-01,1
+1356,Emily,Davis,45.0,Female,Married,1.0,No Degree,Medical,0.0,14.0,2011-01-01,0
+1357,Emily,Gonzalez,34.0,Female,Married,3.0,Bachelor's,Medical,,11.0,2015-01-01,0
+1371,Margaret,Garcia,22.0,Female,Married,26.0,Some College,Other,1.0,4.4,,0
+1381,Karen,Anderson,48.0,F,Divorced,17.0,Doctoral/Professional,Life Sciences,5.0,19.0,2009-12-31,0
+1384,Robert,Garcia,31.0,Male,Divorced,1.0,Some College,Medical,1.0,1.1,2023-01-01,0
+1387,Dorothy,Wilson,33.0,FEMALE,Single,8.0,No Degree,Life Sciences,0.0,3.0,2022-01-01,1
+1392,Christopher,Gonzalez,29.0,Male,Married,5.0,Bachelor's,Technical Degree,,,2019-01-01,0
+1397,Steven,Garcia,,Male,Married,25.0,Some College,Life Sciences,3.0,14.3,2017-12-31,0
+1399,Barbara,Rodriguez,25.0,Female,Single,9.0,Bachelor's,Medical,1.0,7.7,2016-12-31,0
+1401,Donald,Jones,31.0,Maale,singled,1.0,Master's,Other,1.0,10.0,2014-01-01,1
+1402,Jennifer,Garcia,33.0,Female,Married,7.0,Bachelor's,Life Sciences,0.0,4.4,2020-12-31,0
+1403,Margaret,Rodriguez,47.0,Female,Marriied,,No Degree,LifeSciences,2.0,30.0,2008-12-31,0
+1406,Nancy,Rodriguez,31.0,Female,Single,1.0,Bachelor's,Life Sciences,0.0,6.6,2019-01-01,0
+1411,Thomas,Smith,44.0,Male,Divorced,7.0,Some College,Medical,6.0,,2016-01-01,0
+1418,Donna,Miller,48.0,Female,Married,1.0,Bachelor's,Life Sciences,3.0,28.0,2016-01-01,0
+1419,Donald,Hernandez,44.0,M,Divorced,5.0,SOME COLLEGE,Medical,8.0,17.6,2020-01-01,0
+1422,Donald,Jackson,35.0,Male,Married,28.0,Bachelor,Life Sciences,1.0,10.0,2014-01-01,0
+1425,Matthew,Lopez,35.0,Male,Married,,Bachelor's,Other,1.0,11.0,2014-01-01,0
+1428,Paul,Garcia,51.0,Male,Married,,Master's,Medical,3.0,21.0,2019-01-01,0
+1432,Robert,Wilson,34.0,Male,Married,1.0,PHD,Life Sciences,1.0,11.0,2014-01-01,0
+1433,Donald,Jones,44.0,Male,Divorced,2.0,Some College,Life Sciences,3.0,12.0,2015-01-01,0
+1437,Robert,Anderson,35.0,mAle,Divorced,1.0,masters,Medical,1.0,6.6,2017-12-31,0
+1450,James,Brown,30.0,Male,Married,19.0,Bachelor's,Life Sciences,3.0,10.0,2020-01-01,0
+1453,Paul,Jackson,30.0,Male,Divorced,1.0,bachelor's,Life Sciences,0.0,4.4,2020-12-31,0
+1454,Andrew,Davis,43.0,Male,Marriied,10.0,Some College,Life Sciences,,,2022-01-01,0
+1455,Mark,Lopez,46.0,Male,Divorced,1.0,Master's,Medical,7.0,18.7,2020-01-01,1
+1458,William,Lopez,40.0,Mail,Married,4.0,Master's,Marketing,7.0,15.0,2012-01-01,0
+1459,James,Thomas,31.0,Mail,Married,20.0,Bachelor's,Life Sciences,0.0,3.0,2022-01-01,1
+1460,Michael,Martinez,29.0,Male,Married,8.0,Masteer,Other,1.0,7.7,2016-12-31,1
+1464,Lisa,Anderson,30.0,Female,Single,8.0,Bachelor's,Marketing,1.0,9.0,2015-01-01,0
+1466,Donald,Lopez,36.0,Male,Married,2.0,bachelors,Medical,4.0,7.0,2019-01-01,1
+1469,Lisa,Williams,33.0,female,Divorced,16.0,Bachelor's,Life Sciences,1.0,7.0,2017-12-31,0
+1477,Margaret,Anderson,33.0,feMALE,Single,1.0,Bachelor's,Marketing,1.0,10.0,2014-01-01,0
+1480,Anthony,Gonzalez,56.0,Male,Single,2.0,Master's,Life Sciences,7.0,40.0,1992-12-31,1
+1482,Susan,Anderson,54.0,Female,Married,2.0,Master's,Technical Degree,,16.0,2020-01-01,0
+1485,Richard,Miller,32.0,Male,Single,25.0,master's,Life Sciences,1.0,1.0,2023-01-01,1
+1486,Sarah,Williams,41.0,Female,Married,16.0,Bachelor's,Marketing,5.0,24.2,2007-01-01,0
+1488,Paul,Garcia,45.0,MALE,Divorced,16.0,master's,Medical,1.0,20.0,2004-12-31,0
+1490,Richard,Anderson,27.0,MALE,Single,23.0,Bachelor's,Life Sciences,9.0,6.6,2020-12-31,0
+1503,Karen,Brown,28.0,Female,Married,17.0,Master's,Medical,1.0,9.9,2015-01-01,0
+1515,Sandra,Martin,32.0,Female,Single,7.0,Master's,Life Sciences,0.0,13.0,2012-01-01,0
+1520,Steven,Thomas,19.0,Male,Single,5.0,No Degree,Medical,1.0,3.3,2022-01-01,0
+1523,Donald,Garcia,44.0,M,Married,3.0,Master's,Other,4.0,28.6,2022-01-01,0
+1526,Karen,Johnson,33.0,Female,Marrid,1.0,Master's,Life Science,1.0,4.4,2020-01-01,0
+1532,Linda,Jackson,47.0,Femle,Single,11.0,Master's,MARKETING,,8.0,2019-01-01,0
+1537,Susan,Wilson,30.0,Female,Married,6.0,Bachelor's,Technical Degree,0.0,11.0,2015-01-01,0
+1540,Mark,Rodriguez,43.0,Male,Divorced,27.0,Bachelor's,Technical Degree,5.0,8.0,2017-12-31,0
+1542,Mark,Brown,26.0,Male,Divorced,29.0,Some College,Medical,5.0,8.0,,0
+1544,Andrew,Lopez,38.0,Male,Divorced,1.0,Master's,Life Sciences,2.0,24.2,2004-12-31,0
+1545,Kenneth,Wilson,38.0,Male,divored,15.0,Some College,Life Sciences,0.0,12.0,2012-12-31,0
+1546,David,Martin,35.0,MALE,Divorced,6.0,Bachelor's,Medical,4.0,14.3,2016-12-31,0
+1547,William,Miller,32.0,Male,Marrid,3.0,Master's,Life Sciences,3.0,6.0,2024-01-01,0
+1552,David,Hernandez,27.0,Male,Divorced,5.0,Bachelor's,Medical,1.0,11.0,2014-01-01,0
+1555,Dorothy,Brown,26.0,Femaale,Married,1.0,Bachelor's,Life Science,0.0,10.0,2015-01-01,0
+1557,Patricia,Rodriguez,52.0,Female,Married,2.0,No Degree,Marketing,1.0,36.3,1992-01-01,1
+1561,Betty,Thomas,42.0,F,Divorced,29.0,some college,Life Sciences,2.0,,2019-01-01,0
+1578,Andrew,Jones,47.0,Male,Single,14.0,Master's,Marketing,2.0,20.0,2016-12-31,0
+1582,Sandra,Smith,48.0,Femle,Divorced,22.0,Bachelor's,Medical,3.0,26.4,2001-12-31,0
+1584,Mark,Anderson,44.0,male,Single,1.0,Master's,Life Sciences,1.0,27.0,1998-01-01,0
+1585,James,Wilson,28.0,Male,Divorced,27.0,Doctoral/Professional,Marketing,7.0,,2016-01-01,0
+1602,William,Thomas,31.0,mAle,Divorced,3.0,Som College,Human Resources,3.0,7.7,2020-01-01,0
+1604,Matthew,Williams,35.0,mAle,Married,21.0,Bachelor's,Life Sciences,1.0,8.0,2016-01-01,0
+1614,William,Wilson,54.0,Male,Single,8.0,Master's,Life Sciences,6.0,36.0,2016-12-31,0
+1638,Andrew,Wilson,36.0,Male,Divorced,7.0,Bachelor's,LIFE SCIENCES,,4.4,2020-01-01,0
+1647,Dorothy,Wilson,26.0,Female,Single,5.0,Bachelor's,Other,0.0,5.5,2020-01-01,1
+1649,Robert,Moore,50.0,Male,Divorced,1.0,Master's,Life Sciences,7.0,12.0,2017-12-31,1
+1650,Paul,Martin,33.0,Male,Single,7.0,Bachelor's,Other,3.0,18.7,2016-01-01,0
+1651,Barbara,Rodriguez,24.0,Female,Married,1.0,Some Collge,Life Sciences,1.0,1.0,2023-01-01,0
+1654,Susan,Jones,28.0,Female,Divorced,5.0,Bachelor,Technical Degree,5.0,8.0,2020-12-31,0
+1656,Matthew,Jackson,,Male,Married,2.0,Some College,Life Sciences,1.0,1.0,2023-01-01,0
+1657,Robert,Martinez,34.0,Male,Single,18.0,Master's,Life Sciences,2.0,19.8,2012-12-31,0
+1663,John,Martinez,,Male,Single,2.0,Bachelor's,Life Sciences,1.0,,2023-01-01,1
+1666,Mary,Garcia,41.0,Female,Divorced,2.0,Some College,Medical,,6.6,2019-01-01,0
+1667,Donald,Lopez,35.0,MALE,Married,16.0,Bachelar's,MARKETING,0.0,13.2,2012-12-31,0
+1668,Steven,Taylor,23.0,Male,Divorced,26.0,No Degree,Life Sciences,1.0,4.4,2020-01-01,0
+1669,Charles,Garcia,32.0,Male,Marrid,22.0,Master's,Other,1.0,17.6,2008-12-31,0
+1674,Dorothy,Williams,45.0,Female,Marrid,2.0,Some College,Othr,1.0,26.0,1998-01-01,0
+1676,Jennifer,Thomas,34.0,Female,Divorced,19.0,Bachelor,Medical,,15.0,2012-12-31,0
+1680,Elizabeth,Lopez,17.0,Female,Single,3.0,No Degree,Medical,1.0,1.0,2023-01-01,0
+1684,Dorothy,Smith,36.0,Femle,Divorced,1.0,Bachelor's,Technical Degree,2.0,,2016-12-31,0
+1691,Joseph,Hernandez,18.0,Male,Single,10.0,No Degree,Medical,1.0,1.1,2023-01-01,1
+1695,Daniel,Brown,36.0,male,Married,6.0,Bachelor,LIFE SCIENCES,0.0,17.6,2008-12-31,0
+1698,Dorothy,Johnson,27.0,Female,Divorced,10.0,No Degree,Marketing,,7.0,2016-12-31,0
+1700,Sandra,Martinez,,Female,Married,26.0,Bachelor's,Marketing,5.0,23.0,2004-01-01,0
+1714,Daniel,Smith,36.0,Maale,divorced,3.0,SOME COLLEGE,Life Sciences,6.0,14.3,2019-01-01,1
+1728,Jennifer,Jackson,34.0,Female,Divorcd,1.0,Bachelor's,Technical Degree,2.0,18.7,2016-12-31,0
+1730,Margaret,Jones,33.0,Female,Married,3.0,MASTER'S,Life Sciences,1.0,,2016-01-01,0
+1735,Sarah,Davis,40.0,Female,Single,2.0,No Degree,medical,0.0,5.5,2020-01-01,0
+1742,Michael,Moore,20.0,Male,Single,,No Degree,Life Sciences,1.0,2.0,2022-01-01,0
+1747,David,Martinez,23.0,Male,Single,5.0,Bachelor's,Marketing,1.0,6.0,2017-12-31,1
+1748,Kenneth,Johnson,32.0,Maale,Married,29.0,Bachelor's,Medical,4.0,11.0,2016-01-01,0
+1755,Mary,Gonzalez,41.0,Femaale,singled,1.0,Some College,Life Sciences,8.0,8.8,2017-12-31,1
+1758,Michael,Anderson,35.0,Male,Divorced,2.0,Bachelor,life sciences,2.0,16.5,2016-12-31,0
+1766,Robert,Smith,21.0,Male,Divorced,26.0,No Degree,Life Sciences,1.0,4.0,2020-01-01,0
+1784,Paul,Thomas,36.0,Male,Married,18.0,bachelor's,MEDICAL,3.0,16.5,2023-01-01,0
+1789,Jessica,Moore,29.0,Female,Married,20.0,Some College,Marketing,1.0,9.0,2015-01-01,0
+1790,Mary,Gonzalez,31.0,Female,Sngle,2.0,Bachelor's,Life Sciences,7.0,3.3,2023-01-01,1
+1791,Daniel,Thomas,35.0,MALE,Divorced,2.0,Some College,Life Sciences,,17.0,2023-01-01,0
+1794,Steven,Hernandez,39.0,Mail,Divorced,9.0,Masteer,Life Sciences,,5.0,2019-01-01,0
+1800,Ashley,Taylor,40.0,Female,Divorced,2.0,Some College,Marketing,,8.0,2019-01-01,0
+1803,Michael,Davis,32.0,Male,Divorced,13.0,Master's,Life Siences,2.0,,2019-01-01,0
+1806,Joseph,Jackson,28.0,Male,Single,7.0,Bachelor's,Life Sciences,0.0,5.5,2020-01-01,0
+1807,Matthew,Lopez,26.0,Male,Maried,2.0,No Degree,Life Sciences,0.0,6.0,2019-01-01,0
+1812,Nancy,Jackson,30.0,Female,Married,1.0,Master's,Marketing,1.0,14.0,2009-12-31,0
+1816,Thomas,Garcia,24.0,Male,Married,3.0,Master's,Medical,1.0,8.8,2016-01-01,1
+1819,Jessica,Martin,32.0,Female,Married,2.0,Bachelor's,Medicall,1.0,,2016-01-01,0
+1821,Steven,Thomas,52.0,Male,Married,19.0,Master's,Medical,0.0,5.0,2020-01-01,0
+1829,Steven,Lopez,42.0,Male,SINGLE,2.0,No Degree,Medical,5.0,17.6,2022-01-01,0
+1833,Karen,Hernandez,44.0,Female,Married,15.0,Bachelor's,Medical,1.0,10.0,2014-01-01,1
+1836,Christopher,Garcia,44.0,Male,DIVORCED,1.0,Some College,Medical,1.0,6.0,2019-01-01,1
+1837,Paul,Martin,21.0,Male,Single,8.0,No degree,Medical,1.0,5.0,2019-01-01,1
+1844,Emily,Johnson,36.0,Female,Singel,1.0,Bachelor's,LifeSciences,4.0,11.0,2023-01-01,0
+1845,David,Martin,45.0,Male,Divorcd,20.0,Bachleors,Medical,2.0,24.0,2016-12-31,1
+1846,Lisa,Martin,29.0,FEMALE,Married,15.0,No Degree,Life Sciences,0.0,6.6,2019-01-01,0
+1848,Michael,Thomas,28.0,MALE,Divorsed,1.0,Bachelor's,Medical,1.0,1.0,2023-01-01,1
+1854,Mary,Rodriguez,40.0,Female,Single,17.0,Some College,Life Sciences,3.0,,2020-12-31,0
+1855,Richard,Davis,32.0,Male,Divorced,15.0,Bachelor's,Medical,7.0,,2009-12-31,0
+1856,Jennifer,Lopez,38.0,Female,Married,10.0,Master's,Life Sciences,3.0,10.0,2016-12-31,0
+1859,Matthew,Anderson,32.0,Male,Married,8.0,Some College,Technical Degree,1.0,,,0
+1860,Anthony,Garcia,,male,Divorced,1.0,Master's,Life Sciences,1.0,7.7,2016-12-31,0
+1861,Margaret,Thomas,35.0,Female,Divorced,2.0,Master's,Life Sciences,2.0,17.6,2023-01-01,0
+1863,Paul,Gonzalez,28.0,Male,Married,2.0,Bachelor's,Life Sciences,1.0,11.0,2012-12-31,0
+1866,Elizabeth,Anderson,32.0,F,Married,5.0,Master's,Other,3.0,6.6,2020-12-31,0
+1871,Lisa,Garcia,52.0,Female,Maried,22.0,Doctoral/Professional,Medicall,3.0,36.0,2014-01-01,0
+1884,Thomas,Martinez,26.0,Male,Married,10.0,No Degree,Medical,1.0,1.0,,0
+1888,Donald,Jones,35.0,Maale,Married,27.0,masters,Life Sciences,2.0,17.0,2016-12-31,0
+1892,Kenneth,Thomas,36.0,Male,Married,2.0,Some College,Life Sciences,3.0,14.3,2016-01-01,0
+1902,Nancy,Gonzalez,32.0,Female,Married,3.0,No Degree,Medical,3.0,9.9,2020-01-01,0
+1904,Sandra,Johnson,48.0,Female,Sngle,12.0,Bachelor's,Marketing,4.0,16.0,2022-01-01,0
+1906,Mark,Rodriguez,38.0,Male,Divorced,24.0,SOME COLLEGE,Technical Degree,1.0,9.0,2015-01-01,0
+1909,William,Brown,28.0,Maale,Marrid,2.0,Master's,medical,5.0,5.0,2020-12-31,1
+1922,Donna,Jones,50.0,Female,Married,25.0,Master's,Medical,3.0,31.0,2015-01-01,0
+1929,William,Martin,28.0,Male,Married,10.0,No Degree,Medical,1.0,1.0,2023-01-01,0
+1931,Jennifer,Williams,25.0,F,Divorced,3.0,No Degree,Medical,1.0,6.0,2017-12-31,0
+1934,Lisa,Rodriguez,34.0,Female,Married,5.0,Master's,Life Sciences,9.0,6.0,2023-01-01,0
+1935,Steven,Anderson,60.0,Male,Divorced,1.0,Master's,Medical,3.0,20.9,2023-01-01,0
+1939,Margaret,Jones,36.0,Female,Single,29.0,Doctoral/Professional,Life Sciences,1.0,10.0,2014-01-01,0
+1945,Daniel,Wilson,34.0,Male,Married,1.0,Some College,Life Sciences,1.0,19.8,2006-01-01,0
+1952,Donna,Gonzalez,38.0,Female,Divorced,26.0,Bachelor,Medical,1.0,22.0,,0
+1956,Charles,Lopez,36.0,MALE,MARRIED,10.0,Masteer,Human Resources,3.0,11.0,2017-12-31,0
+1959,Charles,Thomas,29.0,mAle,SINGLE,10.0,Bachelor's,LIFE SCIENCES,,1.1,2023-01-01,1
+1965,Richard,Anderson,,Mail,Married,1.0,Master's,life sciences,3.0,7.7,2020-01-01,0
+1967,Ashley,Taylor,25.0,Female,Single,4.0,SOME COLLEGE,Life Sciences,1.0,5.5,2019-01-01,0
+1971,Steven,Gonzalez,38.0,Male,Married,29.0,No Degree,Medical,7.0,17.0,2023-01-01,0
+1982,James,Davis,30.0,Male,Married,1.0,Bachelor's,MEDICAL,0.0,12.0,2012-12-31,0
+1985,Elizabeth,Thomas,37.0,Female,Sngle,4.0,Bachelor's,Medical,0.0,11.0,2015-01-01,0
+1987,Daniel,Lopez,29.0,Maale,Single,2.0,No Degree,Life Sciences,4.0,10.0,2017-12-31,0
+1996,James,Smith,33.0,Maale,Marriied,1.0,Master's,Medical,6.0,10.0,2016-01-01,0
+1998,Elizabeth,Martin,30.0,Femle,Single,29.0,Master's,Life Sciences,1.0,6.6,2017-12-31,0
+2003,Daniel,Anderson,40.0,Male,Single,6.0,SOME COLLEGE,Medical,1.0,21.0,2003-01-01,0
+2004,Sarah,Miller,35.0,Female,Married,1.0,Bachelor's,Medical,0.0,11.0,2015-01-01,0
+2011,Kenneth,Martinez,16.0,Male,Single,3.0,Bachelor's,LIFE SCIENCES,1.0,0.0,2024-01-01,1
+2013,Donald,Williams,40.0,Male,Single,7.0,Mastr's,Medical,,23.1,2003-01-01,0
+2016,Charles,Martinez,46.0,Male,Divorced,1.0,Mastr's,Medical,7.0,17.0,2020-01-01,1
+2021,Barbara,Smith,54.0,Female,Single,10.0,Bachelor,Medical,6.0,9.9,2019-01-01,0
+2030,Thomas,Garcia,26.0,Male,Married,9.0,Bachelor's,Medical,1.0,5.0,2019-01-01,0
+2034,Sarah,Moore,41.0,Female,Married,6.0,Bachelor's,Medical,7.0,21.0,2008-01-01,0
+2037,Nancy,Davis,28.0,Female,Maried,6.0,Bachelor,TECHNICAL DEGREE,0.0,10.0,2015-01-01,0
+2040,Sarah,Jackson,52.0,Female,SINGLE,10.0,Bachelor's,Medical,6.0,9.0,2019-01-01,0
+2045,Robert,Thomas,32.0,Male,Divorced,10.0,Bachelor's,Life Sciences,1.0,16.5,2008-12-31,0
+2046,Susan,Taylor,24.0,Female,Divorced,11.0,Some College,Other,0.0,5.0,2020-01-01,0
+2052,Margaret,Jackson,38.0,female,Married,17.0,No Degree,Life Sciences,0.0,20.0,2004-12-31,0
+2054,Christopher,Garcia,38.0,Male,Divorced,23.0,Master's,Life Sciences,9.0,10.0,2022-01-01,0
+2056,Lisa,Garcia,33.0,Female,Single,5.0,Bachelor's,Marketing,1.0,1.1,2023-01-01,1
+2068,Richard,Lopez,38.0,Male,Married,2.0,Doctoral/Professional,Medical,6.0,6.6,2023-01-01,0
+2075,Betty,Taylor,34.0,Female,Married,5.0,Master's,Life Sciences,9.0,6.6,2023-01-01,0
+2079,Thomas,Anderson,40.0,Male,Single,7.0,Master's,Medical,1.0,21.0,2003-01-01,0
+2082,Margaret,Jones,31.0,Female,Married,10.0,Bachleors,Medical,4.0,13.0,2012-12-31,0
+2091,Daniel,Johnson,24.0,Male,Married,23.0,Bachelor's,Medical,1.0,6.6,2017-12-31,0
+2100,Charles,Thomas,22.0,Male,Divorced,5.0,bachelors,Life Sciences,1.0,4.0,2020-01-01,0
+2106,Barbara,Wilson,36.0,Female,Married,10.0,Bachelor's,Medical,3.0,22.0,2006-01-01,0
+2107,Linda,Taylor,20.0,FEMALE,Married,8.0,No Degre,Medicall,1.0,1.0,2023-01-01,0
+2110,Michael,Thomas,27.0,Male,Single,7.0,BACHELOR'S,Life Sciences,3.0,11.0,2020-12-31,0
+2112,Richard,Rodriguez,35.0,Male,Maried,3.0,Bachelor's,Life Sciences,1.0,1.1,2023-01-01,0
+2125,Sarah,Davis,27.0,Female,Married,9.0,Master's,Medical,9.0,9.0,2019-01-01,0
+2134,Barbara,Garcia,30.0,Female,Single,2.0,Master,Medical,7.0,11.0,2016-12-31,0
+2138,Daniel,Hernandez,35.0,M,Married,2.0,Bachelor's,Marketing,4.0,,2020-12-31,0
+2148,Andrew,Anderson,29.0,Male,Married,15.0,Bachelor's,Medical,1.0,2.0,2022-01-01,1
+2156,Charles,Hernandez,42.0,Male,Single,29.0,Bachelor's,Medical,4.0,16.0,2023-01-01,0
+2158,Emily,Jackson,,Female,Divorced,2.0,Master's,Life Sciences,4.0,11.0,2016-12-31,0
+2160,Steven,Taylor,53.0,Maale,Single,24.0,Master,Life Sciences,6.0,15.0,2022-01-01,1
+2161,Donna,Brown,32.0,Female,Singel,,Bachelor's,Marketing,0.0,,2020-12-31,0
+2167,Elizabeth,Taylor,,Female,MARRIED,12.0,Bachelor's,Medicale,0.0,10.0,2015-01-01,0
+2168,Ashley,Thomas,50.0,Femaale,Married,11.0,Master's,Life Sciences,8.0,9.0,2019-01-01,1
+2175,Matthew,Davis,31.0,Male,Marriied,9.0,BACHELOR'S,Medical,0.0,15.0,2009-12-31,0
+2177,Mark,Jackson,34.0,M,Married,3.0,Some College,Human Resources,0.0,4.4,2020-12-31,0
+2178,Sandra,Williams,18.0,FEMALE,Single,11.0,Bachelor's,Medical,1.0,1.0,2023-01-01,1
+2184,Paul,Moore,39.0,Male,Single,10.0,No Degree,Medicale,7.0,9.9,2020-01-01,0
+2187,Thomas,Taylor,32.0,Male,Married,1.0,BACHELOR'S,Medicale,,9.0,2015-01-01,0
+2190,Daniel,Johnson,30.0,Mail,Married,4.0,Master's,Medicall,1.0,14.0,2009-12-31,1
+2194,Ashley,Lopez,56.0,Female,Married,1.0,Bachelor's,Medical,3.0,32.0,2015-01-01,0
+2197,Mary,Hernandez,34.0,Female,Divorced,4.0,Some College,Life Sciences,7.0,19.8,2020-01-01,0
+2198,Nancy,Martinez,36.0,F,Married,10.0,Masteer,Technical Degree,1.0,11.0,2014-01-01,0
+2199,Paul,Taylor,59.0,Mail,Marriied,,Some College,Medical,8.0,7.0,2022-01-01,0
+2205,Susan,Miller,37.0,Female,Divorced,10.0,No Degree,Life Sciences,0.0,6.6,,0
+2210,Patricia,Jackson,16.0,Female,Single,,Bachelor's,Medical,1.0,0.0,2024-01-01,0
+2213,Steven,Jones,26.0,MALE,Married,21.0,bachelor's,Medical,1.0,5.0,2019-01-01,0
+2217,Andrew,Thomas,23.0,mAle,Marriied,1.0,Som College,Life Siences,1.0,1.0,2023-01-01,0
+2227,Thomas,Anderson,29.0,Male,Single,9.0,Master's,Life Sciences,0.0,3.0,2022-01-01,0
+2238,Michael,Lopez,31.0,Male,Maried,2.0,Master's,Life Sciences,1.0,6.6,2019-01-01,0
+2240,Emily,Jackson,29.0,Female,Divorced,2.0,No Degree,Medical,1.0,1.0,2023-01-01,0
+2241,Margaret,Moore,56.0,Female,married,9.0,Bachelor's,Medical,4.0,9.9,2023-01-01,0
+2242,Thomas,Wilson,46.0,Male,Single,1.0,Some College,Life Sciences,9.0,23.0,2023-01-01,1
+2243,Mary,Taylor,,Female,Marriied,,Master,Life Sciences,6.0,14.3,2015-01-01,1
+2250,Patricia,Martinez,30.0,F,Married,1.0,Bachelor's,Life Sciences,6.0,5.5,2020-12-31,0
+2251,Richard,Moore,26.0,Male,Married,1.0,Bachleors,Technical Degree,3.0,5.0,2020-12-31,1
+2253,Mark,Brown,30.0,male,Divorced,5.0,Master's,Life Sciences,9.0,11.0,,0
+2255,Joseph,Moore,57.0,mAle,Marriied,1.0,Master's,Medical,2.0,15.0,2020-12-31,1
+2257,Steven,Martinez,41.0,Mail,Divorced,10.0,Bachelor's,Life Sciences,4.0,21.0,2016-12-31,0
+2259,Betty,Wilson,52.0,Female,Marrid,17.0,Bachelor's,TECHNICAL DEGREE,8.0,24.2,2014-01-01,0
+2290,Matthew,Williams,35.0,MALE,MARRIED,4.0,Master,Other,1.0,2.2,2022-01-01,0
+2300,Kenneth,Davis,28.0,Male,Divorced,1.0,Some College,Life Sciences,1.0,3.0,2020-12-31,0
+2302,Betty,Brown,31.0,Female,Single,24.0,No Degree,Technical Degre,2.0,9.9,2019-01-01,0
+2305,Mary,Taylor,42.0,feMALE,Single,17.0,SOME COLLEGE,Life Sciences,3.0,11.0,2020-12-31,0
+2308,Donald,Johnson,39.0,Male,Married,1.0,Bachelor's,Life Sciences,3.0,13.2,2019-01-01,0
+2315,Richard,Wilson,33.0,male,Single,4.0,Master's,Life Sciences,1.0,,2015-01-01,0
+2316,Michael,Miller,42.0,Male,Divorced,2.0,No Degree,Technical Degree,0.0,4.0,2020-12-31,0
+2322,Patricia,Garcia,36.0,F,Divorced,2.0,Some College,Life Sciences,3.0,,2016-12-31,0
+2325,Joseph,Rodriguez,41.0,Male,Single,4.0,Bachelor's,marketing,1.0,8.0,2016-01-01,1
+2327,Mark,Gonzalez,38.0,Mail,MARRIED,2.0,Some College,Life Sciences,1.0,,2023-01-01,0
+2328,Anthony,Hernandez,30.0,Male,Divorced,2.0,Bachelor's,Medical,0.0,10.0,2015-01-01,0
+2330,Michael,Moore,52.0,Male,Divorsed,6.0,Some College,Technical Degree,3.0,18.0,,1
+2354,Margaret,Taylor,22.0,Female,Married,8.0,No Degree,Medical,1.0,1.0,2023-01-01,1
+2357,Donna,Rodriguez,38.0,FEMALE,Single,6.0,Bachleors,Life Sciences,7.0,22.0,2004-01-01,0
+2363,Robert,Rodriguez,25.0,Maale,married,9.0,Som College,LifeSciences,3.0,6.0,2020-12-31,1
+2364,Linda,Miller,36.0,Female,Married,12.0,Master's,Life Sciences,9.0,7.0,2020-12-31,0
+2369,Kenneth,Williams,21.0,Male,Marriied,9.0,Bachelor,Marketing,1.0,1.0,2023-01-01,1
+2373,Karen,Jackson,22.0,Female,Married,3.0,No Degree,Life Sciences,0.0,,2020-12-31,1
+2377,Elizabeth,Smith,,Female,Single,1.0,Master's,Life Sciences,4.0,11.0,2022-01-01,0
+2381,William,Hernandez,,Male,Divorced,9.0,Bachelor's,Medical,1.0,12.0,2012-01-01,0
+2386,Elizabeth,Martin,36.0,F,Single,1.0,Master's,Life Sciences,0.0,11.0,2015-01-01,1
+2390,Robert,Williams,41.0,Male,SINGLE,10.0,Some College,Life Sciences,,16.0,2009-12-31,0
+2392,James,Jackson,36.0,Male,Maried,2.0,Some College,Medical,1.0,10.0,2014-01-01,0
+2396,Sarah,Moore,29.0,Female,married,1.0,Some College,Life Sciences,1.0,1.0,2023-01-01,0
+2398,William,Lopez,36.0,Male,Single,2.0,Master's,Life Sciences,3.0,7.0,2020-12-31,1
+2399,Matthew,Davis,53.0,Male,Married,26.0,Doctoral/Professional,Marketing,1.0,39.6,1988-01-01,0
+2410,Andrew,Jones,29.0,Male,Divorced,19.0,bachelors,Technical Degree,4.0,8.8,2020-12-31,0
+2412,Patricia,Davis,34.0,Female,Married,12.0,Master's,Life Sciences,9.0,7.7,2020-12-31,0
+2414,Robert,Rodriguez,27.0,Male,Married,6.0,No Degree,Medical,1.0,,2023-01-01,0
+2415,Daniel,Davis,35.0,Male,Married,1.0,Master's,Medical,,10.0,2016-01-01,0
+2418,Matthew,Thomas,23.0,Maale,Married,10.0,Bachelor's,Technical Degree,2.0,4.0,,0
+2423,Emily,Moore,37.0,Female,Single,3.0,Bachleors,Other,3.0,,2020-01-01,1
+2428,Sarah,Gonzalez,34.0,Female,Divorced,3.0,Some College,Life Sciences,5.0,7.0,2023-01-01,0
+2434,William,Anderson,21.0,Male,Divorced,7.0,Bachelor's,Life Sciences,1.0,3.0,2020-12-31,1
+2460,Donald,Garcia,24.0,Male,singled,24.0,Bachelor's,Medical,8.0,6.0,2020-01-01,0
+2464,Kenneth,Taylor,,Male,Married,1.0,Master,Medical,0.0,6.6,2019-01-01,0
+2465,Charles,Garcia,23.0,Male,Married,19.0,Some College,Marketing,1.0,1.0,2023-01-01,0
+2466,Christopher,Anderson,43.0,Male,Divorced,9.0,BACHELOR'S,marketing,4.0,18.0,2019-01-01,0
+2468,Robert,Davis,30.0,Male,Divorced,9.0,Bachelor's,Medical,,12.0,2012-01-01,0
+2470,Barbara,Brown,22.0,FEMALE,Marrid,3.0,Some College,Other,0.0,4.0,2020-12-31,0
+2472,Dorothy,Taylor,35.0,Female,Single,11.0,BACHELOR'S,medical,4.0,8.0,2020-12-31,0
+2475,David,Thomas,51.0,Male,Divorced,2.0,Bachelor's,Medical,5.0,14.3,2020-01-01,0
+2476,Kenneth,Martin,32.0,Male,Single,5.0,Master's,Technical Degree,2.0,13.2,2016-12-31,0
+2478,Steven,Brown,34.0,M,Divorced,15.0,Bachelor's,Other,7.0,9.0,2023-01-01,1
+2489,Anthony,Jones,22.0,male,Married,23.0,Bachelor's,Medical,1.0,6.6,2017-12-31,0
+2493,Paul,Wilson,20.0,Male,Married,2.0,No Degree,Technical Degree,0.0,3.3,2022-01-01,0
+2506,Kenneth,Rodriguez,39.0,Male,Married,1.0,Bachelor's,Marketting,1.0,11.0,2014-01-01,0
+2507,Matthew,Miller,33.0,Male,Single,,Bachelor,Life Sciences,1.0,10.0,2014-01-01,1
+2511,Kimberly,Moore,34.0,Female,Single,3.0,Some College,Life Siences,5.0,6.6,2022-01-01,0
+2517,David,Brown,56.0,Male,Divorcd,1.0,Master's,life sciences,1.0,13.0,2011-01-01,0
+2525,Anthony,Williams,48.0,Male,Married,24.0,Bachelor's,Life Sciences,3.0,,2012-01-01,0
+2532,Kenneth,Johnson,36.0,Male,Married,6.0,Master's,Life Sciences,2.0,10.0,2016-01-01,0
+2534,Sandra,Smith,27.0,Female,Married,3.0,Som College,Medicall,1.0,6.6,2017-12-31,0
+2539,Joseph,Martin,40.0,Male,Married,4.0,Master,Marketing,7.0,16.5,2012-01-01,0
+2540,Elizabeth,Johnson,42.0,Female,Married,3.0,Bachelor's,Life Sciences,2.0,17.0,2019-01-01,0
+2553,Kenneth,Miller,43.0,Male,Divorced,7.0,Bachelor's,Medical,4.0,,2019-01-01,0
+2555,Andrew,Smith,50.0,Male,MARRIED,1.0,Master's,Life Sciences,0.0,,1991-01-01,0
+2557,Anthony,Taylor,31.0,Male,singled,3.0,Bachelor's,Life Sciences,1.0,10.0,2014-01-01,1
+2564,Mark,Gonzalez,23.0,Maale,Married,8.0,Bachelor's,Life Sciences,0.0,4.0,2020-12-31,0
+2566,Joseph,Hernandez,47.0,Male,married,14.0,Master's,Technical Degree,8.0,16.0,2016-01-01,0
+2574,Steven,Moore,34.0,Male,Married,9.0,Master's,Life Sciences,1.0,5.5,2019-01-01,0
+2578,Christopher,Williams,23.0,Male,Singel,24.0,No Degree,Life Sciences,1.0,1.0,,1
+2585,Jessica,Davis,,Femaale,Married,12.0,No Degree,Medical,8.0,7.0,2020-01-01,0
+2594,Ashley,Lopez,,Female,Single,2.0,Bachelor's,Medical,,2.2,2022-01-01,1
+2596,Ashley,Jackson,34.0,Female,Divorced,23.0,Bachelor's,Human Resources,9.0,12.1,2020-12-31,1
+2604,Patricia,Taylor,42.0,Female,married,3.0,Bachelor's,Life Sciences,2.0,18.7,2019-01-01,0
+2607,Linda,Taylor,47.0,F,Married,25.0,Master's,Life Sciences,1.0,11.0,2015-01-01,0
+2616,Charles,Thomas,42.0,Male,Married,13.0,Bachelor's,Medical,5.0,10.0,2024-01-01,0
+2622,Matthew,Rodriguez,20.0,Male,MARRIED,8.0,No Degree,Life Siences,1.0,,2020-01-01,0
+2632,Anthony,Thomas,35.0,Male,Married,9.0,Some College,Marketing,1.0,5.0,2019-01-01,0
+2638,Betty,Brown,44.0,Female,Married,3.0,Bachelor's,Life Sciences,8.0,23.0,2011-01-01,0
+2642,Mark,Hernandez,53.0,Male,Married,2.0,Bachelor's,Medical,5.0,26.4,2019-01-01,1
+2644,Daniel,Moore,37.0,mAle,Married,21.0,Bachelor's,LIFE SCIENCES,1.0,8.8,2016-01-01,0
+2651,David,Martinez,34.0,Male,Marrid,10.0,Master's,TECHNICAL DEGREE,1.0,8.0,2016-01-01,0
+2652,Nancy,Hernandez,33.0,Female,Married,4.0,Master's,Medical,6.0,7.0,2020-12-31,0
+2655,Matthew,Martin,37.0,Male,Divorsed,20.0,Bachleors,Life Sciences,2.0,7.0,2022-01-01,0
+2658,Christopher,Wilson,32.0,Male,Single,1.0,Bachelor's,Medical,0.0,14.0,2011-01-01,0
+2662,Lisa,Davis,44.0,female,Married,18.0,No Degree,Medical,5.0,30.8,2022-01-01,0
+2663,Lisa,Hernandez,32.0,Female,SINGLE,8.0,Some College,Medical,3.0,10.0,2019-01-01,1
+2668,Steven,Anderson,44.0,Male,Married,10.0,Master's,Other,2.0,9.0,2020-01-01,0
+2669,Anthony,Garcia,26.0,Male,Divorced,8.0,Some College,Medical,1.0,6.0,2019-01-01,0
+2673,Susan,Garcia,38.0,Female,MARRIED,1.0,Bachelor's,Technical Degree,1.0,,2008-12-31,0
+2681,Barbara,Williams,29.0,Female,Divorced,10.0,SOME COLLEGE,Medical,2.0,8.0,2019-01-01,0
+2684,Thomas,Anderson,39.0,Male,Married,5.0,Bachelor's,Technical Degree,3.0,20.9,2023-01-01,1
+2685,Barbara,Jones,38.0,Female,Married,2.0,Some College,Medical,3.0,10.0,2019-01-01,0
+2686,Steven,Garcia,33.0,Male,Married,22.0,Some College,MARKETING,0.0,,2016-12-31,0
+2687,James,Johnson,34.0,Male,Married,18.0,MASTER'S,Life Sciences,4.0,4.0,2023-01-01,0
+2692,Barbara,Moore,37.0,Female,Married,1.0,Master's,Life Sciences,6.0,8.0,2017-12-31,0
+2702,Charles,Jones,45.0,Male,Married,2.0,MASTER'S,Marketing,7.0,4.4,2023-01-01,0
+2704,Mary,Taylor,40.0,Female,Married,10.0,Bachelor's,Human Resources,0.0,21.0,2004-01-01,1
+2705,William,Lopez,35.0,Male,SINGLE,8.0,Master's,Technical Degree,1.0,6.6,2019-01-01,0
+2708,Ashley,Thomas,30.0,Female,single,2.0,some college,Life Sciences,4.0,11.0,2016-01-01,0
+2722,Karen,Moore,29.0,Female,Single,28.0,Mastr's,Medicall,1.0,5.0,2019-01-01,0
+2728,Sandra,Rodriguez,59.0,Femaale,Marriied,2.0,Master's,HR,9.0,33.0,2020-12-31,0
+2733,Mary,Garcia,30.0,Female,singled,8.0,Bachelor's,Marketing,1.0,9.9,2015-01-01,0
+2737,Jessica,Williams,,Female,Divorced,25.0,Master's,Life Sciences,1.0,11.0,2014-01-01,1
+2742,Daniel,Anderson,29.0,Male,Divorced,7.0,Bachelor's,Life Siences,9.0,11.0,,0
+2744,Jennifer,Jones,17.0,Female,Single,25.0,Bachelor's,Life Sciences,,1.0,2023-01-01,0
+2747,Kimberly,Thomas,,Female,Married,20.0,Bachelor's,Technical Degree,1.0,3.0,2020-12-31,1
+2754,Mark,Brown,24.0,male,Divorced,21.0,Some College,Technical Degree,0.0,2.2,2023-01-01,0
+2755,Dorothy,Miller,56.0,Femaale,Married,23.0,Master's,Medical,1.0,44.0,1984-01-01,1
+2757,Thomas,Hernandez,28.0,Male,Married,1.0,Some College,Medicall,1.0,13.2,2012-01-01,0
+2760,Linda,Rodriguez,27.0,Female,single,15.0,Some College,Life Sciences,0.0,10.0,2015-01-01,0
+2761,Ashley,Martinez,33.0,Female,Maried,15.0,Some College,Medical,0.0,,2015-01-01,0
+2764,Michael,Davis,48.0,Male,Single,22.0,Doctoral/Professional,Medical,1.0,35.2,1992-01-01,0
+2778,Barbara,Moore,35.0,Female,Married,16.0,Some College,Othr,0.0,4.4,2020-12-31,0
+2787,Mark,Moore,35.0,Male,Married,18.0,Masteer,Medical,0.0,6.6,2019-01-01,0
+2792,Lisa,Anderson,32.0,female,Married,8.0,Some College,Life Sciences,5.0,6.0,2020-12-31,0
+2794,Paul,Garcia,36.0,Male,Divorced,15.0,Bachelar's,Other,7.0,9.9,2023-01-01,1
+2796,William,Anderson,34.0,Male,Married,22.0,Master's,Other,1.0,16.0,2008-12-31,0
+2804,Christopher,Williams,38.0,Mail,Married,6.0,Master's,Life Sciences,2.0,10.0,,0
+2807,Donald,Moore,30.0,Male,Single,10.0,Bachelor's,Marketing,1.0,10.0,2014-01-01,0
+2810,Anthony,Hernandez,31.0,Male,Divorced,2.0,Master's,Life Sciences,0.0,3.3,2022-01-01,0
+2817,Michael,Johnson,41.0,mAle,Married,2.0,Bachelor's,Medical,1.0,10.0,2014-01-01,0
+2822,Daniel,Davis,31.0,Male,Married,2.0,Bachelor's,Human Resources,3.0,9.9,2022-01-01,0
+2823,Kenneth,Williams,,M,Single,20.0,Bachelor's,Life Sciences,1.0,6.0,2019-01-01,0
+2824,Mary,Miller,37.0,feMALE,Divorced,1.0,Master,Medical,7.0,7.7,2020-12-31,0
+2825,Ashley,Williams,26.0,Female,Divorsed,27.0,Bachelor's,Medical,0.0,6.0,2019-01-01,0
+2827,Daniel,Moore,25.0,Male,Single,2.0,No Degree,Medicall,7.0,6.0,2020-01-01,0
+2828,Anthony,Lopez,32.0,Male,Married,7.0,Doctoral/Professional,Marketting,4.0,7.7,2020-01-01,0
+2833,Richard,Taylor,48.0,Male,Married,,Some College,Marketing,1.0,3.3,2020-12-31,1
+2844,Elizabeth,Garcia,53.0,Female,Divorced,8.0,Bachelor's,Medical,2.0,23.1,2019-01-01,0
+2851,Daniel,Wilson,34.0,Male,Divorced,15.0,Master's,Marketing,1.0,16.5,2008-12-31,0
+2853,Kenneth,Davis,53.0,Male,Married,3.0,Master's,Medical,,,2019-01-01,0
+2857,Daniel,Anderson,35.0,Male,Married,19.0,SOME COLLEGE,Life Sciences,4.0,8.8,2023-01-01,0
+2866,Sarah,Moore,54.0,feMALE,Maried,6.0,Bachelor's,Life Sciences,9.0,36.0,2016-12-31,0
+2867,Steven,Moore,26.0,mAle,Married,28.0,SOME COLLEGE,Marketing,1.0,6.0,2019-01-01,0
+2868,Emily,Jackson,27.0,F,Divorced,3.0,No degree,Medical,1.0,6.6,2017-12-31,0
+2871,Daniel,Jones,32.0,Male,Married,7.0,Bachelor's,Life Sciences,1.0,13.0,2011-01-01,0
+2872,William,Rodriguez,,Male,Divorced,17.0,Bachelor's,Technical Degree,5.0,6.6,2020-01-01,1
+2873,Daniel,Jackson,45.0,Male,Married,23.0,Some College,Life Sciences,1.0,9.0,2015-01-01,0
+2877,Betty,Jackson,32.0,Femaale,married,3.0,No Degree,Medical,3.0,9.0,2020-01-01,0
+2878,Richard,Williams,43.0,male,Divorcd,12.0,Bachelor,Life Sciences,,25.0,1999-01-01,0
+2886,Daniel,Wilson,32.0,Male,Married,19.0,Bachelor's,Life Sciences,3.0,10.0,2020-01-01,0
+2891,Steven,Johnson,29.0,Male,Single,10.0,bachelors,Medical,9.0,8.8,2019-01-01,0
+2894,Christopher,Taylor,35.0,Male,Divorcd,3.0,Master's,Life Sciences,6.0,12.0,2014-01-01,0
+2898,Andrew,Taylor,32.0,Male,Married,10.0,Master's,Technical Degree,1.0,8.0,2016-01-01,0
+2904,Andrew,Johnson,23.0,Male,Marrid,6.0,Bachelor's,Life Sciences,1.0,1.1,2024-01-01,1
+2924,David,Lopez,46.0,Male,Single,5.0,Master's,Marketing,4.0,15.4,2015-01-01,0
+2930,Jennifer,Brown,30.0,Female,Married,13.0,bachelors,Other,1.0,2.2,2022-01-01,0
+2932,Donna,Jones,42.0,female,DIVORCED,,Bachelor's,Life Sciences,4.0,8.0,2022-01-01,0
+2933,Thomas,Smith,33.0,Male,Married,27.0,Master's,Life Sciences,2.0,,2016-12-31,0
+2939,Richard,Moore,38.0,M,Single,16.0,Master's,Medical,6.0,11.0,2023-01-01,0
+2949,Patricia,Anderson,33.0,Female,Single,8.0,No Degree,Life Sciences,0.0,3.3,2022-01-01,1
+2956,Michael,Hernandez,51.0,Male,Single,21.0,Master's,Marketing,0.0,12.1,2014-01-01,0
+2957,Donald,Martin,18.0,Male,Single,5.0,Bachelor's,Marketing,1.0,0.0,2024-01-01,0
+2965,Betty,Garcia,37.0,Female,Married,3.0,Some College,Medical,4.0,12.0,2023-01-01,1
+2980,Anthony,Martinez,46.0,Male,Singel,1.0,Bachelor's,Life Sciences,6.0,27.5,2023-01-01,0
+2991,Paul,Moore,,MALE,Single,14.0,Bachelor's,Medical,1.0,,2004-01-01,0
+2992,Michael,Garcia,37.0,MALE,Married,10.0,No Degree,Medical,,23.1,,0
+2994,Mary,Hernandez,28.0,Femle,Single,13.0,Some College,Marketing,3.0,6.0,2022-01-01,1
+2995,Anthony,Wilson,43.0,Male,Single,1.0,Master's,Medical,4.0,,2020-01-01,1
+3004,Kenneth,Davis,47.0,Male,Divorced,16.0,masters,Medical,1.0,22.0,2004-12-31,0
+3006,Nancy,Williams,43.0,Female,Single,10.0,Master's,Life Sciences,0.0,9.9,2016-01-01,0
+3010,Elizabeth,Gonzalez,49.0,Female,Single,3.0,Bachelor's,Medical,3.0,23.1,2016-12-31,0
+3011,Donald,Thomas,44.0,Male,Sngle,13.0,Master's,Life Sciences,6.0,20.9,2014-01-01,1
+3018,Jennifer,Garcia,24.0,Female,Married,3.0,Some College,Other,0.0,4.4,2020-12-31,0
+3022,Anthony,Gonzalez,21.0,Male,Single,22.0,No Degree,Technical Degree,1.0,3.3,2020-12-31,1
+3023,John,Martin,32.0,Male,Married,1.0,Som College,Life Sciences,1.0,6.0,2017-12-31,0
+3024,Matthew,Hernandez,38.0,Male,Divorced,16.0,Some College,Life Sciences,9.0,6.6,2020-01-01,0
+3033,John,Moore,38.0,Male,Divorced,12.0,Bachelor's,Life Sciences,2.0,14.3,2020-01-01,0
+3037,Matthew,Martinez,35.0,Male,Married,3.0,Bachelor's,Life Sciences,1.0,1.0,2023-01-01,0
+3043,Mark,Williams,39.0,Male,Married,1.0,bachelors,MARKETING,1.0,10.0,2014-01-01,0
+3045,Elizabeth,Jackson,26.0,Female,Single,13.0,Some College,Marketing,3.0,6.0,2022-01-01,1
+3047,Matthew,Wilson,28.0,Male,Single,5.0,Master's,Technical Degree,1.0,2.0,2022-01-01,1
+3049,James,Garcia,33.0,Male,Singel,12.0,Master's,Other,3.0,13.0,2012-12-31,0
+3055,Michael,Anderson,34.0,Male,DIVORCED,15.0,Bachelor's,MEDICAL,7.0,16.0,2009-12-31,0
+3060,Kimberly,Gonzalez,33.0,F,Divorced,2.0,Bachelor's,Life Sciences,1.0,,2023-01-01,1
+3062,Christopher,Jackson,55.0,Male,Divorced,24.0,Some College,Life Sciences,3.0,13.2,2019-01-01,0
+3070,Mary,Martin,38.0,Female,Single,9.0,Master's,Medical,9.0,20.0,2006-01-01,0
+3073,Donald,Moore,25.0,MALE,single,,No degree,LifeSciences,3.0,8.0,2017-12-31,0
+3080,Donna,Smith,26.0,Femle,SINGLE,10.0,Bachelor's,Other,3.0,10.0,2016-01-01,0
+3082,Sarah,Martin,16.0,Female,Single,3.0,Some College,Medicale,1.0,0.0,2024-01-01,1
+3098,Robert,Martinez,21.0,MALE,Married,10.0,Bachleors,Technical Degree,2.0,4.0,2022-01-01,0
+3103,Ashley,Jones,41.0,Female,Married,,BACHELOR'S,Life Sciences,8.0,10.0,2023-01-01,1
+3105,Lisa,Taylor,27.0,Female,Single,5.0,Some College,Life Sciences,0.0,6.6,2019-01-01,0
+3124,Mark,Brown,46.0,Male,Divorced,2.0,Master's,Medical,,24.0,2022-01-01,0
+3129,Susan,Smith,24.0,feMALE,Married,23.0,Bachelor's,Marketing,7.0,5.0,2022-01-01,0
+3141,Donald,Johnson,38.0,Male,Divorced,9.0,Master's,other,3.0,,2016-01-01,0
+3148,Lisa,Moore,,Female,Single,1.0,Master's,Life Sciences,0.0,11.0,2015-01-01,1
+3150,Susan,Jackson,40.0,Female,Married,14.0,Some College,Life Sciences,1.0,5.5,2019-01-01,0
+3151,Christopher,Lopez,36.0,Male,Single,2.0,Bachelor's,Life Sciences,5.0,6.6,2020-12-31,0
+3152,Jennifer,Jones,31.0,Female,Single,1.0,Master's,Life Sciences,1.0,1.0,2023-01-01,1
+3161,Margaret,Williams,45.0,female,Divorced,,Some College,Other,1.0,11.0,2014-01-01,0
+3162,Donald,Davis,51.0,Male,Single,8.0,Master's,Life Sciences,2.0,19.8,2020-01-01,1
+3163,Nancy,Anderson,38.0,female,Married,4.0,NO DEGREE,Medical,1.0,23.1,2004-01-01,0
+3172,Susan,Hernandez,34.0,Female,Married,8.0,Some College,Life Sciences,5.0,6.0,2020-12-31,1
+3174,Karen,Hernandez,38.0,Female,Single,24.0,Bachelor's,Life Sciences,4.0,22.0,2023-01-01,1
+3181,Patricia,Martin,32.0,Female,Single,3.0,Some College,Life Sciences,5.0,6.6,2022-01-01,0
+3182,Jennifer,Hernandez,46.0,Female,Married,21.0,Some College,Medical,4.0,14.3,2015-01-01,1
+3185,Thomas,Smith,25.0,Male,Divorced,10.0,Some College,Life Sciences,1.0,,2015-01-01,1
+3188,Richard,Miller,33.0,M,Divorced,10.0,no degree,Medical,7.0,8.8,2020-01-01,1
+3190,Paul,Hernandez,29.0,Mail,Divorced,29.0,No Degree,Life Sciences,8.0,12.1,2016-12-31,0
+3191,Sandra,Brown,42.0,Female,singled,14.0,Some College,Medical,7.0,10.0,2019-01-01,0
+3201,Emily,Davis,38.0,Femaale,Married,2.0,Master's,Life Sciences,0.0,23.1,2004-01-01,0
+3206,William,Smith,31.0,M,Single,10.0,Bachelor's,MARKETING,3.0,9.9,2016-12-31,0
+3207,Ashley,Johnson,36.0,Female,Married,10.0,Master's,Technical Degree,,10.0,2016-12-31,1
+3210,Anthony,Gonzalez,45.0,Mail,Married,2.0,Bachelor's,Other,0.0,9.0,2016-01-01,0
+3211,David,Martin,27.0,Male,Divorced,10.0,Bachelor's,Marketing,1.0,2.2,2022-01-01,0
+3218,Jennifer,Anderson,33.0,Female,Maried,23.0,Masteer,Medical,3.0,4.4,2022-01-01,0
+3224,Nancy,Gonzalez,54.0,Female,Divorced,4.0,Master,Technical Degree,4.0,28.0,2019-01-01,0
+3225,Elizabeth,Hernandez,49.0,Female,Married,8.0,Some College,Other,4.0,31.9,1998-01-01,0
+3228,Robert,Thomas,,Male,Divorced,17.0,Bachelar's,Technical Degree,5.0,6.0,2020-01-01,1
+3239,Matthew,Jackson,48.0,Maale,Marriied,1.0,Bachelor's,Medical,2.0,5.0,2020-12-31,0
+3246,Margaret,Wilson,42.0,Female,Marrid,15.0,Bachelor's,Medical,1.0,10.0,2014-01-01,0
+3247,Andrew,Hernandez,36.0,Male,Single,5.0,Some College,Life Sciences,8.0,17.6,2011-01-01,0
+3250,Andrew,Thomas,50.0,Male,Single,2.0,Master's,Life Sciences,1.0,,1991-01-01,0
+3251,Linda,Jackson,37.0,Female,Single,1.0,Bachelor,Technical Degree,4.0,13.2,2017-12-31,0
+3252,Donna,Anderson,30.0,Female,Single,26.0,Master's,Marketing,,9.9,2017-12-31,1
+3253,Lisa,Moore,,Female,Sngle,9.0,Bachelor's,MARKETING,1.0,2.0,2022-01-01,1
+3258,Donna,Gonzalez,31.0,Female,Divorced,5.0,bachelor's,Marketing,1.0,2.2,2022-01-01,0
+3259,Christopher,Thomas,35.0,Male,Single,1.0,Bachelor's,Medcial,1.0,3.3,2020-12-31,0
+3268,Susan,Hernandez,45.0,Female,Single,6.0,Bachelor's,Medical,6.0,23.0,2004-12-31,0
+3272,Andrew,Smith,43.0,Male,married,2.0,Masteer,Life Sciences,1.0,7.7,2016-12-31,0
+3281,Margaret,Jackson,27.0,feMALE,Single,17.0,Master's,Life Sciences,1.0,,2016-01-01,1
+3283,Betty,Gonzalez,29.0,female,Divorced,1.0,Bachelor's,Medical,6.0,,2020-12-31,1
+3288,Paul,Gonzalez,48.0,Male,Divorced,1.0,Master's,Life Sciences,7.0,13.2,2017-12-31,1
+3292,Mary,Williams,49.0,F,Married,26.0,Master's,marketing,2.0,,2004-01-01,0
+3296,William,Wilson,34.0,MALE,Married,3.0,MASTER'S,Medical,4.0,17.6,2011-01-01,0
+3310,John,Johnson,32.0,Male,Maried,1.0,Bachelor's,Technical Degree,1.0,11.0,2014-01-01,0
+3313,Andrew,Thomas,39.0,Mail,Married,6.0,Bachelor's,Medical,7.0,8.8,2022-01-01,0
+3314,Robert,Jones,35.0,Male,Married,4.0,Master's,Other,1.0,2.0,2022-01-01,0
+3321,Andrew,Martinez,38.0,MALE,Divorsed,3.0,Bachelor's,Life Sciences,0.0,,2008-01-01,0
+3324,James,Thomas,,Male,Marriied,1.0,Bachelor's,Human Resources,1.0,22.0,2001-12-31,0
+3341,William,Martin,28.0,Male,Married,20.0,BACHELOR'S,Other,0.0,7.0,2017-12-31,0
+3347,Daniel,Garcia,36.0,Male,Married,18.0,Bachelor's,Medical,3.0,15.0,2023-01-01,0
+3358,Patricia,Rodriguez,29.0,Female,MARRIED,12.0,No Degree,Medicall,8.0,7.0,2020-01-01,0
+3361,Matthew,Thomas,46.0,Male,Singel,2.0,Some college,Technical Degree,5.0,7.0,2023-01-01,0
+3364,Matthew,Gonzalez,44.0,Male,Sngle,1.0,Bachelor's,Medical,6.0,6.6,2020-01-01,0
+3368,Thomas,Anderson,39.0,Male,Single,6.0,Bachelor's,Medical,6.0,8.0,2019-01-01,0
+3376,Charles,Jackson,33.0,Male,Single,9.0,Master's,Medical,1.0,10.0,2014-01-01,0
+3392,Richard,Martin,,Male,single,2.0,Bachelor's,Life Sciences,0.0,4.0,2020-12-31,0
+3402,Sarah,Garcia,29.0,feMALE,Divorced,4.0,Bachelor's,Technical Degree,1.0,1.1,2023-01-01,0
+3412,Michael,Jones,32.0,Male,Married,2.0,Master's,Medical,0.0,6.0,2019-01-01,0
+3413,Kimberly,Wilson,34.0,Female,Married,,Master's,Marketing,6.0,6.0,2020-01-01,0
+3415,Michael,Anderson,,Male,Single,3.0,Some College,Medical,,3.3,2020-12-31,0
+3417,John,Williams,27.0,Male,singled,1.0,Bachelor's,Technical Degree,0.0,7.0,2017-12-31,1
+3421,William,Smith,33.0,Male,Single,25.0,Bachelor's,Life Sciences,1.0,,2019-01-01,0
+3423,Charles,Jones,30.0,Male,Married,9.0,Bachelor's,Human Resources,0.0,13.2,2012-12-31,0
+3424,Christopher,Gonzalez,24.0,M,Single,1.0,BACHELOR'S,Medical,1.0,7.0,,0
+3426,Dorothy,Thomas,36.0,Female,Married,10.0,Some College,Life Sciences,1.0,10.0,2014-01-01,0
+3431,Ashley,Brown,55.0,Female,Divorced,8.0,Bachelor's,Medical,2.0,21.0,2019-01-01,0
+3432,Andrew,Moore,48.0,Male,Singel,1.0,Master's,Other,3.0,5.0,2024-01-01,1
+3449,Ashley,Gonzalez,38.0,Female,Divorced,12.0,Bachelar's,Life Sciences,2.0,15.0,2016-12-31,0
+3450,Robert,Moore,27.0,Mail,Married,2.0,Master's,Technical Degree,1.0,6.0,2019-01-01,0
+3451,Karen,Thomas,29.0,Femaale,Divorced,7.0,Bachelor's,Technical Degree,3.0,11.0,2016-12-31,1
+3455,Christopher,Johnson,38.0,Male,Married,5.0,Master's,LifeSciences,5.0,,2006-01-01,0
+3460,Joseph,Williams,33.0,Male,Married,1.0,Doctoral/Professional,Marketing,1.0,11.0,2014-01-01,0
+3471,Linda,Thomas,18.0,Female,Single,2.0,bachelors,Medical,1.0,2.0,2022-01-01,1
+3474,Susan,Wilson,,Female,DIVORCED,1.0,Bachelar's,Life Sciences,1.0,3.3,2020-12-31,0
+3479,Susan,Johnson,46.0,female,Divorced,18.0,Bachelor's,Medical,2.0,20.9,2014-01-01,0
+3480,Andrew,Garcia,29.0,Male,Married,1.0,Bachelor's,LifeSciences,1.0,10.0,,0
+3499,Anthony,Davis,20.0,Male,Married,8.0,No Degree,Life Sciences,1.0,4.0,2020-01-01,0
+3516,David,Garcia,33.0,Male,single,9.0,Master's,Life Sciences,9.0,11.0,2023-01-01,1
+3518,Nancy,Martinez,31.0,Female,Married,7.0,Some College,Medical,,13.0,2011-01-01,1
+3519,Richard,Wilson,34.0,Male,Single,1.0,Bachelar's,MARKETING,,14.0,2009-12-31,1
+3526,Steven,Brown,30.0,Male,Single,10.0,Master's,Mrketing,8.0,,2024-01-01,0
+3533,Jessica,Brown,34.0,Female,Married,8.0,Bachelor's,Life Sciences,9.0,10.0,2016-01-01,0
+3537,Donald,Jackson,32.0,Male,Divorced,13.0,Master's,Medical,,9.9,2016-01-01,0
+3540,Richard,Martin,45.0,Male,Married,26.0,Bachelor,Mrketing,1.0,10.0,2014-01-01,0
+3543,William,Anderson,29.0,Male,Divorced,13.0,Bachelor's,Human Resources,4.0,4.0,2022-01-01,0
+3549,William,Brown,27.0,Male,Maried,1.0,No Degree,Marketing,0.0,6.0,2019-01-01,0
+3550,Mark,Anderson,50.0,Male,Married,9.0,Bachelor's,Marketing,4.0,29.7,2023-01-01,0
+3554,David,Martin,35.0,Male,Married,1.0,Bachelor's,Marketing,9.0,15.0,2012-12-31,0
+3555,Elizabeth,Jackson,41.0,Female,Married,8.0,Bachelor,Marketing,5.0,14.0,2019-01-01,0
+3556,Kimberly,Davis,40.0,Femaale,Married,11.0,Bachleors,Technical degree,,11.0,2014-01-01,0
+3558,Steven,Thomas,26.0,Male,singled,5.0,Bachelor's,Medical,0.0,6.0,2019-01-01,0
+3563,Jessica,Hernandez,27.0,Female,Divorced,,Master's,Life Sciences,4.0,11.0,2016-12-31,0
+3564,Margaret,Jackson,28.0,Female,MARRIED,3.0,Bachelar's,Medical,1.0,1.1,2023-01-01,0
+3573,Mark,Thomas,37.0,Male,Divorced,3.0,Some Collge,Medical,0.0,11.0,2014-01-01,0
+3576,Anthony,Miller,55.0,Male,Single,14.0,Masteer,Medcial,8.0,,,0
+3578,Thomas,Davis,40.0,Mail,Divorced,10.0,Master's,Marketing,2.0,11.0,2023-01-01,0
+3587,James,Williams,,Male,Married,1.0,Master's,MEDICAL,0.0,3.3,2022-01-01,0
+3594,Donna,Hernandez,45.0,Female,Married,2.0,Some College,Marketing,0.0,8.0,2016-12-31,0
+3601,Elizabeth,Moore,46.0,feMALE,Married,,Some College,Medical,4.0,13.0,2015-01-01,1
+3607,Susan,Davis,49.0,Female,Marriied,1.0,Bachelor's,Technical Degre,2.0,7.7,2020-01-01,0
+3610,Anthony,Rodriguez,39.0,M,Divorced,9.0,Bachelor,Medical,2.0,23.1,2006-01-01,0
+3614,Steven,Taylor,51.0,Male,DIVORCED,5.0,bachelors,Life Sciences,1.0,36.3,1991-01-01,0
+3626,Donald,Jones,29.0,Male,Divorsed,10.0,Bachelor's,Marketing,1.0,2.2,2022-01-01,0
+3628,James,Martinez,32.0,M,Single,25.0,Master,Life Sciences,1.0,1.1,2023-01-01,1
+3631,Nancy,Wilson,43.0,Female,Single,6.0,Bachelor's,Medical,6.0,23.0,2004-12-31,0
+3632,Mark,Smith,40.0,Male,Single,9.0,Master's,Life Sciences,3.0,16.5,2019-01-01,1
+3634,Jennifer,Smith,38.0,Female,Single,2.0,Masteer,Life Sciences,6.0,,2008-12-31,0
+3645,Ashley,Lopez,30.0,Female,Single,5.0,Some College,Life Sciences,3.0,8.0,2020-01-01,1
+3649,Elizabeth,Martin,34.0,Female,MARRIED,16.0,Master's,Marketing,4.0,,2020-12-31,0
+3652,David,Jones,30.0,male,Married,16.0,Bachelor,Life Sciences,3.0,10.0,2016-12-31,0
+3654,Michael,Johnson,40.0,male,Married,13.0,Bachelor's,Medical,5.0,10.0,2024-01-01,0
+3661,William,Lopez,,Male,Married,1.0,Bachelor's,HUMAN RESOURCES,1.0,24.2,2001-12-31,0
+3662,Mark,Moore,,Male,Single,9.0,Bachelor's,Medical,1.0,1.1,2023-01-01,1
+3664,Karen,Brown,46.0,Female,Married,2.0,bachelor's,Mrketing,8.0,30.8,1998-01-01,0
+3668,William,Smith,46.0,Male,Divorced,2.0,Bachelor,Life Sciences,4.0,13.0,2014-01-01,0
+3669,Kimberly,Taylor,48.0,feMALE,Married,1.0,bachelors,Life Sciences,3.0,30.8,2016-01-01,0
+3671,Ashley,Martinez,20.0,Female,Single,2.0,BACHELOR'S,Medical,1.0,2.0,,1
+3678,James,Gonzalez,43.0,Male,Single,24.0,Master's,Medical,1.0,6.6,2017-12-31,0
+3680,Sandra,Lopez,60.0,Female,Married,7.0,Bachelor's,Life Sciences,5.0,33.0,1995-01-01,0
+3687,Paul,Anderson,30.0,M,Single,5.0,Master's,Life Sciences,8.0,8.0,2023-01-01,0
+3691,Kenneth,Martin,34.0,Maale,Married,14.0,No Degree,Life Sciences,0.0,18.7,2008-01-01,0
+3695,Nancy,Gonzalez,32.0,Female,Married,5.0,Master's,Other,3.0,6.0,2020-12-31,0
+3703,Elizabeth,Wilson,58.0,female,Married,7.0,Master's,Medical,,34.1,2014-01-01,1
+3704,Margaret,Jones,54.0,Female,Married,17.0,Bachelor's,Technical Degree,8.0,24.2,2014-01-01,0
+3713,Anthony,Garcia,41.0,Male,Marriied,2.0,Master,Life Siences,1.0,7.7,2016-12-31,0
+3715,Andrew,Jones,52.0,M,Married,3.0,BACHELOR'S,Medical,2.0,28.0,2019-01-01,0
+3731,Jennifer,Martin,35.0,FEMALE,Married,8.0,Masteer,Life Sciences,1.0,3.0,2020-12-31,1
+3738,Sarah,Garcia,33.0,Femaale,Single,27.0,No Degree,Medical,1.0,6.0,2017-12-31,1
+3740,Barbara,Hernandez,35.0,Female,Married,21.0,No Degree,Life Sciences,1.0,10.0,2014-01-01,0
+3747,Steven,Williams,37.0,Male,Single,3.0,Bachelor's,Life Sciences,2.0,12.0,2019-01-01,0
+3751,Kimberly,Hernandez,54.0,Female,Divorced,8.0,Bachelor's,Life Sciences,4.0,,2022-01-01,0
+3753,Sarah,Lopez,41.0,Female,married,28.0,Master's,Life Sciences,0.0,23.1,2004-01-01,0
+3757,Barbara,Taylor,48.0,feMALE,Married,29.0,No Degree,Medical,3.0,16.5,2024-01-01,0
+3760,Christopher,Garcia,29.0,Male,Single,9.0,Doctoral/Professional,Other,,4.4,2020-12-31,0
+3768,Robert,Brown,31.0,Male,Married,5.0,No Degree,Life Sciences,,8.0,2019-01-01,0
+3772,Barbara,Anderson,32.0,Female,Single,2.0,Master's,Medical,,6.6,2017-12-31,0
+3779,William,Miller,20.0,Male,Single,7.0,No Degree,Life Sciences,1.0,1.0,2023-01-01,1
+3790,Thomas,Smith,38.0,Male,Divorced,9.0,Master's,Medical,8.0,3.3,2023-01-01,0
+3799,Steven,Martin,34.0,male,divorced,3.0,Some College,Life Sciences,6.0,14.3,2019-01-01,1
+3806,Paul,Smith,24.0,mAle,Divorced,29.0,Some College,Medicale,5.0,8.8,2024-01-01,0
+3809,Nancy,Jackson,34.0,Female,Married,2.0,Bachelor's,Life Sciences,4.0,6.6,2022-01-01,0
+3813,Anthony,Miller,19.0,Male,Single,9.0,Some College,Life Sciences,1.0,,2023-01-01,0
+3814,Steven,Davis,33.0,Male,Single,18.0,Some College,Life Sciences,2.0,11.0,2022-01-01,0
+3819,Ashley,Lopez,50.0,Female,Divorced,7.0,Some College,Medical,5.0,29.0,1996-12-31,0
+3840,Christopher,Miller,44.0,Male,Married,10.0,Masteer,Other,2.0,9.9,2020-01-01,0
+3855,Linda,Johnson,48.0,Female,Divorced,7.0,Some College,Medcial,5.0,31.9,1996-12-31,0
+3861,Donna,Brown,38.0,Female,Singel,9.0,Some College,Life Sciences,1.0,2.2,2022-01-01,0
+3863,Ashley,Anderson,59.0,Female,Single,25.0,Bachelor's,Life Sciences,,30.8,2003-01-01,0
+3865,Ashley,Thomas,32.0,Femaale,Single,27.0,Some College,Medical,2.0,,2020-12-31,0
+3869,Mary,Johnson,32.0,female,Divorced,26.0,No Degree,Technical Degree,1.0,5.5,2019-01-01,0
+3880,Michael,Jackson,29.0,Male,Single,17.0,Bachelor's,other,1.0,10.0,2014-01-01,0
+3886,Matthew,Rodriguez,26.0,Male,Marriied,19.0,master's,Medical,1.0,6.0,2017-12-31,0
+3890,Lisa,Johnson,55.0,Female,Single,,Bachelor's,LifeSciences,2.0,30.0,2019-01-01,1
+3893,Nancy,Lopez,45.0,Female,Sngle,25.0,bachelors,Medical,,22.0,2024-01-01,0
+3895,Christopher,Gonzalez,45.0,Male,Married,6.0,Master's,Other,4.0,18.7,2024-01-01,0
+3896,Michael,Wilson,43.0,Male,Divorced,9.0,Bachelor's,Life Sciences,8.0,20.0,2007-01-01,0
+3907,Mark,Wilson,57.0,Male,Married,3.0,Bachelor's,Life Sciences,3.0,7.7,2023-01-01,0
+3912,Lisa,Gonzalez,37.0,Female,Single,11.0,Bachelor's,MEDICAL,4.0,8.8,2020-12-31,0
+3921,Anthony,Miller,36.0,Mail,Divorced,13.0,Doctoral/Professional,Marketing,5.0,17.6,2022-01-01,1
+3922,Donald,Williams,28.0,Male,Married,12.0,masters,Life Sciences,1.0,1.1,2023-01-01,1
+3923,Paul,Miller,33.0,Mail,Single,6.0,Master's,Life Sciences,,18.7,2007-01-01,0
+3927,Jessica,Martin,25.0,Femle,Single,5.0,Some College,Life Sciences,0.0,6.6,2019-01-01,1
+3940,Kenneth,Taylor,49.0,Male,Divorced,9.0,Bachelor's,Life Sciences,4.0,31.0,1995-01-01,0
+3946,Charles,Moore,45.0,Male,Married,2.0,Some College,Medical,9.0,24.2,2004-01-01,0
+3951,William,Davis,28.0,M,Divorced,7.0,masters,Life Sciences,1.0,11.0,2014-01-01,0
+3953,Anthony,Wilson,30.0,Mail,married,1.0,Some College,Medical,1.0,13.2,2012-01-01,0
+3972,Patricia,Williams,41.0,Female,Single,6.0,Bachelor's,Life Sciences,3.0,16.0,2023-01-01,0
+3978,Michael,Jackson,36.0,Male,Divorced,6.0,Some College,Medical,6.0,7.7,2020-12-31,0
+3986,Matthew,Davis,26.0,Male,MARRIED,19.0,Master's,Medical,1.0,6.6,2017-12-31,0
+3992,Andrew,Johnson,46.0,Male,Single,9.0,Some College,Medical,1.0,9.0,2015-01-01,1
+3998,Barbara,Lopez,27.0,Female,Married,27.0,Bachelor's,Medical,4.0,12.1,2016-01-01,0
+4008,Mary,Gonzalez,27.0,F,Marriied,6.0,No Degree,Medical,1.0,11.0,2014-01-01,0
+4013,Lisa,Wilson,35.0,Female,Married,2.0,Bachelor's,Marketing,1.0,2.2,2022-01-01,1
+4019,Charles,Taylor,33.0,Male,Divorced,2.0,Bachelor's,Life Sciences,2.0,15.0,2016-12-31,0
+4022,Paul,Hernandez,21.0,mAle,Single,5.0,no degree,Medical,1.0,3.3,2022-01-01,0
+4024,Patricia,Garcia,22.0,Female,Divorced,11.0,Some College,Other,0.0,5.0,2020-01-01,0
+4028,Lisa,Jackson,32.0,Female,Divorced,8.0,Doctoral/Professional,Life Sciences,3.0,,2024-01-01,0
+4030,David,Davis,39.0,Male,Married,9.0,Some College,Medical,1.0,11.0,2014-01-01,0
+4036,Emily,Hernandez,39.0,female,Divorced,13.0,Master's,Medical,6.0,21.0,2004-12-31,0
+4042,James,Smith,42.0,Male,MARRIED,24.0,Bachelor's,Medical,1.0,11.0,2014-01-01,0
+4057,Richard,Rodriguez,34.0,mAle,Divorced,8.0,Master's,Technical Degree,4.0,13.2,2016-12-31,0
+4059,Matthew,Jones,27.0,Male,Married,2.0,Bachelor's,Life Sciences,1.0,4.4,2020-01-01,0
+4070,Robert,Smith,42.0,M,Single,17.0,Bachelor's,Life Sciences,2.0,6.0,2024-01-01,0
+4072,Lisa,Gonzalez,28.0,Female,Single,1.0,Some College,Life Sciences,7.0,11.0,2016-12-31,1
+4074,Anthony,Martin,22.0,Male,Sngle,1.0,Some College,Life Siences,1.0,4.4,2020-01-01,0
+4076,Linda,Moore,46.0,Femle,Married,4.0,some college,Marketing,2.0,28.6,2012-12-31,0
+4089,Dorothy,Thomas,34.0,Femle,Divorced,6.0,Master's,Life Sciences,,13.2,2023-01-01,0
+4102,David,Hernandez,,Male,married,1.0,Master's,Life Sciences,0.0,34.0,,0
+4104,Paul,Anderson,58.0,Male,Single,16.0,Master's,Marketing,8.0,11.0,2022-01-01,0
+4106,Barbara,Johnson,44.0,Female,Divorced,18.0,bachelor's,Medical,2.0,20.9,2014-01-01,0
+4107,Jessica,Garcia,37.0,F,Married,25.0,Doctoral/Professional,Medical,3.0,16.5,2011-01-01,0
+4116,Barbara,Brown,34.0,Female,Divorced,3.0,Bachelor's,Life Sciences,1.0,11.0,,0
+4117,Nancy,Williams,32.0,Female,Single,7.0,Master's,Life Sciences,0.0,14.3,2012-01-01,0
+4126,Joseph,Thomas,,Male,Married,1.0,None,Life Sciences,1.0,20.0,2004-01-01,0
+4136,James,Hernandez,27.0,Male,Single,17.0,bachelors,Other,1.0,11.0,2014-01-01,0
+4139,Emily,Jones,58.0,Female,Married,21.0,Bachelor,Life Sciences,4.0,31.9,2023-01-01,0
+4141,Thomas,Hernandez,28.0,Male,Divorced,1.0,Bachelor's,Life Sciences,0.0,6.0,2019-01-01,0
+4154,Kenneth,Jones,42.0,Male,Single,23.0,Some College,Life Sciences,1.0,22.0,2004-01-01,0
+4162,Margaret,Lopez,44.0,Female,Single,1.0,SOME COLLEGE,Life Sciences,6.0,10.0,2016-12-31,0
+4163,Kenneth,Garcia,49.0,Male,Married,,Master's,Life Sciences,3.0,11.0,2020-01-01,0
+4167,Mark,Davis,54.0,Male,Married,5.0,Some College,Medcial,4.0,,2020-01-01,0
+4169,Dorothy,Taylor,36.0,Female,Single,3.0,Doctoral/Professional,Technical Degree,3.0,20.9,2020-12-31,0
+4179,John,Taylor,36.0,Male,Married,17.0,Some College,Marketing,2.0,12.0,2020-01-01,0
+4182,Linda,Anderson,30.0,Female,Marriied,22.0,Master's,Other,0.0,10.0,2015-01-01,0
+4184,Nancy,Rodriguez,36.0,Female,Single,18.0,No Degree,Medical,1.0,8.0,2016-01-01,0
+4185,Andrew,Williams,48.0,Male,Single,2.0,Some College,Technical Degree,5.0,7.0,2023-01-01,0
+4191,Karen,Hernandez,37.0,female,Divorced,25.0,Some College,Medical,7.0,9.0,2017-12-31,0
+4207,Betty,Martinez,39.0,Female,Single,2.0,Master's,Technical Degree,0.0,22.0,2004-12-31,0
+4212,Mary,Miller,47.0,Female,Divorced,4.0,bachelors,Life Siences,8.0,28.0,2001-12-31,0
+4216,Robert,Martinez,38.0,Male,Divorced,12.0,Bachelor's,Life Sciences,2.0,13.0,2020-01-01,0
+4221,Sandra,Thomas,38.0,Female,Single,2.0,Bachelor's,Medical,1.0,4.0,2020-01-01,0
+4225,Thomas,Jackson,16.0,M,Single,8.0,No Degree,Medical,1.0,0.0,2024-01-01,1
+4232,John,Thomas,26.0,mAle,Single,16.0,Bachelor's,Medical,1.0,5.0,2019-01-01,0
+4233,Matthew,Thomas,40.0,Male,Married,1.0,Master,Life Sciences,1.0,24.2,2001-12-31,0
+4240,Jennifer,Rodriguez,32.0,Female,Sngle,6.0,master's,Other,1.0,17.6,2008-01-01,0
+4243,Kenneth,Lopez,48.0,Male,Married,28.0,No Degree,Medical,1.0,22.0,2004-01-01,0
+4250,Emily,Hernandez,17.0,Female,Single,25.0,Bachelor's,LIFE SCIENCES,1.0,1.1,2023-01-01,0
+4252,Barbara,Martinez,30.0,Female,Single,2.0,MASTER'S,Technical Degree,0.0,11.0,2015-01-01,0
+4258,Barbara,Garcia,41.0,Female,Single,20.0,Some College,Marketing,1.0,4.4,2020-01-01,1
+4265,James,Lopez,28.0,Male,Married,16.0,No Degree,Life Sciences,8.0,4.4,2022-01-01,0
+4266,Sarah,Lopez,51.0,feMALE,Single,1.0,No Degree,Medical,,19.8,2009-12-31,0
+4273,Joseph,Thomas,39.0,Mail,singled,2.0,master's,Life Sciences,,22.0,2001-12-31,0
+4277,William,Taylor,27.0,Mail,Single,2.0,Bachleors,Medical,2.0,6.0,2020-01-01,0
+4278,Donna,Brown,40.0,Female,MARRIED,14.0,Some College,Life Sciences,,5.0,2019-01-01,0
+4281,Michael,Martin,,Male,Married,3.0,Bachelor's,Life Sciences,3.0,7.0,2023-01-01,0
+4283,Kimberly,Johnson,38.0,Female,Single,9.0,Masteer,Medical,9.0,22.0,2006-01-01,0
+4284,Steven,Brown,36.0,Male,married,2.0,Some College,Life Sciences,1.0,1.1,2023-01-01,0
+4287,Elizabeth,Martinez,50.0,Female,divorced,1.0,Master's,Medical,3.0,,2016-12-31,0
+4295,Donald,Hernandez,24.0,Male,Married,9.0,Bachelor,Medical,1.0,5.0,2019-01-01,0
+4308,Steven,Williams,28.0,Male,Divorced,1.0,Some College,Life Sciences,1.0,3.3,,0
+4310,Christopher,Gonzalez,27.0,Male,Divorced,20.0,some college,Marketing,2.0,10.0,2020-12-31,0
+4315,Steven,Martinez,56.0,Male,Single,10.0,Master's,Medical,0.0,41.8,1987-01-01,0
+4322,Mark,Miller,39.0,Male,Single,24.0,No Degree,LifeSciences,7.0,19.8,2016-12-31,0
+4328,Paul,Hernandez,27.0,Male,Sngle,24.0,Some College,Life Sciences,1.0,1.0,2023-01-01,1
+4331,Thomas,Miller,23.0,Male,Single,10.0,No Degree,Medical,1.0,2.0,2022-01-01,0
+4332,Robert,Taylor,29.0,MALE,Divorced,3.0,Some College,Medical,1.0,4.4,2020-01-01,0
+4352,Andrew,Jones,32.0,Male,Single,10.0,Bachelor's,Marketing,1.0,11.0,2014-01-01,0
+4357,Nancy,Anderson,45.0,Female,Married,9.0,Master's,Life Sciences,1.0,15.0,2008-12-31,0
+4361,John,Wilson,37.0,Male,Married,10.0,No Degree,Medical,1.0,21.0,2003-01-01,0
+4365,Dorothy,Gonzalez,33.0,feMALE,Single,29.0,Master's,MEDICAL,1.0,14.0,2011-01-01,1
+4367,Dorothy,Gonzalez,19.0,feMALE,Single,1.0,No Degree,Technical Degree,0.0,,2024-01-01,1
+4376,Linda,Miller,40.0,Female,Married,26.0,Bachelor's,Marketing,5.0,,2004-01-01,0
+4377,Mark,Thomas,24.0,Male,SINGLE,7.0,Bachelor's,Other,0.0,8.0,2016-12-31,1
+4387,Nancy,Martinez,27.0,Female,Married,1.0,No Degre,Medicale,1.0,12.1,2012-12-31,0
+4397,John,Wilson,39.0,Male,Divorced,5.0,Some College,LIFE SCIENCES,6.0,5.0,2023-01-01,1
+4398,Donald,Jackson,37.0,Male,Married,3.0,bachelors,Othr,1.0,11.0,2014-01-01,0
+4399,Karen,Jackson,27.0,Female,Divorced,7.0,Bachelor's,Technical Degree,3.0,10.0,,1
+4404,Sandra,Anderson,32.0,Female,Married,9.0,No Degree,Life Sciences,1.0,6.0,2017-12-31,0
+4409,Jessica,Gonzalez,38.0,Female,divored,2.0,Some College,Marketing,7.0,8.0,2019-01-01,0
+4410,Christopher,Moore,38.0,Male,Single,25.0,Master's,Marketing,2.0,9.0,2019-01-01,1
+4412,Sarah,Williams,31.0,Female,Single,1.0,Some College,Life Sciences,1.0,15.0,2008-12-31,0
+4415,Kimberly,Brown,36.0,Female,Married,10.0,Bachelor's,Medical,3.0,20.0,2006-01-01,0
+4417,Richard,Martin,35.0,Male,Single,5.0,Some College,Technical Degree,,7.7,2017-12-31,0
+4418,Kimberly,Jackson,37.0,Femaale,Married,25.0,Doctoral/ Professional,Medical,3.0,15.0,2011-01-01,0
+4419,John,Jackson,,M,divorced,10.0,Bachelor's,Life Sciences,,16.5,2008-12-31,0
+4420,Dorothy,Miller,57.0,Female,Single,2.0,Bachelor's,Life Sciences,3.0,33.0,2019-01-01,0
+4421,Ashley,Taylor,54.0,Female,Married,7.0,Master's,Medical,,15.4,2016-12-31,0
+4424,Mary,Rodriguez,33.0,Femaale,Married,18.0,Bachelor,Medicall,1.0,,2019-01-01,0
+4425,Susan,Davis,30.0,Female,Married,4.0,Bachelor's,Life Sciences,1.0,,2009-12-31,0
+4430,Patricia,Thomas,22.0,F,Married,7.0,Bachelor's,Life Sciences,1.0,6.0,2017-12-31,1
+4432,Anthony,Garcia,32.0,Male,Married,22.0,Master's,Other,1.0,16.0,2008-12-31,0
+4440,Charles,Williams,37.0,Mail,Married,1.0,Master's,Life Sciences,5.0,18.7,2009-12-31,1
+4448,William,Wilson,19.0,Male,Single,2.0,Bachelor's,Life Sciences,1.0,1.1,2023-01-01,0
+4452,Jessica,Martin,53.0,Femaale,Maried,7.0,Some college,Marketing,7.0,35.0,2019-01-01,0
+4454,Donald,Taylor,22.0,Mail,Divorced,29.0,No Degree,Medicall,1.0,6.6,2017-12-31,0
+4461,Margaret,Davis,24.0,Female,MARRIED,3.0,Some Collge,Other,,4.0,2020-12-31,0
+4465,Paul,Jones,30.0,Male,Married,3.0,Bachelor's,life sciences,4.0,9.9,2019-01-01,0
+4469,Richard,Jones,33.0,Male,Single,1.0,Master's,Other,3.0,6.0,2020-12-31,0
+4470,Daniel,Moore,31.0,mAle,Divorced,6.0,bachelors,Life Sciences,3.0,16.5,2011-01-01,0
+4471,David,Davis,34.0,mAle,Married,1.0,Bachleors,Technical Degree,1.0,10.0,2014-01-01,0
+4473,Kimberly,Anderson,33.0,Female,Married,5.0,Master,life sciences,6.0,12.0,2014-01-01,0
+4475,Mark,Martin,42.0,Male,Maried,1.0,master's,Life Sciences,2.0,11.0,2022-01-01,0
+4487,Linda,Jones,24.0,Female,Single,1.0,no degree,Technical Degree,1.0,6.0,2019-01-01,1
+4492,Sarah,Anderson,42.0,Female,Married,2.0,Bachelor's,Life Sciences,1.0,9.9,2016-01-01,0
+4498,James,Martin,40.0,Male,Divorced,9.0,Master,Other,3.0,11.0,2016-01-01,0
+4501,Margaret,Moore,41.0,Female,Divorced,10.0,Master's,Life Sciences,1.0,9.9,2015-01-01,0
+4510,Michael,Anderson,34.0,male,Married,8.0,Bachelor's,Life Sciences,0.0,6.6,2019-01-01,0
+4512,Mark,Smith,36.0,Male,Married,1.0,Some College,Life Sciences,1.0,18.0,2006-01-01,0
+4513,Joseph,Smith,31.0,Male,Single,2.0,Bachelor's,Life Sciences,0.0,4.4,2020-12-31,0
+4515,Richard,Williams,50.0,Male,Married,8.0,Master's,Marketing,7.0,4.0,2022-01-01,0
+4517,Joseph,Davis,32.0,Male,Married,7.0,Some College,Tech Degree,0.0,12.0,2012-12-31,1
+4519,John,Rodriguez,43.0,Male,Divorced,1.0,Master's,Technical Degree,1.0,11.0,2014-01-01,0
+4521,Susan,Smith,18.0,Female,Single,6.0,Bachelor's,Life Sciences,1.0,1.1,2023-01-01,0
+4523,Michael,Rodriguez,28.0,Male,Single,5.0,Master's,Medicall,1.0,4.4,2020-01-01,0
+4529,Jennifer,Jackson,39.0,Female,Divorced,4.0,No Degree,Marketing,0.0,25.3,2001-12-31,0
+4535,Paul,Martin,29.0,Male,divorced,20.0,Some College,Marketing,2.0,10.0,2020-12-31,0
+4536,Charles,Moore,44.0,Male,Divorced,5.0,Some College,Medical,8.0,16.0,2020-01-01,0
+4544,John,Davis,38.0,Male,Divorced,2.0,Bachelor's,Medical,2.0,8.8,2020-12-31,0
+4547,Mark,Hernandez,32.0,Male,Single,6.0,No Degree,Medical,,8.0,2020-01-01,1
+4551,James,Davis,29.0,Male,Married,2.0,Some College,Life Sciences,0.0,3.0,2022-01-01,1
+4556,Michael,Smith,32.0,Maale,Married,8.0,Bachelor's,Medical,1.0,10.0,2014-01-01,0
+4559,Lisa,Rodriguez,47.0,Female,Divorced,16.0,bachelors,Medicale,4.0,,2022-01-01,0
+4567,Sandra,Jackson,46.0,Femaale,Divorced,18.0,Bachelor's,Medical,,19.0,2014-01-01,0
+4573,Patricia,Martinez,34.0,Female,Married,3.0,No Degree,Medical,3.0,9.0,2020-01-01,0
+4576,Patricia,Moore,34.0,FEMALE,Divorced,23.0,Bachelor's,Human Resources,9.0,11.0,2020-12-31,1
+4581,Kenneth,Martin,40.0,M,Married,2.0,Bachelor's,Life Sciences,,26.4,2001-12-31,0
+4590,Linda,Smith,37.0,Female,Married,10.0,Bachelor's,Medical,6.0,17.0,2019-01-01,0
+4594,Steven,Rodriguez,46.0,Maale,Divorsed,9.0,Bachelor's,Marketing,4.0,30.8,2016-12-31,1
+4596,Donald,Martin,30.0,male,Single,1.0,Bachelor's,Life Sciences,0.0,4.0,2020-12-31,1
+4598,Joseph,Jones,34.0,MALE,Married,27.0,Bachelor's,medical,6.0,17.0,2016-12-31,0
+4601,Emily,Wilson,,F,Single,2.0,Bachelor's,Medical,1.0,4.0,2020-01-01,0
+4602,Steven,Lopez,,Male,Married,3.0,Master's,Medical,4.0,16.0,2011-01-01,0
+4606,Karen,Martin,19.0,Female,Single,10.0,Some College,Life Sciences,1.0,2.0,2022-01-01,1
+4607,Lisa,Martinez,32.0,Femle,Single,3.0,Some college,Life Sciences,3.0,11.0,2016-12-31,0
+4617,Donald,Anderson,30.0,Male,Divorcd,24.0,No Degree,Life Sciences,1.0,1.1,2023-01-01,0
+4637,Mark,Miller,,Male,married,10.0,No Degree,Medical,1.0,1.1,2023-01-01,0
+4639,John,Smith,46.0,Male,Single,26.0,Some college,Life Sciences,8.0,6.0,2022-01-01,0
+4641,Karen,Garcia,36.0,Female,Married,5.0,Master's,Life Sciences,4.0,9.9,2020-12-31,1
+4644,Paul,Davis,49.0,Male,Divorced,18.0,Master's,Life Sciences,1.0,31.0,1992-12-31,0
+4649,Matthew,Brown,51.0,M,Maried,7.0,Master's,Medicall,2.0,11.0,2023-01-01,0
+4660,Christopher,Martin,,Male,Married,1.0,Bachelor's,Life Sciences,3.0,,,0
+4671,Donna,Williams,39.0,Female,Married,12.0,Bachelor's,Technical Degree,1.0,23.0,2001-12-31,0
+4678,Ashley,Thomas,46.0,Female,Marrid,2.0,Doctoral/Professional,Marketing,2.0,14.0,2015-01-01,0
+4685,Richard,Martinez,22.0,Male,Married,19.0,No Degree,Medical,,2.2,2022-01-01,0
+4686,Margaret,Gonzalez,27.0,Femle,Married,15.0,Bachelor's,Life Sciences,0.0,,2016-12-31,0
+4687,Andrew,Garcia,34.0,Male,Married,2.0,Master's,Medical,0.0,6.0,2019-01-01,0
+4689,Paul,Williams,36.0,Male,Marriied,,Bachelor's,Marketing,0.0,3.0,2022-01-01,0
+4692,Dorothy,Lopez,32.0,Female,Single,3.0,Some College,Life Sciences,5.0,6.0,2022-01-01,0
+4699,Daniel,Thomas,43.0,Mail,Married,11.0,bachelors,Life Sciences,1.0,11.0,2014-01-01,0
+4700,Christopher,Rodriguez,38.0,Male,Married,1.0,Some College,Medical,2.0,6.0,2020-01-01,0
+4701,Matthew,Smith,38.0,Male,Married,2.0,Master's,Medical,5.0,5.5,2024-01-01,0
+4710,Robert,Lopez,31.0,Male,divorced,4.0,Bachelor's,Technical Degree,5.0,,2015-01-01,0
+4711,Patricia,Moore,24.0,Female,Divorced,10.0,Master's,marketing,,,2019-01-01,0
+4722,Ashley,Taylor,42.0,Femle,Single,,Some College,Medical,7.0,11.0,2019-01-01,0
+4728,Sandra,Anderson,31.0,Female,Married,7.0,Master's,Marketing,2.0,9.9,2020-12-31,0
+4729,Lisa,Williams,28.0,Female,Divorcd,7.0,Master's,Marketing,7.0,8.8,2020-12-31,0
+4734,James,Lopez,33.0,MALE,single,7.0,Bachelor's,Other,,17.0,2016-01-01,0
+4739,Jessica,Wilson,31.0,Female,Single,16.0,Bachelor's,Life Sciences,2.0,11.0,2024-01-01,1
+4741,Kimberly,Martinez,45.0,Female,Single,6.0,bachelors,Medicall,6.0,25.3,2004-12-31,0
+4744,John,Jones,39.0,Male,Married,5.0,Doctoral/Professional,Medical,2.0,,2020-01-01,0
+4755,Jennifer,Garcia,52.0,Female,Married,2.0,Mastr's,Technical Degree,9.0,16.0,2020-01-01,0
+4758,Kenneth,Thomas,35.0,Male,Single,9.0,Master's,Life Sciences,,10.0,2023-01-01,1
+4762,Richard,Davis,47.0,MALE,Maried,8.0,No Degree,Life Siences,1.0,10.0,2014-01-01,0
+4764,Jennifer,Anderson,39.0,Female,Marriied,8.0,Bachelor's,Marketing,5.0,14.0,2019-01-01,0
+4770,William,Moore,30.0,Male,married,7.0,Some College,life sciences,1.0,10.0,2014-01-01,1
+4771,Anthony,Thomas,39.0,M,Married,1.0,Bachleors,Life Sciences,3.0,12.0,2019-01-01,0
+4772,Jennifer,Gonzalez,34.0,Female,Single,2.0,Master's,Technical Degree,1.0,14.0,,1
+4784,Joseph,Taylor,34.0,Male,Married,9.0,Bachelor's,Medical,0.0,2.2,2023-01-01,1
+4786,Donald,Anderson,24.0,Male,Married,28.0,Some College,Marketing,1.0,6.0,2019-01-01,0
+4790,Daniel,Martinez,35.0,Male,Married,1.0,Bachelor's,Medical,4.0,5.0,2020-12-31,0
+4791,Matthew,Martin,35.0,Male,Single,18.0,Some College,Life Sciences,2.0,11.0,2022-01-01,0
+4792,David,Wilson,27.0,Male,Married,1.0,No Degree,Marketing,0.0,,2019-01-01,0
+4794,Kenneth,Wilson,40.0,Male,Divorced,8.0,Some College,Life Sciences,3.0,8.8,2022-01-01,0
+4795,Sandra,Gonzalez,51.0,Female,SINGLE,1.0,No Degree,Medical,7.0,18.0,2009-12-31,0
+4804,Nancy,Williams,31.0,Female,Single,8.0,Doctoral/Professional,Life Siences,3.0,9.9,2020-12-31,0
+4805,Michael,Taylor,36.0,Male,Marrid,1.0,Master's,Life Sciences,0.0,16.0,2008-12-31,0
+4809,Steven,Johnson,,Male,Divorced,1.0,Master,Medical,2.0,31.0,2016-12-31,0
+4814,Matthew,Johnson,,Male,Married,13.0,Bachelor's,Human Resources,4.0,8.8,2019-01-01,0
+4824,James,Martin,24.0,Male,Married,1.0,Bachelor's,LIFE SCIENCES,1.0,8.8,2016-01-01,0
+4841,Nancy,Davis,32.0,feMALE,Divorced,14.0,Bachelor's,Technical Degree,1.0,8.8,2016-01-01,1
+4842,Richard,Williams,29.0,Mail,Divorced,5.0,Bachelor's,Medical,1.0,11.0,2014-01-01,0
+4843,James,Wilson,,Male,singled,21.0,Bachelor's,OTHER,1.0,1.1,2023-01-01,1
+4847,Michael,Garcia,47.0,Male,Married,4.0,Some College,Medical,2.0,23.0,2023-01-01,0
+4853,Richard,Moore,37.0,Male,Married,19.0,Bachelor's,LIFE SCIENCES,3.0,9.9,2020-01-01,0
+4858,David,Smith,47.0,Male,Married,8.0,Master's,Technical Degree,6.0,24.2,2015-01-01,0
+4863,Sarah,Martin,40.0,Female,Married,15.0,Bachelor's,LifeSciences,1.0,18.0,,0
+4869,Emily,Garcia,57.0,Female,Single,1.0,No Degree,Life Sciences,7.0,22.0,2020-01-01,0
+4898,Lisa,Davis,24.0,Female,Married,6.0,Bachelor's,Other,1.0,5.0,2019-01-01,1
+4903,Christopher,Garcia,22.0,Male,Married,18.0,No Degree,Life Sciences,0.0,6.0,2019-01-01,0
+4904,Mark,Smith,27.0,Male,Single,1.0,Bachelor's,Life Sciences,8.0,10.0,2020-12-31,0
+4905,Jennifer,Thomas,32.0,Female,single,8.0,Bachelor's,Marketing,1.0,9.0,2015-01-01,0
+4925,Anthony,Taylor,44.0,Male,Single,24.0,Bachelor's,Medical,2.0,9.0,2019-01-01,0
+4927,William,Thomas,30.0,M,Divorced,29.0,Master's,Life Sciences,8.0,8.8,2020-01-01,0
+4928,James,Gonzalez,33.0,Male,Married,3.0,Bachelor's,Life Sciences,1.0,1.1,2023-01-01,0
+4934,Mark,Martinez,47.0,Male,Married,5.0,Doctoral/Professional,Life Sciences,4.0,21.0,2020-12-31,0
+4935,Sandra,Martinez,33.0,Female,Married,8.0,Master's,Life Sciences,1.0,3.3,2020-12-31,1
+4940,Richard,Jones,33.0,Male,Single,,Bachelor's,Life Sciences,1.0,,2014-01-01,1
+4941,Richard,Smith,42.0,Mail,Married,13.0,Bachelor's,Medical,,11.0,2024-01-01,0
+4945,Betty,Lopez,36.0,Female,Married,6.0,Some College,Other,1.0,5.0,2019-01-01,0
+4960,Charles,Martin,31.0,Male,Divorced,3.0,Master's,Medical,9.0,9.0,2022-01-01,0
+4966,Matthew,Gonzalez,38.0,Male,Divorced,7.0,Bachelar's,Life Sciences,1.0,4.0,2020-01-01,0
+4968,Steven,Miller,32.0,Male,Single,1.0,No Degre,Life Sciences,1.0,1.1,2023-01-01,0
+4970,Anthony,Rodriguez,29.0,Male,Divorced,7.0,Bachelor's,Marketing,4.0,13.0,2016-12-31,0
+4971,Karen,Taylor,48.0,feMALE,Married,1.0,Bachelor,Life Sciences,0.0,20.9,2006-01-01,0
+4972,Paul,Gonzalez,47.0,Male,Divorced,18.0,Master,Life Sciences,1.0,31.0,1992-12-31,0
+4976,Nancy,Jones,45.0,Female,married,2.0,Master's,Life Sciences,4.0,10.0,2016-01-01,0
+4980,Ashley,Smith,53.0,Female,Divorced,8.0,Bachelor's,Medical,2.0,21.0,2019-01-01,0
+4983,Margaret,Martinez,45.0,Female,Single,9.0,Master's,Life Sciences,,7.0,2022-01-01,0
+4984,Anthony,Garcia,30.0,Male,Divorced,23.0,Bachelor,Life Sciences,1.0,10.0,2014-01-01,0
+4988,David,Taylor,33.0,Male,Divorced,2.0,Master's,Medical,,6.0,2017-12-31,0
+4994,Margaret,Anderson,38.0,Female,Married,2.0,Bachelor's,Medical,6.0,,,0
+5001,Emily,Davis,44.0,Female,Married,2.0,No Degree,Life Sciences,1.0,11.0,2014-01-01,0
+5002,Donald,Thomas,26.0,Male,Single,,masters,Life Sciences,1.0,7.7,2016-12-31,1
+5007,Susan,Taylor,43.0,Female,divored,8.0,Master's,Other,4.0,8.8,2019-01-01,0
+5010,Sarah,Thomas,33.0,Female,Married,14.0,Bachelor's,Medical,1.0,8.8,2016-01-01,0
+5011,Ashley,Hernandez,47.0,female,Single,1.0,Some College,Technical Degree,7.0,27.5,2016-12-31,0
+5012,Kenneth,Wilson,26.0,male,Divorced,1.0,Bachelor's,Life Science,1.0,1.0,2023-01-01,0
+5016,Matthew,Gonzalez,23.0,MALE,Divorced,2.0,No Degree,Other,6.0,7.7,2022-01-01,0
+5020,Mark,Gonzalez,43.0,Male,Married,2.0,Bachelor,Other,0.0,9.0,2016-01-01,0
+5025,Sandra,Martin,31.0,Female,Single,1.0,Doctoral/Professional,Life Sciences,1.0,11.0,2014-01-01,1
+5029,James,Lopez,,Male,Divorced,7.0,Bachelor's,LIFE SCIENCES,1.0,6.0,2017-12-31,0
+5052,Charles,Davis,31.0,Male,Divorced,6.0,Master's,Medical,4.0,14.3,2016-12-31,0
+5063,Linda,Martinez,39.0,Female,Single,20.0,Some College,Marketing,1.0,4.4,2020-01-01,1
+5076,Dorothy,Martin,34.0,Female,Single,1.0,Master's,LIFE SCIENCES,6.0,15.0,2023-01-01,0
+5083,Mark,Jones,46.0,Male,Divorced,2.0,Some College,Life Sciences,,12.0,2015-01-01,0
+5087,Karen,Taylor,34.0,F,Single,2.0,Master's,Life Sciences,3.0,17.0,2011-01-01,0
+5090,Susan,Thomas,29.0,feMALE,Married,20.0,Bachelor's,Life Sciences,,4.0,2022-01-01,1
+5104,Richard,Moore,42.0,mAle,Married,23.0,Bachelor's,Medical,4.0,18.7,2020-12-31,0
+5116,Barbara,Gonzalez,39.0,Female,Single,7.0,Some College,Medical,6.0,8.8,2022-01-01,0
+5117,Anthony,Garcia,35.0,Male,Marriied,6.0,Master's,Medical,4.0,7.0,2019-01-01,0
+5118,John,Brown,51.0,MALE,Divorced,2.0,Some College,Medical,6.0,24.2,2007-01-01,0
+5119,Daniel,Thomas,22.0,Male,Married,4.0,No degree,Life Sciences,0.0,6.6,2019-01-01,0
+5122,Lisa,Jackson,35.0,Female,Divorced,14.0,Bachelor's,Life Sciences,1.0,19.8,2006-01-01,0
+5125,John,Brown,48.0,Male,Divorced,28.0,Bachelor's,marketing,4.0,22.0,2020-12-31,1
+5135,Ashley,Taylor,36.0,Female,Married,25.0,Some College,Life Sciences,3.0,20.9,2014-01-01,0
+5148,Kimberly,Moore,40.0,Female,Married,2.0,Master's,Life Sciences,1.0,11.0,2014-01-01,0
+5153,Linda,Garcia,58.0,Female,Married,1.0,bachelors,Medical,3.0,35.2,2015-01-01,0
+5161,Sarah,Johnson,22.0,feMALE,divorced,10.0,Master's,Marketing,1.0,5.0,2019-01-01,0
+5168,Steven,Martinez,,mAle,Marriied,1.0,no degree,Life Sciences,3.0,27.5,2000-12-31,0
+5176,Jessica,Johnson,34.0,Femaale,Married,16.0,Master's,Marketing,4.0,11.0,2020-12-31,0
+5177,Richard,Jones,28.0,M,Singel,16.0,bachelors,Medicale,1.0,5.5,2019-01-01,0
+5182,Sarah,Jones,35.0,Female,Married,10.0,Bachelor's,Medical,6.0,17.0,2019-01-01,0
+5188,Jennifer,Rodriguez,28.0,Female,Single,,Bachelor's,Medical,0.0,12.0,2012-12-31,0
+5190,Kimberly,Miller,52.0,feMALE,Single,,Mastr's,Life Sciences,3.0,20.0,2020-01-01,1
+5198,Kenneth,Davis,38.0,Maale,Married,1.0,some college,Medical,2.0,6.6,2020-01-01,0
+5211,Steven,Martinez,44.0,Maale,Single,20.0,Bachelor's,Life Sciences,1.0,,2019-01-01,0
+5216,Sarah,Martin,34.0,Female,Single,8.0,Some College,Medical,3.0,11.0,2019-01-01,1
+5218,David,Hernandez,53.0,Male,Married,24.0,Master's,Medical,3.0,11.0,2020-01-01,1
+5245,James,Wilson,38.0,Male,Single,2.0,Master's,Life Sciences,2.0,8.8,2022-01-01,0
+5250,Mary,Martin,45.0,Femaale,Single,5.0,Doctoral/Professional,Medical,1.0,10.0,,0
+5255,Patricia,Martin,42.0,Female,Marrid,,Some College,Life Sciences,9.0,8.0,2020-01-01,0
+5261,John,Wilson,27.0,MALE,singled,7.0,Bachelor's,Life Sciences,3.0,12.1,2020-12-31,0
+5268,Karen,Rodriguez,52.0,Female,Single,2.0,Bachleors,Life Sciences,7.0,6.6,2022-01-01,0
+5274,Donald,Johnson,25.0,male,Married,7.0,No degree,Medical,1.0,2.2,2022-01-01,0
+5277,Christopher,Martinez,55.0,Male,Marrid,26.0,Doctoral/Professional,Marketing,,39.6,1988-01-01,0
+5283,Donald,Miller,32.0,Male,Married,2.0,No Degree,Marketing,0.0,4.0,2020-12-31,0
+5285,Steven,Jones,27.0,Male,Divorced,19.0,Bachleors,TECHNICAL DEGREE,4.0,8.8,2020-12-31,0
+5286,Anthony,Brown,39.0,Male,Married,10.0,NO DEGREE,Medical,1.0,23.1,2003-01-01,0
+5300,Thomas,Johnson,38.0,Male,divored,1.0,Master's,life sciences,2.0,22.0,,0
+5303,Patricia,Garcia,25.0,Female,Divorced,6.0,masters,Medical,0.0,6.6,,0
+5311,Michael,Brown,34.0,Male,Single,3.0,Some College,Medical,4.0,14.3,2016-01-01,0
+5318,Anthony,Thomas,24.0,M,Divorced,29.0,No Degree,Medcial,1.0,6.6,2017-12-31,0
+5320,Ashley,Williams,27.0,Female,Divorcd,21.0,Master's,Life Science,1.0,10.0,2014-01-01,0
+5321,Anthony,Davis,38.0,Male,Divorced,10.0,Mastr's,Marketting,2.0,11.0,2023-01-01,0
+5323,Dorothy,Garcia,31.0,Female,Single,3.0,Bachelor's,Life Sciences,1.0,7.0,2016-12-31,1
+5324,Joseph,Rodriguez,41.0,MALE,Divorced,19.0,some college,Life Sciences,2.0,17.0,2023-01-01,0
+5326,Jessica,Wilson,56.0,Female,Married,23.0,Master's,Medicale,1.0,40.0,1984-01-01,0
+5330,Richard,Jackson,39.0,Mail,Divorced,2.0,Bachelor's,Life Siences,7.0,,2006-01-01,1
+5331,William,Davis,41.0,Male,Divorced,14.0,Bachelor's,Life Sciences,4.0,13.0,2015-01-01,0
+5333,Betty,Johnson,20.0,Female,married,26.0,Some College,Other,1.0,,2020-01-01,0
+5334,Charles,Miller,28.0,Male,Divorsed,8.0,Some College,Other,5.0,,2016-01-01,0
+5355,Linda,Wilson,46.0,Female,Divorced,8.0,masters,Life Sciences,8.0,20.9,2008-01-01,0
+5358,Christopher,Martinez,27.0,Mail,Marriied,13.0,SOME COLLEGE,other,4.0,10.0,2020-01-01,0
+5360,James,Moore,45.0,Male,Single,14.0,Master's,Marketing,2.0,20.0,2016-12-31,0
+5362,Nancy,Lopez,33.0,Female,Divorced,25.0,Master's,Medical,1.0,17.6,2008-01-01,0
+5363,Andrew,Taylor,33.0,Male,Single,2.0,Bachelor's,Life Sciences,0.0,4.4,2020-12-31,0
+5364,Kenneth,Lopez,36.0,Male,MARRIED,3.0,Master's,Other,3.0,8.8,2022-01-01,0
+5374,Kenneth,Hernandez,34.0,Male,Single,2.0,Some College,Life Sciences,2.0,5.5,2020-12-31,0
+5379,Anthony,Moore,47.0,Male,Married,2.0,No Degree,Life Sciences,3.0,28.0,2019-01-01,0
+5382,Mark,Brown,33.0,Maale,Singel,10.0,Bachelor's,marketing,3.0,9.0,2016-12-31,1
+5388,Barbara,Martinez,34.0,Female,Single,24.0,Master's,Medical,0.0,17.6,2008-12-31,1
+5390,John,Miller,35.0,Male,Divorced,8.0,Some College,Other,2.0,20.9,2014-01-01,0
+5395,Matthew,Moore,53.0,Male,Single,24.0,Master's,Life Sciences,6.0,16.5,2022-01-01,0
+5404,Charles,Martinez,56.0,Male,Single,7.0,Bachelor's,Life Sciences,4.0,37.0,2017-12-31,0
+5413,John,Davis,41.0,Male,Single,10.0,Some College,Medical,1.0,20.9,2004-12-31,0
+5415,Michael,Smith,28.0,Male,Single,7.0,Bachelor's,Life Sciences,0.0,5.0,,1
+5416,Daniel,Martin,44.0,Mail,Married,15.0,Some college,Life Sciences,5.0,27.5,2020-01-01,0
+5424,Sarah,Garcia,42.0,Female,Divorced,1.0,Bachelor's,Life Sciences,4.0,8.8,2022-01-01,0
+5433,Betty,Jones,24.0,Female,Married,4.0,No Degree,Medical,1.0,5.5,2019-01-01,0
+5453,Matthew,Smith,34.0,M,Single,3.0,No Degree,Life Sciences,0.0,7.7,2017-12-31,1
+5454,Michael,Smith,27.0,Male,Married,2.0,Master's,Technical Degree,1.0,6.6,2019-01-01,0
+5464,David,Martinez,48.0,Male,Married,29.0,masters,Life Sciences,0.0,28.0,1996-12-31,0
+5465,Lisa,Thomas,47.0,Female,Single,11.0,Master's,Marketing,3.0,8.8,,0
+5469,Linda,Smith,38.0,Female,married,17.0,No Degree,Life Sciences,0.0,22.0,2004-12-31,0
+5474,Mary,Davis,47.0,Female,Married,1.0,Bachelor's,Technical Degre,2.0,7.0,2020-01-01,0
+5475,Mary,Davis,36.0,Female,singled,2.0,Master's,Life Sciences,6.0,18.7,2008-12-31,0
+5479,Betty,Brown,29.0,Female,Divorced,21.0,Master's,Life Sciences,1.0,11.0,2014-01-01,0
+5481,Michael,Davis,20.0,Maale,Divorced,16.0,Some College,medical,1.0,1.1,2023-01-01,0
+5486,Robert,Johnson,19.0,Male,Single,22.0,No Degree,Technical Degree,1.0,3.0,2020-12-31,1
+5495,Donald,Lopez,31.0,Male,Married,22.0,Master's,Medical,,10.0,2014-01-01,1
+5501,Robert,Brown,51.0,Male,Divorced,2.0,Bachelor's,Medical,5.0,13.0,2020-01-01,0
+5503,Charles,Jones,41.0,Male,Divorced,10.0,Master's,Human Resources,3.0,25.3,2003-01-01,0
+5505,William,Garcia,40.0,Male,Single,25.0,MASTER'S,Marketing,2.0,,2019-01-01,1
+5506,Betty,Lopez,29.0,female,Married,6.0,No Degree,Medical,1.0,10.0,2014-01-01,0
+5519,Emily,Davis,37.0,Female,Married,11.0,Some college,Medical,5.0,15.0,2023-01-01,1
+5521,Daniel,Smith,53.0,Male,Divorced,22.0,Bachelor's,Technical Degree,5.0,8.0,2020-01-01,0
+5522,Richard,Smith,38.0,Male,Married,2.0,Some College,Life Sciences,1.0,,2023-01-01,0
+5525,Michael,Johnson,58.0,Male,Divorced,1.0,Master's,Life Sciences,2.0,12.0,2019-01-01,0
+5532,Barbara,Brown,30.0,Female,Divorced,8.0,Bachelor's,Human Resources,6.0,6.0,2020-01-01,1
+5535,Daniel,Johnson,,Male,SINGLE,5.0,Some College,Life Sciences,8.0,16.0,2011-01-01,0
+5536,Michael,Jackson,28.0,Male,Divorced,15.0,Som College,Life Sciences,1.0,4.0,2020-01-01,0
+5544,William,Garcia,28.0,Male,Divorced,1.0,BACHELOR'S,Medical,1.0,1.1,2023-01-01,1
+5558,Karen,Davis,45.0,Female,Single,5.0,Doctoral/Professional,Medical,1.0,11.0,2014-01-01,0
+5562,William,Miller,34.0,male,Divorced,15.0,Master's,Marketting,1.0,15.0,2008-12-31,0
+5568,Ashley,Hernandez,28.0,Female,Divorced,5.0,Bachelor's,Technical Degree,5.0,8.8,2020-12-31,0
+5570,Elizabeth,Johnson,28.0,Femaale,Married,28.0,Some College,Medical,1.0,12.1,2014-01-01,0
+5577,Thomas,Garcia,31.0,Male,Married,1.0,Some College,Life Sciences,1.0,4.0,2020-01-01,0
+5578,Kimberly,Brown,39.0,Female,Marriied,7.0,Som College,TECHNICAL DEGREE,1.0,11.0,2014-01-01,0
+5584,Sarah,Williams,27.0,F,Married,11.0,Bachelor's,Medical,8.0,5.0,2023-01-01,1
+5587,Donald,Johnson,45.0,Male,Married,8.0,Masteer,Other,,12.0,2014-01-01,0
+5597,Michael,Taylor,26.0,Male,Married,24.0,Bachelor's,Medical,1.0,1.0,2023-01-01,1
+5606,David,Taylor,29.0,Male,Singel,2.0,Master's,Other,7.0,10.0,2019-01-01,0
+5608,Steven,Hernandez,47.0,Male,Married,2.0,No Degre,Life Sciences,3.0,30.8,2019-01-01,0
+5609,Mark,Jones,37.0,Male,Divorced,2.0,Some College,Life Sciences,,17.0,2023-01-01,0
+5618,James,Jones,31.0,MALE,Single,5.0,Bachelor,Medical,0.0,11.0,2015-01-01,0
+5629,Ashley,Rodriguez,34.0,Female,Married,9.0,No Degree,Life Sciences,1.0,6.0,2017-12-31,0
+5634,Betty,Wilson,,Female,Married,2.0,Bachelor's,Life Sciences,4.0,6.0,2022-01-01,0
+5638,Christopher,Lopez,32.0,Maale,Married,,Some College,Human Resources,0.0,4.4,2020-12-31,0
+5651,Mark,Anderson,,Male,Single,16.0,Master's,Medical,6.0,10.0,2023-01-01,0
+5658,Christopher,Hernandez,55.0,Male,Divorced,8.0,No Degree,Medical,1.0,37.4,1991-01-01,0
+5663,Paul,Jones,56.0,Male,Single,24.0,Some College,life sciences,1.0,5.0,2020-01-01,1
+5670,Susan,Johnson,31.0,Female,Married,4.0,Master,Medical,8.0,8.0,2019-01-01,0
+5684,Nancy,Wilson,33.0,Female,Marriied,7.0,Bachelor's,LIFE SCIENCES,0.0,4.0,2020-12-31,1
+5692,Kenneth,Jones,22.0,Male,Married,18.0,No Degre,Life Siences,0.0,6.6,2019-01-01,0
+5693,Lisa,Hernandez,27.0,Femaale,Married,1.0,Some College,Life Sciences,1.0,9.9,2015-01-01,0
+5697,Michael,Wilson,48.0,Male,Married,8.0,Master's,Marketing,7.0,4.0,2022-01-01,0
+5704,Paul,Garcia,32.0,Male,Divorsed,9.0,Some College,Medical,0.0,9.9,2016-01-01,0
+5707,Susan,Miller,46.0,Female,Married,15.0,Master's,Other,8.0,10.0,2016-01-01,0
+5711,Karen,Taylor,33.0,Female,Married,2.0,Bachelor's,Mrketing,1.0,2.0,2022-01-01,1
+5718,David,Anderson,,Male,Married,20.0,Bachelor's,Life Sciences,3.0,12.0,2023-01-01,1
+5721,Kenneth,Garcia,58.0,M,Married,15.0,Master's,Life Siences,2.0,,2022-01-01,0
+5732,Dorothy,Jackson,27.0,Female,Single,2.0,Some College,Medical,0.0,9.9,2016-01-01,0
+5733,John,Martinez,31.0,Male,single,1.0,Master's,Medical,1.0,1.1,2023-01-01,0
+5738,Ashley,Brown,27.0,Femaale,married,23.0,No Degree,Life Sciences,1.0,11.0,2012-12-31,1

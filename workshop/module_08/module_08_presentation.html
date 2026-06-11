@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 08 · Operating at scale</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Final module. Learners arrive with every technical tool they need — async, resilience, diagnostics. What remains is operations: keys, model lifecycle, inventory. The pitch: none of this is algorithmic; it is discipline.",
+    "Agenda — 2-card. Two arcs: environments (multi-env keys, per-environment endpoint, validated startup) and the model lifecycle (tag with set_attributes, models.list inventory). Flag the capstone exercise — stitch everything together at the end.",
+    "Learning objectives. Three. A is the environment layer. B is metadata tagging on trained models. C is the inventory discipline.",
+    "Part 01 divider. Pause. The line to land: 'building it' and 'running it' are different skills. Everything from here is the second.",
+    "Key concept. Read slowly. Environment, mode, inventory — the three operational axes. Every production team gets all three wrong at least once; this module is the pre-emptive fix.",
+    "Code — build_client. The pattern is one function per environment, selecting the right key from FUNDAMENTAL_API_KEY_DEV / _STG / _PROD and passing the matching api_url to Fundamental. Each environment maps to its own endpoint — rotation and promotion stay in environment variables, never source.",
+    "Code — tag with set_attributes. Metadata only, not training. After fit returns, call client.models.set_attributes(model_id, {...}) to stamp version, owner, and stage onto the trained model. Read them back with client.models.get — the attributes dict travels with the model id.",
+    "Tagging discipline. Frame the shift: a trained model with no metadata is an orphan waiting to happen. Stamp version, owner, and stage the moment fit returns. set_attributes is the single call that turns a bare model id into something future-you can identify without reading commit history.",
+    "Model versioning. When a fit must be reproducible across a fleet, pin the version with the model_version constructor parameter — e.g. NEXUSClassifier(mode='quality', model_version='0.1.7'). Leave it unset to track the latest. fit still takes only X and y; this is just a constructor argument.",
+    "model_version. The contrast to land: by default you train on the latest model version, which can change underneath you; model_version pins it so retraining is reproducible. Call client.models.get_supported_versions() to list the available versions and the current default. One constructor flag, no other change to the fit call.",
+    "Part 02 divider. Shift from environment setup to inventory and startup. The two missing pieces between a trained model and a production service.",
+    "Code — models.list. Every model you have ever trained under the key. Materialize it into a DataFrame and the rest of pandas is your audit tool. For each model read .trained_model_id and .attributes from the TrainedModelMetadata, not string ids.",
+    "Two-column — validated startup. build_validated_client calls models.list at boot time as a liveness check. Rotation failures surface immediately instead of hours later during the first real call. Pair with initialize_production to wire up model_id from a registry.",
+    "Registry + orphan detection. The operational discipline the module ends on. Write every model_id to a registry the moment fit returns — no exceptions. Reconcile against models.list monthly. Anything in the inventory that is not in your registry is an orphan — a future incident that has not happened yet.",
+    "Exercise. Capstone. Build a validated client for dev, train a model and tag it with set_attributes, audit the inventory. The anti-pattern: hardcoding model ids in source. Push learners to write every model_id to a registry file the moment fit() returns — no exceptions. If someone asks 'what if the registry write fails,' that is a good question; the answer lives in Module 06's resilience patterns. The capstone is not just code; it is the habit of writing every artifact down. The capstone is now scaffolded in the notebook with a reference solution.",
+    "Takeaways. Three. Read aloud. Leave a breath after 'validate at startup.' That rule catches more production incidents than any other on the list.",
+    "Closing. Celebrate. Nine modules, from first fit() to a production operations playbook. No next module — this is the summit. Thank the room."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 08</div>
+  <h1 class="cov-title">Operating<br>at <em>scale.</em></h1>
+  <div class="cov-big-n">08 / 08</div>
+  <div class="cov-meta">300&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>ENVIRONMENTS</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Right key, right endpoint</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Multi-env keys &mdash; DEV, STG, PROD</div><div class="ag-row-b">FUNDAMENTAL_API_KEY_{ENV} per environment. Rotation is a variable update, not a code change.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Each environment, its own endpoint</div><div class="ag-row-b">Pass the matching api_url to Fundamental, or set FUNDAMENTAL_API_URL. Dev and prod never share a target.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Validate at startup &mdash; fail fast</div><div class="ag-row-b">build_validated_client calls models.list at boot. Rotation failures surface before the first real call.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>MODEL LIFECYCLE</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Tag, then audit</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">client.models.set_attributes() &mdash; tag metadata</div><div class="ag-row-b">Stamp version, owner, and stage onto a trained model. Metadata travels with the model id.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">models.list() &mdash; complete inventory</div><div class="ag-row-b">Every model you have trained under the key. Materialize to DataFrame, filter, audit.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; the production startup</div><div class="ag-row-b">Validated client, tag the model, registry write. The capstone.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Separate <em>dev, staging, prod</em> cleanly</h3>
+        <p class="lo-b">Per-environment API keys (FUNDAMENTAL_API_KEY_{ENV}), a matching api_url per environment, and a validated-startup wrapper that surfaces rotation failures at boot &mdash; not at the first real call.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Tag trained models with <em>metadata</em></h3>
+        <p class="lo-b">client.models.set_attributes() stamps version, owner, and stage onto a model. Read it back with client.models.get(). The attributes dict travels with the model id.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Audit your model <em>inventory</em></h3>
+        <p class="lo-b">client.models.list() returns every trained model you own. Materialize it into a DataFrame, sort, filter by attribute. Treat model ids as production artifacts.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/stargaze-car.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">From <em>running</em><br>to <em>operating</em>.</h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title"><em>Environment</em>, <em>mode</em>, and <em>inventory</em> &mdash; the three operational axes that separate a working pipeline from a production service.</h2>
+  </div>
+  <div class="kc-cite">Fig. 08 &middot; The module in one sentence</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     06  CODE — Multi-env client
+     ============================================================ -->
+<section data-screen-label="06 Code build client">
+  <h2 class="code-title">One <em>function</em>, every environment.</h2>
+  <div class="code-sub">Per-env keys. Each environment maps to its own api_url. No code changes between dev and prod.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_08_operating_at_scale.ipynb &middot; cell 6</span>
+      </div>
+<pre class="code-pre" style="font-size:17.5px">ENV_API_URLS = {
+    <span class="c-str">"dev"</span>:  <span class="c-str">"https://dev.api.fundamental.tech"</span>,
+    <span class="c-str">"stg"</span>:  <span class="c-str">"https://stg.api.fundamental.tech"</span>,
+    <span class="c-str">"prod"</span>: <span class="c-str">"https://api.fundamental.tech"</span>,
+}
+
+<span class="c-key">def</span> <span class="c-fn">build_client</span>(env=<span class="c-str">"dev"</span>):
+    suffix = env.<span class="c-fn">upper</span>()
+    key = (os.<span class="c-fn">getenv</span>(<span class="c-str">f"FUNDAMENTAL_API_KEY_{suffix}"</span>)
+           <span class="c-key">or</span> os.<span class="c-fn">getenv</span>(<span class="c-str">"FUNDAMENTAL_API_KEY"</span>))
+    <span class="c-key">if</span> <span class="c-key">not</span> key:
+        <span class="c-key">raise</span> <span class="c-fn">ValueError</span>(<span class="c-str">f"No API key for env: {env}"</span>)
+    <span class="c-com"># each environment maps to its own endpoint</span>
+    api_url = ENV_API_URLS[env.<span class="c-fn">lower</span>()]
+    client = <span class="c-fn">Fundamental</span>(api_key=key, api_url=api_url)
+    fundamental.<span class="c-fn">set_client</span>(client)
+    <span class="c-key">return</span> client
+
+<span class="c-com"># usage &mdash; same code, any environment</span>
+dev_client  = <span class="c-fn">build_client</span>(env=<span class="c-str">"dev"</span>)
+prod_client = <span class="c-fn">build_client</span>(env=<span class="c-str">"prod"</span>)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Rotation is a <em>variable update</em>.</h3>
+      <p class="code-note-b">Key rotation, environment promotion, and staging deploys all become changes to environment variables &mdash; never to source. The estimator code from Modules 01 through 07 stays exactly the same.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     07  CODE — Tag with set_attributes
+     ============================================================ -->
+<section data-screen-label="07 Code set_attributes">
+  <h2 class="code-title"><em>client.models.set_attributes()</em> &mdash; tag the model.</h2>
+  <div class="code-sub">Metadata only, not training. Stamp version, owner, and stage onto a trained model.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_08_operating_at_scale.ipynb &middot; cell 15</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># tag a trained model with metadata &mdash; the moment fit returns</span>
+model_id = nexus.trained_model_id_
+
+client.models.<span class="c-fn">set_attributes</span>(model_id, {
+    <span class="c-str">"version"</span>: <span class="c-str">"1.0"</span>,
+    <span class="c-str">"owner"</span>:   <span class="c-str">"credit-risk-pod"</span>,
+    <span class="c-str">"stage"</span>:   <span class="c-str">"production"</span>,
+})
+
+<span class="c-com"># read the metadata back from the model id</span>
+metadata = client.models.<span class="c-fn">get</span>(model_id)
+<span class="c-fn">print</span>(metadata.attributes)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Metadata <em>travels with the id</em>.</h3>
+      <p class="code-note-b">set_attributes does not train anything &mdash; it tags the model the fit already produced. Version, owner, and stage stay attached to the model id, so future-you can identify it without reading commit history.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     08  TWO-COLUMN — model versioning for reproducible training
+     ============================================================ -->
+<section data-screen-label="08 Model Versioning">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">model_version EXPLAINED</div>
+      <h2 class="tc-title">Pin the model <em>version</em>.</h2>
+      <p class="tc-body">By default a fit trains on the latest NEXUS model version, which can change over time. When a fit must be reproducible across a fleet &mdash; or you need to retrain a model exactly as it was &mdash; pin it with the <code>model_version</code> constructor parameter: <code>NEXUSClassifier(mode="quality", model_version="0.1.7")</code>.</p>
+      <p class="tc-body">Leave it unset to track the latest. Call <code>client.models.get_supported_versions()</code> to list the available versions and the current default before you pin.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE RULE</div>
+      <h3 class="tc-right-h">Pin the<br>version for<br>reproducible<br>retraining</h3>
+      <p class="tc-right-b">A fleet should train against a known version &mdash; set <code>model_version</code> on the constructor, and discover valid values with <code>get_supported_versions()</code>.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">.versions &middot; .latest</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">what get_supported_versions()<br>returns.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     09  TWO-COLUMN — Look up and retire models                   [NEW]
+     ============================================================ -->
+<section data-screen-label="09 Lookup and Retire">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">LOOK UP AND RETIRE</div>
+      <h2 class="tc-title">Inspect a model. Prune <em>the stale ones</em>.</h2>
+      <p class="tc-body"><code>client.models.get(model_id)</code> returns a <code>TrainedModelMetadata</code> &mdash; the model id and the attributes dict you stamped on it. Read the <code>stage</code> attribute before you load a model into production; it catches the wrong-environment id at the boundary, not at first prediction.</p>
+      <p class="tc-body"><code>client.models.delete(model_id)</code> permanently removes a model. Gate it on the tags you set: only prune what is labelled an experiment, never a model marked production.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE FOUR-METHOD SURFACE</div>
+      <h3 class="tc-right-h">list,<br>get,<br>set_attributes,<br>delete</h3>
+      <p class="tc-right-b">Train it, tag it, list it, look it up, retire it. Every step in the model lifecycle is a single call on <code>client.models</code> &mdash; independent of the estimator that created the model.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">tag &rarr; retire</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">lifecycle in four calls.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     10  THREE-CARD — Pipeline competition                        [NEW]
+     ============================================================ -->
+<section data-screen-label="10 Pipeline Competition">
+  <h2 class="tk-title">Three habits. <em>One</em> lifecycle.</h2>
+  <div class="tk-sub">The <code>client.models</code> surface only pays off with discipline &mdash; tag on fit, look up on deploy, prune on retire.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Tag <em>on fit</em></h3>
+      <p class="tk-card-b">Every <code>fit()</code> is followed by <code>set_attributes()</code> &mdash; version, owner, stage. An untagged model is an orphan waiting to happen.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Look up <em>on deploy</em></h3>
+      <p class="tk-card-b">Before loading a model, call <code>get(model_id)</code> and verify <code>stage</code> is <code>production</code>. Catch the wrong-environment id at the boundary.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Prune <em>on retire</em></h3>
+      <p class="tk-card-b"><code>list()</code> the inventory, filter on the tags you set, <code>delete()</code> stale experiments. Production stays locked by its <code>stage</code> tag.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     11  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="11 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; INVENTORY AND STARTUP</div>
+  <h2 class="div-title">Audit the <em>inventory</em>.<br>Validate at <em>boot</em>.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     12  CODE — models.list() inventory
+     ============================================================ -->
+<section data-screen-label="12 Code models list">
+  <h2 class="code-title"><em>models.list()</em> &mdash; every model you own.</h2>
+  <div class="code-sub">Materialize to a DataFrame. Sort, filter, audit.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_08_operating_at_scale.ipynb &middot; cell 14</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># reads FUNDAMENTAL_API_KEY / FUNDAMENTAL_API_URL from the env</span>
+client = <span class="c-fn">Fundamental</span>()
+models = client.models.<span class="c-fn">list</span>()
+
+<span class="c-com"># TrainedModelMetadata objects &mdash; not strings. Read id + attributes.</span>
+inventory = pd.<span class="c-fn">DataFrame</span>([{
+    <span class="c-str">"model_id"</span>: m.trained_model_id,
+    <span class="c-str">"version"</span>: m.attributes.<span class="c-fn">get</span>(<span class="c-str">"version"</span>),
+    <span class="c-str">"owner"</span>:   m.attributes.<span class="c-fn">get</span>(<span class="c-str">"owner"</span>),
+    <span class="c-str">"stage"</span>:   m.attributes.<span class="c-fn">get</span>(<span class="c-str">"stage"</span>),
+} <span class="c-key">for</span> m <span class="c-key">in</span> models])
+
+<span class="c-com"># audit is just pandas &mdash; sort, filter, groupby</span>
+prod = inventory[inventory[<span class="c-str">"stage"</span>] == <span class="c-str">"production"</span>]
+<span class="c-fn">print</span>(prod.<span class="c-fn">to_string</span>(index=<span class="c-str">False</span>))</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Model ids <em>are</em> production artifacts.</h3>
+      <p class="code-note-b">trained_model_id_ is the only handle you have on a trained model. models.list() is how you verify your registry is complete &mdash; compare periodically and find the orphans before they become incidents.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     13  TWO-COLUMN — Validated startup
+     ============================================================ -->
+<section data-screen-label="13 Validated Startup">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">VALIDATED STARTUP</div>
+      <h2 class="tc-title">Fail at <em>boot</em>. Not at the first call.</h2>
+      <p class="tc-body">build_validated_client wraps build_client with one extra step: call <em>client.models.list()</em> before returning. It is a fast, read-only API round-trip that proves the key is valid and the endpoint is reachable.</p>
+      <p class="tc-body">Pair with <em>initialize_production(env, model_id)</em>: validate the client, load the trained_model_id_ from your registry, return a ready-to-predict estimator. Any auth or network failure raises before your service ever handles a real request.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE LOAD-BEARING LINE</div>
+      <h3 class="tc-right-h">One<br>read-only<br>call at<br>boot</h3>
+      <p class="tc-right-b">models.list() is cheap. Running it at startup turns silent rotation failures into loud startup errors &mdash; which is exactly what your on-call rotation wants.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">1 call</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">at startup &mdash; catches key<br>and network issues early.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     14  TWO-COLUMN — Registry + orphan detection                 [NEW]
+     ============================================================ -->
+<section data-screen-label="14 Registry and Orphans">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE DISCIPLINE</div>
+      <h2 class="tc-title">Write every model_id <em>the moment</em> fit returns.</h2>
+      <p class="tc-body">A registry is a file &mdash; model_id, task, mode, created_at, dataset, notes &mdash; appended every time training completes. No exceptions. No "I'll write it after lunch." Every lost row is a future incident.</p>
+      <p class="tc-body">Reconcile against <em>models.list()</em> periodically. Anything in the inventory that is not in your registry is an <em>orphan</em> &mdash; a model someone forgot to record. Orphans do not cause incidents until someone tries to roll back to one.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE CHECK</div>
+      <h3 class="tc-right-h">registry<br>+<br>models.list()<br>&rarr; no orphans</h3>
+      <p class="tc-right-b">Compare the two sets. Every model in production should be in both. Every experiment should be in the registry. Anything only in <em>models.list()</em> is a question you have not answered yet.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">0 orphans</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">the ship-it invariant<br>for your model fleet.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">14</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     15  EXERCISE — Capstone
+     ============================================================ -->
+<section data-screen-label="15 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">08</div>
+      <h3 class="ex-side-h">The<br>capstone.<br>Stitch it all<br>together.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">The notebook, FUNDAMENTAL_API_KEY_DEV set in env</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">A validated client, a tagged model id, a registry line</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Advanced &middot; <span style="opacity:.5;">&#9679;&#9679;&#9679;&#9679;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">Build a validated client.<br>Tag a <em>trained</em> model. Write the model id to your registry.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Set <em>FUNDAMENTAL_API_KEY_DEV</em> in your environment. Call <em>build_validated_client(env="dev")</em>. Confirm the key validates at boot.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Fit a model, capture <em>trained_model_id_</em>, then tag it with <em>client.models.set_attributes()</em> &mdash; version, owner, stage.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Append a registry line: model id, version, stage, features. <em>Before</em> you close the notebook.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">Call <em>models.list()</em>, materialize the inventory DataFrame, confirm your new id appears. Paste the row into the <em>Your call</em> cell.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">15</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     16  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="16 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Env vars only &mdash; <em>never</em> source</h3>
+      <p class="tk-card-b">FUNDAMENTAL_API_KEY_{ENV} per environment, each with its own api_url. Rotation is a variable update; the code does not move.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Tag every model. <em>Look it up on deploy.</em></h3>
+      <p class="tk-card-b">client.models.set_attributes() stamps version, owner, and stage. get() reads it back before you promote. The attributes travel with the model id.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Validate at <em>startup</em>. Audit the inventory.</h3>
+      <p class="tk-card-b">build_validated_client runs models.list at boot &mdash; catches rotation and network issues before the first real call. Treat trained_model_id_ like a production artifact.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">16</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     17  CLOSING — Workshop complete
+     ============================================================ -->
+<section data-screen-label="17 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/stargazer.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Workshop <em>complete.</em></h1>
+  <div class="closing-meta">Nine modules &middot; from first fit() to a production operations playbook</div>
+  <div class="closing-cta">You started with <em>one feature, one prediction</em>. You are leaving with async pipelines, resilient retries, full diagnostics, and the operational discipline to ship.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

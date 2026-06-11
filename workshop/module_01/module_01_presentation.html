@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 01 · Your first credit risk model</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+    /* Data-schema table: scoped, table-specific only */
+    .sch-wrap   { position: absolute; top: 300px; left: 96px; right: 96px; bottom: 140px;
+                  overflow: hidden; }
+    .sch-table  { width: 100%; border-collapse: collapse; font-size: 20px;
+                  font-family: inherit; color: #1E293B; }
+    .sch-table th { text-align: left; font-size: 13px; font-weight: 700;
+                    letter-spacing: 0.08em; text-transform: uppercase;
+                    color: #64748B; padding: 10px 16px; border-bottom: 1px solid #E2E8F0; }
+    .sch-table td { padding: 10px 16px; border-bottom: 1px solid #F1F5F9; }
+    .sch-table td.sch-name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                              font-size: 19px; }
+    .sch-table td.sch-type { color: #64748B; font-size: 17px; }
+    .sch-tag    { display: inline-block; padding: 3px 10px; border-radius: 10px;
+                  font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
+    .sch-tag--use   { background: #DBEAFE; color: #1D4ED8; }
+    .sch-tag--m03   { background: #EDE9FE; color: #6D28D9; }
+    .sch-tag--drop  { background: #F1F5F9; color: #64748B; }
+    .sch-tag--tgt   { background: #FEF3C7; color: #B45309; }
+    .sch-row-use   td:first-child { border-left: 3px solid #3B82F6; }
+    .sch-row-m03   td:first-child { border-left: 3px solid #8B5CF6; }
+    .sch-row-drop  td:first-child { border-left: 3px solid #CBD5E1; }
+    .sch-row-tgt   td:first-child { border-left: 3px solid #F59E0B; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Set the stakes: first real model, first real dataset. Most of the clock is quiet while training runs. Do not skip the mental-model slides to get to code faster — the wait is where the ideas land.",
+    "Agenda — 2-card. Two arcs: the setup (why NEXUS is different, what the data looks like), then the pipeline (three code cells, start to finish). Tell the room the second arc has natural pauses while training runs.",
+    "Learning objectives. Three, no more. If a learner cannot explain each one to the person next to them by the end, the module has failed.",
+    "Part 01 divider. Stay here for a beat. The idea on the next slide is the whole reason the workshop exists.",
+    "Key concept. Pretraining on tables. This is the one claim everything else depends on. If the room pushes back, defer to Module 03 — that is where the mechanism becomes concrete.",
+    "Before / after. The before column is 10 years of muscle memory. The after column is four lines. Read them side by side. Do not downplay the muscle memory — it is the reason learners trust the after column.",
+    "Data schema. Name the four Module 01 columns out loud — age, distance_from_branch_miles, num_previous_lenders, total_employment_years. Flag that the five purple rows are not gone; Module 03 adds the categoricals as-is and derives a numeric tenure feature from the date — plus cleaning and joins that lift accuracy. Identifiers and the target are never features.",
+    "The use case. 4,591 borrowers, 19.1% default. Name the base rate out loud. If someone predicts 'no default' for everyone, they are right 80.9% of the time — and they are useless. Accuracy is the wrong metric. AUC is next.",
+    "Part 02 divider. Tonal shift to code. From here to Module 02, we do not leave the notebook.",
+    "Authenticate code. The one-liner that matters: set_client(Fundamental()). Environment variable is the only right way to store a key. Warn them: no API keys in notebook cells that get committed.",
+    "Fit code. quality mode takes a few minutes. Tell the room this up front. Point at nexus.trained_model_id_ — that string is the whole artifact, and it persists across sessions via %store in the notebook.",
+    "Predict code. y_pred is the binary classification. Reading classification_report: precision catches false alarms, recall catches missed defaults. AUC is the single number for overall discriminative power.",
+    "Exercise. Expect the quality-mode wait — someone will try mode='speed' to skip it. Let them; then ask them to hold their speed AUC next to the quality AUC once it lands. The trade-off is Module 02's opener, so this seeds it without spoiling it. If a pair's AUC collapses to 0.5, check that y_train is the default_flag column, not an id.",
+    "Takeaways. Three. The sklearn interface, the cloud training, the model handle. Everything else is details that show up in Modules 02 through 08.",
+    "Closing. Module 02 lives on probabilities, persistence, and speed-vs-quality. Tell them to keep the model_id — they will reload it in the next session."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 01</div>
+  <h1 class="cov-title">Your first<br><em>credit risk model</em></h1>
+  <div class="cov-big-n">01 / 08</div>
+  <div class="cov-meta">100&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE SETUP</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Why one API replaces a stack</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">NEXUS is a pretrained tabular model</div><div class="ag-row-b">Think GPT for tables. fit() adapts NEXUS to your data in minutes.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">The interface is sklearn</div><div class="ag-row-b">fit, predict, predict_proba. If you know one, you know the other.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">The problem is loan default</div><div class="ag-row-b">4,591 borrowers, 19.1% default, four numeric features to start.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>THE PIPELINE</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Three cells, start to finish</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Authenticate &mdash; one set_client() call</div><div class="ag-row-b">Key from an env var. Never from a notebook cell.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Train &mdash; NEXUSClassifier(mode="quality"), then fit(X, y)</div><div class="ag-row-b">A few minutes in the cloud. You leave with a model id.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Score the holdout &mdash; predict() + ROC AUC</div><div class="ag-row-b">Standard sklearn metrics. The number you report back.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Explain what NEXUS is, without hand-waving</h3>
+        <p class="lo-b">One sentence. A pretrained tabular model behind an sklearn interface. Training happens in the cloud, a model id comes back.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Train a binary classifier on a real dataset</h3>
+        <p class="lo-b">4,591 borrowers, four numeric features, one default flag. NEXUSClassifier(), fit, done.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Score a holdout set and read the metrics</h3>
+        <p class="lo-b">predict(), classification_report, and an ROC AUC you can defend against the 19.1% base rate.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/mars.png);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">Tables are <em>a foundation</em><br>model <em>problem</em></h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The shift that makes this module short.</div>
+    <h2 class="kc-title">NEXUS was pretrained on <em>a massive corpus of tables</em>. Your fit() call <em>adapts NEXUS to your data</em>.</h2>
+  </div>
+  <div class="kc-cite">Fig. 01 &middot; Pretraining is the work you didn't do</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     06  BEFORE / AFTER — sklearn vs NEXUS
+     ============================================================ -->
+<section data-screen-label="06 Before After">
+  <h2 class="ba-title">The four lines that <em>used to be</em> a pipeline</h2>
+  <div class="ba-grid">
+    <div class="ba-card ba-card--before">
+      <span class="ba-tag">Before &middot; Traditional ML</span>
+      <h3 class="ba-h">Train on your laptop, own every choice</h3>
+      <ul class="ba-list">
+        <li>Pick a model family &mdash; random forest, GBM, logistic</li>
+        <li>Encode categoricals, impute missings, scale numerics</li>
+        <li>Grid-search hyperparameters across a cluster</li>
+        <li>Retrain from scratch when the data shifts</li>
+        <li>Own the infra that runs all of the above</li>
+      </ul>
+    </div>
+    <div class="ba-arrow">&rarr;</div>
+    <div class="ba-card ba-card--after">
+      <span class="ba-tag">After &middot; NEXUS</span>
+      <h3 class="ba-h">Call fit(), get a model id</h3>
+      <ul class="ba-list">
+        <li>One estimator covers classification and regression</li>
+        <li>Ints, floats, strings, NaNs &mdash; pass them as-is; dates become one numeric feature (Module 03)</li>
+        <li>No model selection, no hyperparameter tuning</li>
+        <li>Training runs in the cloud, not on your laptop</li>
+        <li>The output is a string you carry to every later module</li>
+      </ul>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     07  SCHEMA TABLE — 13 columns, what waits                    [NEW]
+     ============================================================ -->
+<section data-screen-label="07 Data Schema">
+  <h2 class="ch-title">The 13 columns &mdash; <em>what goes in, what waits</em>.</h2>
+  <div class="ch-eb">Four numeric features for Module 01. Module 03 adds the categoricals as-is and derives a numeric tenure feature from the date. Three identifiers never enter the model.</div>
+  <div class="sch-wrap">
+    <table class="sch-table">
+      <thead>
+        <tr>
+          <th style="width: 42%;">Column</th>
+          <th style="width: 28%;">Type</th>
+          <th style="width: 30%;">Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="sch-row-use"><td class="sch-name">age</td><td class="sch-type">int</td><td><span class="sch-tag sch-tag--use">Use in Module 01</span></td></tr>
+        <tr class="sch-row-use"><td class="sch-name">distance_from_branch_miles</td><td class="sch-type">int</td><td><span class="sch-tag sch-tag--use">Use in Module 01</span></td></tr>
+        <tr class="sch-row-use"><td class="sch-name">num_previous_lenders</td><td class="sch-type">int</td><td><span class="sch-tag sch-tag--use">Use in Module 01</span></td></tr>
+        <tr class="sch-row-use"><td class="sch-name">total_employment_years</td><td class="sch-type">float</td><td><span class="sch-tag sch-tag--use">Use in Module 01</span></td></tr>
+        <tr class="sch-row-m03"><td class="sch-name">gender</td><td class="sch-type">string &middot; categorical</td><td><span class="sch-tag sch-tag--m03">Added in Module 03</span></td></tr>
+        <tr class="sch-row-m03"><td class="sch-name">marital_status</td><td class="sch-type">string &middot; categorical</td><td><span class="sch-tag sch-tag--m03">Added in Module 03</span></td></tr>
+        <tr class="sch-row-m03"><td class="sch-name">education_level</td><td class="sch-type">string &middot; categorical</td><td><span class="sch-tag sch-tag--m03">Added in Module 03</span></td></tr>
+        <tr class="sch-row-m03"><td class="sch-name">occupation_sector</td><td class="sch-type">string &middot; categorical</td><td><span class="sch-tag sch-tag--m03">Added in Module 03</span></td></tr>
+        <tr class="sch-row-m03"><td class="sch-name">account_open_date</td><td class="sch-type">string &middot; date</td><td><span class="sch-tag sch-tag--m03">Added in Module 03</span></td></tr>
+        <tr class="sch-row-tgt"><td class="sch-name">default_flag</td><td class="sch-type">int &middot; 0 / 1</td><td><span class="sch-tag sch-tag--tgt">Target &middot; never a feature</span></td></tr>
+        <tr class="sch-row-drop"><td class="sch-name">borrower_id</td><td class="sch-type">string &middot; identifier</td><td><span class="sch-tag sch-tag--drop">Dropped</span></td></tr>
+        <tr class="sch-row-drop"><td class="sch-name">first_name</td><td class="sch-type">string &middot; identifier</td><td><span class="sch-tag sch-tag--drop">Dropped</span></td></tr>
+        <tr class="sch-row-drop"><td class="sch-name">last_name</td><td class="sch-type">string &middot; identifier</td><td><span class="sch-tag sch-tag--drop">Dropped</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     08  TWO-COLUMN — The use case
+     ============================================================ -->
+<section data-screen-label="08 The Use Case">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE USE CASE</div>
+      <h2 class="tc-title">4,591 borrowers. One question: <em>will they pay us back?</em></h2>
+      <p class="tc-body">Every lender faces the same decision. An applicant walks in with a slim file, and you have minutes to commit money or walk away. Traditional credit scoring has not moved meaningfully since the 1980s.</p>
+      <p class="tc-body">For Module 01 we start with <em>four numeric features</em> &mdash; age, employment years, distance from branch, prior lenders. Module 03 adds the categorical columns and the joins.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">CLASS BALANCE</div>
+      <h3 class="tc-right-h">19.1% of borrowers<br>defaulted</h3>
+      <p class="tc-right-b">A model that says &ldquo;no default&rdquo; for everyone is right 80.9% of the time &mdash; and useless. Accuracy is the wrong metric. ROC AUC is the one we read.</p>
+      <div class="tc-stat">
+        <div class="tc-stat-n">4,591</div>
+        <div class="tc-stat-l">training rows, one<br>binary target column.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     09  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="09 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; THE PIPELINE</div>
+  <h2 class="div-title">Three cells.<br>End with <em>a number you can defend</em>.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     10  CODE SNIPPET — Authenticate
+     ============================================================ -->
+<section data-screen-label="10 Code Authenticate">
+  <h2 class="code-title">Step 01 &middot; <em>Authenticate</em>.</h2>
+  <div class="code-sub">One call. Every estimator in the session picks up the connection.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_01_your_first_nexus_model.ipynb &middot; cell 7</span>
+      </div>
+<pre class="code-pre" style="font-size:21px"><span class="c-com"># FUNDAMENTAL_API_KEY lives in the shell env, never in a committed cell.</span>
+<span class="c-key">from</span> fundamental <span class="c-key">import</span> Fundamental, NEXUSClassifier, set_client
+
+<span class="c-fn">set_client</span>(<span class="c-fn">Fundamental</span>())
+
+<span class="c-fn">print</span>(<span class="c-str">"Authentication: OK"</span>)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Configure once. <em>Use everywhere.</em></h3>
+      <p class="code-note-b">set_client() registers the connection for the whole Python session. From here on, every NEXUSClassifier or NEXUSRegressor you instantiate reaches the same account &mdash; no passing client objects around, no rediscovering the key on every call.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     11  CODE SNIPPET — Fit
+     ============================================================ -->
+<section data-screen-label="11 Code Fit">
+  <h2 class="code-title">Step 02 &middot; <em>Train</em>.</h2>
+  <div class="code-sub">Numeric features only. Quality mode. A few minutes of wall clock.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_01_your_first_nexus_model.ipynb &middot; cells 16 &amp; 19</span>
+      </div>
+<pre class="code-pre">FEATURES = [<span class="c-str">"age"</span>, <span class="c-str">"distance_from_branch_miles"</span>,
+            <span class="c-str">"num_previous_lenders"</span>, <span class="c-str">"total_employment_years"</span>]
+
+X_train = train_df[FEATURES]
+y_train = train_df[<span class="c-str">"default_flag"</span>]
+
+nexus = <span class="c-fn">NEXUSClassifier</span>(mode=<span class="c-str">"quality"</span>)
+nexus.<span class="c-fn">fit</span>(X_train, y_train)
+
+MODEL_ID = nexus.trained_model_id_
+<span class="c-fn">print</span>(MODEL_ID)  <span class="c-com"># e.g. 72d000e3-9216-44ba-...</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">The id <em>outlives the session</em>.</h3>
+      <p class="code-note-b">trained_model_id_ lives in Fundamental's registry. Store it. Every module from 02 onward reloads the weights from that string &mdash; no retraining, no local checkpoints, no mystery about which model is which.</p>
+      <p class="code-note-b"><em>mode="quality"</em> runs longer, trains to a better AUC. <em>mode="speed"</em> returns faster &mdash; for iteration. Module 02 compares them on the same data.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     12  CODE SNIPPET — Predict + evaluate
+     ============================================================ -->
+<section data-screen-label="12 Code Predict">
+  <h2 class="code-title">Step 03 &middot; <em>Score the holdout</em>.</h2>
+  <div class="code-sub">Standard sklearn metrics. One number to report back.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_01_your_first_nexus_model.ipynb &middot; cells 23 &amp; 25</span>
+      </div>
+<pre class="code-pre"><span class="c-key">from</span> sklearn.metrics <span class="c-key">import</span> classification_report, roc_auc_score
+
+X_holdout = holdout_df[FEATURES]
+y_holdout = holdout_df[<span class="c-str">"default_flag"</span>]
+
+y_pred = nexus.<span class="c-fn">predict</span>(X_holdout)
+
+<span class="c-fn">print</span>(<span class="c-fn">classification_report</span>(y_holdout, y_pred,
+    target_names=[<span class="c-str">"No default"</span>, <span class="c-str">"Default"</span>]))
+
+auc = <span class="c-fn">roc_auc_score</span>(y_holdout, y_pred)
+<span class="c-fn">print</span>(<span class="c-fn">f"ROC AUC: {auc:.4f}"</span>)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Three metrics. <em>Three questions.</em></h3>
+      <p class="code-note-b">Precision asks, of borrowers we flagged, how many really defaulted &mdash; false alarms. Recall asks, of real defaulters, how many we caught &mdash; missed defaults. AUC is the single number for overall discriminative power. Module 02 tunes the threshold between them.</p>
+      <p class="code-note-b">Confusion matrix, in business terms: <em>TN</em> correctly approved a safe borrower. <em>FP</em> flagged a safe borrower (false alarm). <em>FN</em> missed a defaulter (<em>the expensive one</em>). <em>TP</em> caught a defaulter.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     13  EXERCISE — Train and score
+     ============================================================ -->
+<section data-screen-label="13 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">01</div>
+      <h3 class="ex-side-h">Train it.<br>Score it.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">The notebook, the borrowers CSVs</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">A trained model id + one AUC you would ship</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Starter &middot; <span style="opacity:.5;">&#9679;&#9679;</span>&#9675;<span style="opacity:.5;">&#9675;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">Train the baseline, score the holdout,<br>and <em>write down one AUC</em> you would bring to your team.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Run the <em>authenticate</em> cell. Confirm the <em>Authentication: OK</em> line prints.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Run the <em>train</em> cell with <em>mode="quality"</em>. Expect a wait &mdash; use it to re-read the before/after slide.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Run the <em>score</em> cell. Note the ROC AUC. Compare it with the 19.1% base rate and the person next to you.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">In one sentence, describe a borrower profile your model would flag. Pick two features and a direction.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">13</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     14  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="14 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">NEXUS speaks sklearn</h3>
+      <p class="tk-card-b">fit, predict, predict_proba &mdash; the interface <em>does not change</em>. Your GridSearchCV and Pipeline code still work.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Training is remote, the handle is local</h3>
+      <p class="tk-card-b">Data goes to the cloud, weights live in Fundamental's registry, and what you keep is a <em>string</em>: trained_model_id_.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Four features is the floor</h3>
+      <p class="tk-card-b">Numeric columns only for now. Module 03 adds categoricals and joins &mdash; same interface, <em>materially better</em> model.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">14</span> / 15</div>
+</section>
+
+<!-- ============================================================
+     15  CLOSING
+     ============================================================ -->
+<section data-screen-label="15 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/research-hero.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>probabilities.</em></h1>
+  <div class="closing-meta">Module 02 &middot; Probabilities, persistence, and modes &middot; 100&#8209;level</div>
+  <div class="closing-cta">Bring your MODEL_ID. You'll reload it without retraining.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

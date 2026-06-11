@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 07 · Diagnostics and debugging</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Learners arrive with a pipeline that survives failures from Module 06. This module gives them the tools to investigate the failures that did not reproduce cleanly, or the ones that got silently recovered. The target audience is anyone who has ever seen a log line that just says TIMEOUT.",
+    "Agenda — 2-card. Two arcs: the toolkit (logging + diagnose + harness) and the five failure fingerprints that cover most production incidents. Flag up front: the SDK's built-in fundamental.diagnostics module plus structured error metadata is the whole kit.",
+    "Learning objectives. Three. A is observability. B is the decision rule they already know from Module 06, now applied to investigation. C is pattern recognition — five fingerprints.",
+    "Part 01 divider. Pause. Frame the module: the bug that doesn't reproduce is the one you need a diagnostic toolkit for. Intermittent failures, silent retries, drifted accuracy — these all land here.",
+    "Key concept. Read slowly. Built-in diagnostics + error metadata. Import diagnose, activate, and deactivate from fundamental.diagnostics. Every NEXUS call is already observable — learners just have to turn the knobs up.",
+    "What the built-in diagnostics give you. This is the design choice that matters. diagnose() is the context manager from fundamental.diagnostics — import it alongside activate() and deactivate(). Why it earns its place: it writes a timestamped log file into the directory you pass, redacts secrets automatically, and on an exception captures an enhanced report with traceback, SDK version, platform, and trace_id. Learners get incident-ready output without wiring up logging by hand.",
+    "Code — diagnose(). The built-in context manager from fundamental.diagnostics. Pass log_dir and it writes a timestamped fundamental_debug log file into that directory, activates diagnostics for the block, and deactivates on exit. Secrets in the logs are redacted automatically — safe to paste into a support ticket.",
+    "Two-column — what gets logged. Endpoint, row count, model id, latency, trace id. Secrets are masked. The trace id is the one identifier support asks for — logging it saves hours.",
+    "Part 02 divider. Shift from tools to patterns. Every production team sees the same five failures; pattern recognition cuts minutes off the investigation.",
+    "Trace id is the one field. The support-ticket rule of thumb. A ticket without a trace id means the engineer searches logs by timestamp and key prefix — usually guesses wrong. A ticket with a trace id jumps straight to the server-side entry. Everything in this module's toolkit is downstream of that one rule: always capture the trace id, always include it.",
+    "Fingerprints 1-3. The common three — bad API key, rate limit, poll timeout. Each card has symptom + error code + first check. Walk one at a time: most learners have seen at least one of these in the wild already.",
+    "Fingerprints 4-5. The other two — shape mismatch and stale model id. Both are fix-input class. Both usually resolve without a support ticket. Live-run insight: load_model() validates the ID against the platform eagerly, so a stale ID surfaces during the load call, not during the subsequent predict. The fingerprint is NotFoundError on load_model — once you see the call site, the diagnosis is immediate. Most of these resolve without a support ticket if the first check is done right. Push the room to memorize the five; the decision rule they already know from Module 06 picks the action.",
+    "Code — DiagnosticHarness. The reusable part. One dataclass collects operation, status, duration, and error metadata across an entire pipeline run. The summary() DataFrame is what you attach to an incident report.",
+    "Exercise. Learners wrap a failing call with diagnose(), capture the log, and match it to one of the five fingerprints. The anti-pattern: filing a support ticket without the trace id. Push them to log the exception type and trace_id on every exception — including ones their retry code silently handles. Silent recoveries hide real drift. The one-card fingerprint table and a matching exercise now live in the notebook.",
+    "Takeaways. Three. Read aloud. Leave a breath after 'masked automatically.' That rule changes the shape of every incident-response conversation.",
+    "Closing. Segue to Module 08 — the final module. Operating at scale: multi-environment keys, model versioning for reproducible training, and model lifecycle management with models.list()."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 07</div>
+  <h1 class="cov-title">Diagnostics<br>and <em>debugging.</em></h1>
+  <div class="cov-big-n">07 / 08</div>
+  <div class="cov-meta">300&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE TOOLKIT</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Python logging, turned up</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">The fundamental logger</div><div class="ag-row-b">Every NEXUS call logs through the "fundamental" hierarchy. No special imports.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">diagnose() &mdash; scoped DEBUG</div><div class="ag-row-b">A context manager. Wrap one call, write to a file, auto-restore on exit.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">DiagnosticHarness &mdash; pipeline-wide capture</div><div class="ag-row-b">A dataclass that collects status, duration, and error metadata across every operation.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>FIVE FINGERPRINTS</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Patterns you will see in production</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Bad API key &mdash; and the whitespace trap</div><div class="ag-row-b">401 at first call. Check length and strip. Most auth failures are one of these two.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Rate limits, timeouts, shape mismatches, stale ids</div><div class="ag-row-b">Four more. Each has an trace_id. Each has a first-check that resolves most cases.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; match the fingerprint</div><div class="ag-row-b">Wrap a failing call, read the log, pick the pattern. Write the one-sentence fix.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Turn on <em>scoped DEBUG</em> logging</h3>
+        <p class="lo-b">Configure the fundamental logger with standard Python logging. Wrap specific calls in a diagnose() context manager for focused investigation &mdash; with auto-cleanup on exit.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Read <em>trace_id</em> and <em>exception type</em></h3>
+        <p class="lo-b">Pull structured metadata off every NEXUSError. Pick the right action &mdash; fix, retry, or escalate &mdash; the same decision rule you learned in Module 06, now applied to investigation.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Recognize the <em>five fingerprints</em></h3>
+        <p class="lo-b">Bad API key, rate limit, poll timeout, shape mismatch, stale model id. Most production failures match one of these. A quick check of the exception class and trace_id identifies all five in seconds.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/skyline-dusk.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">When the <em>bug</em><br>doesn't <em>reproduce</em>.</h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title">The SDK's built-in <em>diagnostics</em> plus <em>structured metadata</em> are the whole diagnostic kit &mdash; activate, run, read the report.</h2>
+  </div>
+  <div class="kc-cite">Fig. 07 &middot; The module in one sentence</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     06  TWO-COLUMN — Built-in diagnostics                        [NEW]
+     ============================================================ -->
+<section data-screen-label="06 Built-in Diagnostics">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE BUILT-IN TOOL</div>
+      <h2 class="tc-title">Diagnostics ship <em>in the SDK.</em></h2>
+      <p class="tc-body">Import <code>diagnose</code>, <code>activate</code>, and <code>deactivate</code> from <code>fundamental.diagnostics</code>. <code>activate()</code> and <code>deactivate()</code> turn diagnostics on and off globally; <code>diagnose()</code> scopes them to a single block.</p>
+      <p class="tc-body">What you get: a <em>timestamped log file</em> written into the directory you pass, <em>automatic secret redaction</em> so excerpts are safe to share, and on an exception an <em>enhanced error report</em> &mdash; traceback, SDK version, platform, and the trace_id &mdash; before the error re-raises.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">WHAT YOU GET</div>
+      <h3 class="tc-right-h">Activate.<br>Run.<br>Read the<br>report.</h3>
+      <p class="tc-right-b">No setup beyond the import. <code>diagnose()</code> activates diagnostics for the block and deactivates on exit. If the block raises, the enhanced report lands in the log file with everything support needs to trace the request.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">1 import</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">diagnose, activate, deactivate<br>from fundamental.diagnostics.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     07  CODE — diagnose() context manager
+     ============================================================ -->
+<section data-screen-label="07 Code diagnose">
+  <h2 class="code-title"><em>diagnose()</em> &mdash; scoped diagnostics.</h2>
+  <div class="code-sub">Wrap one call. Auto-deactivate on exit. Safe to paste into a ticket.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_07_diagnostics_debugging.ipynb &middot; cell 11</span>
+      </div>
+<pre class="code-pre"><span class="c-key">from</span> fundamental.diagnostics <span class="c-key">import</span> diagnose, activate, deactivate
+
+<span class="c-com"># global on/off &mdash; writes a timestamped log file into log_dir</span>
+<span class="c-fn">activate</span>(log_dir=<span class="c-str">"./logs"</span>)
+proba = nexus.<span class="c-fn">predict_proba</span>(X_holdout)
+<span class="c-fn">deactivate</span>()
+
+<span class="c-com"># scoped &mdash; activates for the block, deactivates on exit</span>
+<span class="c-key">with</span> <span class="c-fn">diagnose</span>(log_dir=<span class="c-str">"./logs"</span>):
+    proba = nexus.<span class="c-fn">predict_proba</span>(X_holdout)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Surgical, not <em>global</em>.</h3>
+      <p class="code-note-b">activate() stays on until you call deactivate(). diagnose() scopes diagnostics to one block, deactivates on exit, and writes a timestamped log file into the directory you pass &mdash; ready to attach to a ticket.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     08  TWO-COLUMN — What gets logged
+     ============================================================ -->
+<section data-screen-label="08 What Gets Logged">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">WHAT GETS LOGGED</div>
+      <h2 class="tc-title">Every request. Every response. <em>The trace id.</em></h2>
+      <p class="tc-body">Endpoint, row count, model id, latency, HTTP status. Every NEXUS call writes a structured line through the fundamental logger hierarchy. Errors include the full exception class and message, plus the <em>trace id</em> the server assigned to the request.</p>
+      <p class="tc-body">API keys and other secrets are <em>masked automatically</em>. Log excerpts are safe to paste into a support ticket &mdash; and the trace id is the one line that routes the ticket straight to your request in the server logs.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE SHORTCUT</div>
+      <h3 class="tc-right-h">The trace id<br>saves hours<br>of back-and-<br>forth</h3>
+      <p class="tc-right-b">Support cannot find your request without it. With it, they jump straight to the server-side logs. Always include the trace id when filing a ticket.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">1 id</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">every API call gets one &mdash;<br>logged on success and failure.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     09  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="09 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; FIVE FINGERPRINTS</div>
+  <h2 class="div-title">Five <em>patterns</em>.<br>Most production failures fit one.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     10  TWO-COLUMN — Trace id is the one field                   [NEW]
+     ============================================================ -->
+<section data-screen-label="10 Trace Id First">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE ONE IDENTIFIER</div>
+      <h2 class="tc-title">Include the <em>trace id</em>. Everything else is optional.</h2>
+      <p class="tc-body">A support ticket <em>without</em> a trace id means the engineer on the other end searches logs by timestamp and key prefix &mdash; and usually guesses wrong. A ticket <em>with</em> a trace id jumps straight to your exact request in the server logs.</p>
+      <p class="tc-body">The trace id is on every response and every error log line. <code>diagnose()</code> puts it in the file. <code>DiagnosticHarness</code> puts it in the DataFrame. The whole toolkit is downstream of that one rule: always capture the trace id, always include it.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE CONTRAST</div>
+      <h3 class="tc-right-h">With a<br>trace id: <em>fast</em>.<br>Without: <em>slow</em>.</h3>
+      <p class="tc-right-b">Support cannot search by symptom; they search by id. A ticket with a trace id routes straight to the server-side entry. A ticket without one means hours of back-and-forth before anyone sees your request.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">1 line</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">the difference between<br>a quick fix and an outage.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     11  TWO-COLUMN — Five fingerprints table
+     ============================================================ -->
+<section data-screen-label="11 Fingerprints 1-3">
+  <h2 class="tk-title">Five fingerprints &mdash; <em>the common three</em>.</h2>
+  <div class="tk-sub">Symptom. Exception. First check. Most tickets you file will be one of these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Bad <em>API key</em></h3>
+      <p class="tk-card-b"><strong>Symptom:</strong> 401 on the first call.<br><strong>Exception:</strong> AuthenticationError.<br><strong>First check:</strong> strip whitespace, verify length. Most auth failures are a trailing newline from a paste.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Rate <em>limit</em></h3>
+      <p class="tk-card-b"><strong>Symptom:</strong> rapid 429s.<br><strong>Exception:</strong> RateLimitError.<br><strong>First check:</strong> log timestamps under 2s apart means no backoff is wired up. Fix the retry code, not the key.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Poll <em>timeout</em></h3>
+      <p class="tk-card-b"><strong>Symptom:</strong> timeout during poll.<br><strong>Exception:</strong> RequestTimeoutError.<br><strong>First check:</strong> the <em>job is still running</em>. Retry the poll with the same task_id. Do <em>not</em> resubmit.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     12  TWO-COLUMN — Fingerprints 4-5                            [NEW P2]
+     ============================================================ -->
+<section data-screen-label="12 Fingerprints 4-5">
+  <h2 class="tk-title">Five fingerprints &mdash; <em>the other two</em>.</h2>
+  <div class="tk-sub">Client-side validation and registry drift. Often mistaken for bugs; usually easy fixes.</div>
+  <div class="tk-grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="tk-card">
+      <div class="tk-card-n">04</div>
+      <h3 class="tk-card-h">Shape <em>mismatch</em></h3>
+      <p class="tk-card-b"><strong>Symptom:</strong> <code>TypeError</code> or <code>ValueError</code> on predict, before the network call.<br><strong>Exception:</strong> <code>TypeError</code> / <code>ValueError</code> &mdash; raised client-side, before any API call.<br><strong>First check:</strong> does <code>X.shape[1]</code> match the training feature count? Re-check the enriched frame &mdash; a dropped column or silent dedup often hides here.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">05</div>
+      <h3 class="tk-card-h">Stale <em>model id</em></h3>
+      <p class="tk-card-b"><strong>Symptom:</strong> error on load.<br><strong>Exception:</strong> NotFoundError.<br><strong>First check:</strong> the model id is stale, deleted, or from the wrong environment. Verify against <code>models.list()</code> before you blame the code.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     12  CODE — DiagnosticHarness
+     ============================================================ -->
+<section data-screen-label="13 Code DiagnosticHarness">
+  <h2 class="code-title"><em>DiagnosticHarness</em> &mdash; pipeline capture.</h2>
+  <div class="code-sub">One dataclass. Every operation. A DataFrame you can attach to a ticket.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_07_diagnostics_debugging.ipynb &middot; cell 18</span>
+      </div>
+<pre class="code-pre" style="font-size:20.5px">@dataclass
+<span class="c-key">class</span> <span class="c-fn">DiagnosticHarness</span>:
+    events: <span class="c-fn">list</span> = <span class="c-fn">field</span>(default_factory=<span class="c-fn">list</span>)
+    <span class="c-key">def</span> <span class="c-fn">record</span>(self, operation, status, error=<span class="c-str">None</span>):
+        self.events.<span class="c-fn">append</span>({
+            <span class="c-str">"operation"</span>:      operation,
+            <span class="c-str">"status"</span>:         status,
+            <span class="c-str">"trace_id"</span>:     <span class="c-fn">getattr</span>(error, <span class="c-str">"trace_id"</span>, <span class="c-str">None</span>),
+            <span class="c-str">"error_type"</span>: <span class="c-fn">type</span>(error).__name__ <span class="c-key">if</span> error <span class="c-key">else</span> <span class="c-str">None</span>,
+        })
+    <span class="c-key">def</span> <span class="c-fn">summary</span>(self) -&gt; pd.DataFrame: <span class="c-key">return</span> pd.<span class="c-fn">DataFrame</span>(self.events)
+<span class="c-com"># wrap any NEXUS call &mdash; success or failure</span>
+harness = <span class="c-fn">DiagnosticHarness</span>()
+<span class="c-key">try</span>:
+    probas = nexus.<span class="c-fn">predict_proba</span>(X_holdout)
+    harness.<span class="c-fn">record</span>(<span class="c-str">"predict_proba"</span>, <span class="c-str">"success"</span>)
+<span class="c-key">except</span> <span class="c-fn">Exception</span> <span class="c-key">as</span> exc:
+    harness.<span class="c-fn">record</span>(<span class="c-str">"predict_proba"</span>, <span class="c-str">"error"</span>, error=exc)</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Every event, in <em>one table</em>.</h3>
+      <p class="code-note-b">harness.summary() is a pandas DataFrame &mdash; one row per operation, with status, trace_id, and exception type. Filter, sort, attach to an incident report. The output survives a process restart; the diagnostics do not.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     14  EXERCISE — Match the fingerprint
+     ============================================================ -->
+<section data-screen-label="14 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">07</div>
+      <h3 class="ex-side-h">Wrap it.<br>Capture it.<br>Match the<br>fingerprint.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">The notebook, an intentionally broken model id</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">A log excerpt, a trace id, a one-line fix</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Advanced &middot; <span style="opacity:.5;">&#9679;&#9679;&#9679;&#9679;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">You have a failing predict() call.<br>Wrap it in diagnose(), pull the fingerprint, write the fix.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Wrap the broken call in <em>diagnose(log_dir="./logs")</em>. It writes a timestamped log file into that directory. Let it fail.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Grep the log for ERROR and WARNING. Copy the <em>exception type</em> and the trace_id.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Match the <em>exception type</em> to one of the five fingerprints. Note the recommended first check.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">Write a one-line fix. If the first check does not resolve it, draft the <em>support ticket</em> &mdash; include the trace id.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">14</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     15  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="15 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Diagnostics <em>ship</em> in the SDK</h3>
+      <p class="tk-card-b">Import diagnose, activate, and deactivate from fundamental.diagnostics. Scope a block with diagnose() for investigation, combine with the DiagnosticHarness for pipelines.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Secrets are <em>masked</em> automatically</h3>
+      <p class="tk-card-b">Log excerpts are safe to share. The trace id on every request is what routes a support ticket straight to the right server-side entry &mdash; always include it.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Learn the <em>five fingerprints</em></h3>
+      <p class="tk-card-b">Bad API key, rate limit, poll timeout, shape mismatch, stale model id. A glance at exception type plus trace_id identifies all five in seconds.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">15</span> / 16</div>
+</section>
+
+<!-- ============================================================
+     16  CLOSING
+     ============================================================ -->
+<section data-screen-label="16 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/nexus-sees-future.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>operating at scale.</em></h1>
+  <div class="closing-meta">Module 08 &middot; Multi-environment keys, model versioning, model lifecycle &middot; 300&#8209;level</div>
+  <div class="closing-cta">The last module. <em>Production operations</em> &mdash; keys, modes, and the inventory of every model you have trained.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

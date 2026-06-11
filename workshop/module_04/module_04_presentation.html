@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 04 · Model explanations</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. Learners arrive with the 22-feature enriched model from Module 03. The AUC is good. This module answers the next question the room always asks: which features are doing the work, and why.",
+    "Agenda — 2-card. Two arcs: reading the model (global feature importance via get_feature_importance) and operational moves (async importance, feature-selection experiment). Flag the async pattern — it is the same shape used for training and prediction in Modules 05 and 06.",
+    "Learning objectives. Three. The first covers global feature importance — NEXUS exposes a single global importance score per feature (there are no per-record/local explanations). The second introduces the submit/poll async idea that every remaining module will reuse. The third is the experiment that turns rankings into decisions.",
+    "Part 01 divider. Pause. Frame why explanation matters: interpretability for stakeholders, efficiency for production. The stat to land: a model with 12 features that matches the 22-feature AUC is the better production model.",
+    "Key concept. Read slowly. One call returns one ndarray, paired with X.columns to rank features. That is the sentence to remember.",
+    "What feature importance gives you. NEXUS returns one importance score per feature, computed from the model's internal attribution over a holdout you supply. Higher score means the feature pulled more weight in the model's decisions. The output is a flat ndarray — pair with X.columns to rank, and you have the frame the rest of the module uses for the trim experiment.",
+    "Code — get_feature_importance(). Walk the call once. The return is a flat ndarray; pair it with X.columns and you have the ranked frame you will reuse in the experiment at the end.",
+    "Governance use case. This is the model-documentation slide. Global importance answers 'what does the model care about overall' — the artifact regulated lending puts in the file: which features drive the model, and evidence that prohibited or proxy features are not dominating. Be explicit that NEXUS gives global importance only; per-record 'why this borrower' explanations are not a NEXUS output — you would add a separate technique for that.",
+    "Async path. submit_feature_importance_task / poll_feature_importance_result. Same submit/poll pattern Module 5 uses for fit and predict — a third surface that exposes it. The submit returns instantly; the poll returns the same flat ndarray the synchronous call would have.",
+    "Part 02 divider. Shift from reading the model to running big jobs. The async pattern is the through-line of the rest of the workshop.",
+    "Code — submit + poll. The hardest part of async you will see all course. Everything in Modules 05 and 06 follows the same shape — submit, save the task id, poll.",
+    "Analyst scores rank low. This is the surprise. The enriched frame includes six hand-crafted credit assessment scores. You would expect them to dominate the importance ranking. They do not — raw demographic and behavioral features outrank them. The lesson: domain experts distill, but models see the un-distilled signal, and sometimes the un-distilled signal is stronger.",
+    "Importance vs necessity. The key distinction of the module. What the model used is not the same question as what the model needs. Importance ranks the model you already trained. Retraining on the trimmed frame tells you what a fresh model built without those columns would look like. Those two answers can differ — the next slide runs the experiment that shows how much.",
+    "Two-column — feature selection. The experiment validates the ranking. Frame it: importance tells you what the model used. Retraining on the trimmed set tells you what it needed. Those are different questions.",
+    "Cumulative importance — the fragility read. The curve's shape tells you where the model's signal lives. Steep climb means concentrated: about a third of the features (8 of 22) carry 80% of the weight. That is cheap to serve and fragile to drift. A gentler climb spreads the load: robust to any one failure, more work to monitor. The number that matters is not any one feature's importance — it is the shape of the whole curve.",
+    "Exercise. Learners run the trim-and-retrain loop across N = 15, 10, 5. Watch for the trap: they assume the leanest model wins. Push them to read the delta — the rule of thumb is that under 0.005 AUC drop is acceptable for production, but it is a starting point, not a law. Context rules: a fraud model with a hard recall target may not tolerate any drop; a marketing model often will.",
+    "Takeaways. Three. Read them aloud. Leave a breath after the third.",
+    "Closing. Segue to Module 05 — async patterns for training and prediction. They have already seen the shape here; now it scales to the whole pipeline."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 04</div>
+  <h1 class="cov-title">Model<br><em>explanations.</em></h1>
+  <div class="cov-big-n">04 / 08</div>
+  <div class="cov-meta">200&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE RANKING</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">What your model learned</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Global importance &mdash; what matters overall</div><div class="ag-row-b">get_feature_importance(X) returns a flat ndarray; pair with X.columns to rank.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Cumulative importance and feature trimming</div><div class="ag-row-b">Read the elbow off the curve. Cut the bottom features. Watch the AUC.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Async feature importance</div><div class="ag-row-b">submit_feature_importance_task and poll_feature_importance_result. Same submit/poll pattern as fit and predict.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>OPERATIONS</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Submit, poll, trim</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">The async pattern &mdash; submit and poll</div><div class="ag-row-b">submit_feature_importance_task() returns a task id. Your process keeps running.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Feature selection &mdash; rank, trim, retrain</div><div class="ag-row-b">Test N = 15, 10, 5. Measure holdout AUC against the 22-feature baseline.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; the leaner model</div><div class="ag-row-b">Trim by importance. Retrain. Decide which model you would ship.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Call <em>get_feature_importance()</em> and rank the features</h3>
+        <p class="lo-b">Global importance ranking via get_feature_importance, the cumulative importance curve, and the importance-driven feature-trimming experiment.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Run it <em>async</em> &mdash; submit and poll</h3>
+        <p class="lo-b">submit_feature_importance_task() returns a task id immediately. poll_feature_importance_result() returns the importance scores (an ndarray) when it is ready. The same shape shows up in Modules 05 and 06.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Validate feature cuts on <em>holdout AUC</em></h3>
+        <p class="lo-b">Rank by importance, trim to top N, retrain, measure the delta. Importance tells you what the model used; the experiment tells you what it needed.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/energy.png);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">Which <em>features</em><br>did the <em>work</em>?</h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title"><em>get_feature_importance(X)</em> returns one ranked frame &mdash; global importance, with an async twin for big jobs.</h2>
+  </div>
+  <div class="kc-cite">Fig. 04 &middot; The module in one sentence</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     06  TWO-COLUMN — What feature importance gives you                                [NEW]
+     ============================================================ -->
+<section data-screen-label="06 Feature importance">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE SHORT VERSION</div>
+      <h2 class="tc-title">Feature importance puts a <em>number</em> on each feature's pull.</h2>
+      <p class="tc-body">For each feature, NEXUS returns a single non-negative importance score over the holdout you pass in. Higher means the model relied on that feature more. The result is a flat ndarray with one entry per column &mdash; ranking is a one-line zip with X.columns.</p>
+      <p class="tc-body">NEXUS computes importance from the trained model directly &mdash; no extra library, no kernel selection, no background dataset configuration. Pass the holdout you care about to <code>get_feature_importance(X)</code> and the scores come back.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">ONE SCORE PER FEATURE</div>
+      <h3 class="tc-right-h">one number<br>per feature<br>is the<br>ranking</h3>
+      <p class="tc-right-b">Each score is non-negative &mdash; one entry per column, in your column order. Pair the scores with X.columns and sort to rank what the model relies on. This is a global view across the whole holdout.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">global</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">one ranking<br>across the model.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     07  CODE — get_feature_importance() + ranking
+     ============================================================ -->
+<section data-screen-label="07 Code get_feature_importance">
+  <h2 class="code-title"><em>get_feature_importance(X)</em> reads the model.</h2>
+  <div class="code-sub">Pass your holdout as X. One flat ndarray back.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_04_feature_importance.ipynb &middot; cells 9 &amp; 11</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># reload the enriched Module 03 model</span>
+nexus = <span class="c-fn">NEXUSClassifier</span>()
+nexus.load_model(ENRICHED_MODEL_ID)
+
+<span class="c-com"># synchronous importance &mdash; blocks until results arrive</span>
+importance = nexus.<span class="c-fn">get_feature_importance</span>(X_holdout)
+
+<span class="c-com"># pair the flat ndarray with column names and sort</span>
+importance_df = pd.<span class="c-fn">DataFrame</span>({
+    <span class="c-str">"feature"</span>: X_holdout.columns,
+    <span class="c-str">"importance"</span>: importance,
+}).<span class="c-fn">sort_values</span>(<span class="c-str">"importance"</span>, ascending=<span class="c-str">False</span>)
+<span class="c-com"># &rarr; one row per feature, sorted by importance</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">The call returns <em>one ranked frame</em>.</h3>
+      <p class="code-note-b">get_feature_importance(X) returns a flat ndarray of importance scores aligned to your column order. Pair with X.columns to build the ranked frame the rest of the module uses.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     08  TWO-COLUMN — Global importance for governance
+     ============================================================ -->
+<section data-screen-label="08 Governance Use Case">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE MOTIVATION</div>
+      <h2 class="tc-title">What the model <em>relies on</em>, on the record.</h2>
+      <p class="tc-body">In regulated lending you have to document what drives the model: which features carry the most weight, and evidence that prohibited or proxy features are not dominating. A global importance ranking is exactly that artifact &mdash; a model-level record you can put in the file and defend in review.</p>
+      <p class="tc-body">NEXUS returns <em>global</em> feature importance &mdash; one ranked score per feature. It does not produce per-record (local) explanations; for instance-level &ldquo;why this borrower&rdquo; reasoning you would layer on a separate technique.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">MODEL GOVERNANCE</div>
+      <h3 class="tc-right-h">Document<br>what the model<br>relies on</h3>
+      <p class="tc-right-b">get_feature_importance(X) returns a flat ndarray of importance scores aligned to your column order. Pair with X.columns to rank, plot, and drive the trim experiment in Part 5.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">global, by design</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">what drives the model,<br>documented for review.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     09  CODE — submit and poll
+     ============================================================ -->
+<section data-screen-label="09 Code submit and poll">
+  <h2 class="code-title">Submit, then <em>poll</em>.</h2>
+  <div class="code-sub">Kick off the job. Pick up the scores when they are ready.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_04_feature_importance.ipynb &middot; cells 17 &amp; 19</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># submit &mdash; returns a task id immediately, no blocking</span>
+task_id = nexus.<span class="c-fn">submit_feature_importance_task</span>(X_holdout)
+<span class="c-fn">print</span>(<span class="c-str">f"submitted: {task_id}"</span>)  <span class="c-com"># save this id</span>
+
+<span class="c-com"># poll &mdash; returns None while running, the scores when done</span>
+result = <span class="c-str">None</span>
+<span class="c-key">while</span> result <span class="c-key">is</span> <span class="c-str">None</span>:
+    result = nexus.<span class="c-fn">poll_feature_importance_result</span>(task_id)
+    <span class="c-key">if</span> result <span class="c-key">is</span> <span class="c-str">None</span>:
+        time.<span class="c-fn">sleep</span>(<span class="c-str">15</span>)  <span class="c-com"># check again in 15s</span>
+<span class="c-com"># &rarr; same flat ndarray the sync call returns</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Submit returns now. Poll <em>when you're ready</em>.</h3>
+      <p class="code-note-b">The poll returns the same flat ndarray as the sync call &mdash; pair it with X.columns for a ranked DataFrame. The next slide reads this pattern as the through-line for the rest of the workshop.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     10  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="10 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; OPERATIONS</div>
+  <h2 class="div-title">Submit. Poll. <em>Keep moving.</em></h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     11  CODE — submit_feature_importance_task + poll
+     ============================================================ -->
+<section data-screen-label="11 Code submit and poll">
+  <h2 class="code-title">The <em>async</em> twin.</h2>
+  <div class="code-sub">Submit, save the id, poll when you're ready.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_04_feature_importance.ipynb &middot; cells 17 &amp; 19</span>
+      </div>
+<pre class="code-pre"><span class="c-com"># submit &mdash; returns a task id immediately, no blocking</span>
+task_id = nexus.<span class="c-fn">submit_feature_importance_task</span>(X_holdout)
+<span class="c-fn">print</span>(<span class="c-str">f"submitted: {task_id}"</span>)  <span class="c-com"># save this id</span>
+
+<span class="c-com"># poll &mdash; returns None if still running, the scores when done</span>
+result = <span class="c-str">None</span>
+<span class="c-key">while</span> result <span class="c-key">is</span> <span class="c-str">None</span>:
+    result = nexus.<span class="c-fn">poll_feature_importance_result</span>(task_id)
+    <span class="c-key">if</span> result <span class="c-key">is</span> <span class="c-str">None</span>:
+        time.<span class="c-fn">sleep</span>(<span class="c-str">15</span>)  <span class="c-com"># check again in 15s</span>
+<span class="c-com"># in production: persist task_id, poll from a scheduled job.</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">The <em>same shape</em> runs the rest of the workshop.</h3>
+      <p class="code-note-b">submit + poll is how Modules 05 and 06 train and predict in the background. Once you have the pattern here, you have it everywhere &mdash; training, prediction, explanations, all non-blocking.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     12  TWO-COLUMN — Analyst scores rank low                     [NEW]
+     ============================================================ -->
+<section data-screen-label="12 Analyst Scores Rank Low">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">A SURPRISE IN THE RANKING</div>
+      <h2 class="tc-title">The analyst scores rank <em>lower</em> than you would guess.</h2>
+      <p class="tc-body">The enriched feature frame from Module 03 includes six assessment scores &mdash; creditworthiness_rating, payment_behavior_score, financial_stability_score, lender_relationship_score, credit_engagement_score, debt_service_score. Each one was hand-crafted by credit analysts. You would expect them to dominate.</p>
+      <p class="tc-body">They do not. Raw demographic features and behavioral aggregates like <em>monthly_income_usd</em> and <em>on_time_rate</em> carry more signal. The six curated scores collectively account for a <em>small slice</em> of total importance.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">WHAT IT MEANS</div>
+      <h3 class="tc-right-h">Structured<br>judgment isn't<br>always the<br>best signal</h3>
+      <p class="tc-right-b">The model extracts more signal from the <em>un-distilled</em> behavior than the analysts condensed into summary scores. That is not a verdict on analyst judgment &mdash; it is a reminder that expert priors and model priors can differ, and the data usually sides with the model.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">6 low</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">analyst-curated scores,<br>small share of importance.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     13  TWO-COLUMN — Importance ≠ Necessity                      [NEW]
+     ============================================================ -->
+<section data-screen-label="13 Importance Not Necessity">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE DISTINCTION</div>
+      <h2 class="tc-title">What the model <em>used</em> is not what the model <em>needs</em>.</h2>
+      <p class="tc-body">Importance scores measure contribution when the model had every feature available. A column near the bottom of the ranking <em>looks</em> disposable. But drop it and retrain &mdash; the model can redistribute its reliance across other features, and the AUC can move more than the low importance suggested.</p>
+      <p class="tc-body">The only honest test is to retrain on the trimmed frame and compare holdout AUC. That is why the next slide runs an experiment, not just a cut.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">TWO QUESTIONS</div>
+      <h3 class="tc-right-h">'What it<br>used'<br>&ne;<br>'what it<br>needs'</h3>
+      <p class="tc-right-b">Importance ranks the model you already have. Retraining measures the model you would build without those columns. Nonlinear interactions mean the two answers can differ &mdash; sometimes sharply.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">rank &rarr; retrain</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">never skip the second half.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     14  TWO-COLUMN — Feature selection experiment
+     ============================================================ -->
+<section data-screen-label="14 Feature Selection">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE EXPERIMENT</div>
+      <h2 class="tc-title">Rank. Trim. Retrain. <em>Compare.</em></h2>
+      <p class="tc-body">Importance scores tell you what the model used when it had everything. They do not tell you what happens if you retrain without the low-signal columns.</p>
+      <p class="tc-body">The experiment is four steps: sort by importance, select the top N, retrain a fresh NEXUSClassifier on the slim frame, compare holdout AUC to the 22-feature baseline. Test N = <em>15, 10, 5</em>. The delta tells you which model ships.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE RULE OF THUMB</div>
+      <h3 class="tc-right-h">If the AUC<br>delta is under<br>0.005, ship lean</h3>
+      <p class="tc-right-b">Smaller feature sets cost less to collect, less to monitor, and less to explain. If the AUC holds, the leaner model almost always wins.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">22 &rarr; 15</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">the typical first cut &mdash;<br>validated on holdout AUC.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">14</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     15  CHART — Cumulative importance / fragility               [NEW P2]
+     ============================================================ -->
+<section data-screen-label="15 Cumulative Importance">
+  <h2 class="ch-title">Where does the <em>signal</em> live?</h2>
+  <div class="ch-eb">Cumulative importance across the 22-feature enriched frame &mdash; the shape of the curve is your fragility signal.</div>
+  <div style="position: absolute; top: 300px; left: 96px; right: 96px; bottom: 140px;
+              display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center;">
+    <div>
+      <img src="module_04_cumulative_importance.png"
+           alt="Cumulative importance curve: features 1-8 reach 80% of total importance, features 1-15 reach 95%, long tail to feature 22."
+           style="width: 100%; height: auto; display: block; border-radius: 8px; box-shadow: 0 2px 18px rgba(15, 23, 42, 0.08);">
+    </div>
+    <div>
+      <div class="tc-eb" style="color:#1D4ED8;">READING THE CURVE</div>
+      <h3 class="tc-right-h" style="margin-top: 10px;">Steep early<br>means<br><em>concentrated</em><br>signal</h3>
+      <p class="tc-body" style="margin-top: 18px;">A curve that climbs fast and flattens &mdash; <em>about a third of the features (8 of 22) carry 80% of the weight</em> &mdash; is a <em>concentration</em> signal. Your model leans on a small handful of inputs. That is cheap to serve; it is also fragile to drift in any of them.</p>
+      <p class="tc-body">A flatter, more gradual curve spreads the load across many features. Robust to any one source failing; more work to monitor.</p>
+      <div class="tc-stat" style="margin-top: 24px;">
+        <div class="tc-stat-n">shape &rarr; risk</div>
+        <div class="tc-stat-l">the curve tells you<br>what breaks the model.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">15</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     16  EXERCISE — Trim and measure
+     ============================================================ -->
+<section data-screen-label="16 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">04</div>
+      <h3 class="ex-side-h">Trim the<br>frame.<br>Keep the<br>AUC.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">importance_array, importance_df</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">A feature-count vs AUC table + one-sentence pick</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Intermediate &middot; <span style="opacity:.5;">&#9679;&#9679;&#9679;</span>&#9675;</div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">You have the importance scores (an ndarray) and a ranked importance_df.<br>Find the <em>leanest model</em> that still holds the baseline AUC.</h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Sort importance_df, take the top <em>15</em>, retrain a fresh NEXUSClassifier on that slim frame.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Repeat for <em>top 10</em> and <em>top 5</em>. Record AUC and delta against the 22-feature baseline for each.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Plot feature count vs AUC. Look for the point where the curve bends &mdash; that is your cut.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">In one sentence: how many features, and why. Paste into the notebook's <em>Your call</em> cell.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">16</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     17  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="17 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">One call, <em>one ranked frame</em></h3>
+      <p class="tk-card-b">get_feature_importance(X) returns a flat ndarray of importance scores. Pair with X.columns to rank, then trim the long tail and re-fit a slim model.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Submit + poll is <em>the shape</em></h3>
+      <p class="tk-card-b">submit_feature_importance_task, poll_feature_importance_result. The same pattern runs training and prediction in Modules 05 and 06. Learn it once, reuse it everywhere.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Trim, then <em>validate</em></h3>
+      <p class="tk-card-b">Importance scores inform feature selection. Holdout AUC decides it. Always retrain on the trimmed frame before you commit to a cut.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">17</span> / 18</div>
+</section>
+
+<!-- ============================================================
+     18  CLOSING
+     ============================================================ -->
+<section data-screen-label="18 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/analyst.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>async patterns.</em></h1>
+  <div class="closing-meta">Module 05 &middot; submit_fit_task, poll_fit_result, parallel jobs &middot; 200&#8209;level</div>
+  <div class="closing-cta">Same shape you saw here &mdash; applied to <em>training and prediction</em>. Non-blocking end to end.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fundamental — Module 06 · Resilient pipelines</title>
+  <link rel="stylesheet" href="../../fundamental_assets/colors_and_type.css">
+  <link rel="stylesheet" href="../../fundamental_assets/deck-base.css">
+  <link rel="stylesheet" href="../../fundamental_assets/workshop.css">
+  <style>
+    /* Match the template's authored default — the tweaks panel normally sets this */
+    :root { --wk-scale: 0.95; }
+    /* Task lifecycle flow — scoped to this deck */
+    .lc-wrap    { position: absolute; top: 300px; left: 96px; right: 96px; bottom: 180px;
+                  display: flex; flex-direction: column; justify-content: center; }
+    .lc-row     { display: grid; grid-template-columns: 1fr 48px 1fr 48px 1fr 48px 1fr;
+                  align-items: center; gap: 0; }
+    .lc-box     { border-radius: 14px; padding: 28px 24px; background: #FFFFFF;
+                  border: 1px solid #E2E8F0; text-align: center; min-height: 160px;
+                  display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+    .lc-box--start  { border-top: 5px solid #64748B; }
+    .lc-box--wait   { border-top: 5px solid #8B5CF6; }
+    .lc-box--run    { border-top: 5px solid #3B82F6; }
+    .lc-box--done   { border-top: 5px solid #059669; background: #ECFDF5; }
+    .lc-box--fail   { border-top: 5px solid #DC2626; background: #FEF2F2; }
+    .lc-name    { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                  font-size: 22px; color: #1E293B; font-weight: 600; letter-spacing: 0.04em; }
+    .lc-note    { font-size: 15px; color: #64748B; line-height: 1.35; }
+    .lc-arrow   { font-size: 36px; color: #94A3B8; text-align: center; font-family: var(--wk-serif); }
+    .lc-split   { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+                  max-width: 760px; margin-left: auto; margin-right: auto; }
+    .lc-foot    { position: absolute; left: 96px; right: 96px; bottom: 120px;
+                  text-align: center; font-size: 20px; color: #475569;
+                  font-family: var(--wk-serif); font-style: italic; }
+    .lc-foot strong { font-style: normal; color: #1E293B; }
+  </style>
+  <script type="application/json" id="speaker-notes">
+    [
+    "Cover — paper. First 300-level module. Learners have a working async pipeline from Module 05. This module is about the gap between 'works in my notebook' and 'works at 3 AM when no one is watching.'",
+    "Agenda — 2-card. Two arcs: the error model (hierarchy, metadata, the three buckets) and the patterns that keep a pipeline alive (backoff, resilient polling, full-stack wrapper). Flag the takeaway up front: the exception class decides the action.",
+    "Learning objectives. Three. A is the decision rule — read the exception class, pick an action. B is the retry mechanism. C is the full pipeline that combines everything.",
+    "Part 01 divider. Pause. The line to land: 'works in a notebook' is not the same as 'works in production.' The whole module closes that gap.",
+    "Key concept. Read slowly. Three buckets, three actions. That is the one sentence you want in their heads by the end of the moment you spend here.",
+    "Three layers of defense. Name the layers out loud. Layer 1 is your client code — validation happens before the request ever leaves. Layer 2 is the server's structured report — a typed NEXUSError subclass with trace_id and a details dict. Layer 3 is the decision rule that turns that report into an action. The rest of the module is just tooling on top of this mental model.",
+    "Two-column — error hierarchy. Input errors mean fix your code. Transient errors mean retry with backoff. Any other NEXUSError means escalate. The exception class is the category — branch on it with isinstance, not on a string.",
+    "Code — backoff and decorator. Two functions. backoff_delay returns a monotonic wait with 20 percent jitter. @with_retry wraps any SDK call and catches only RETRYABLE_EXCEPTIONS, so it retries only transient errors. Everything else surfaces immediately.",
+    "Why jitter. The thundering-herd explanation. Synchronized retries are the worst kind — ten clients hit the same rate limit, all back off the same amount, all retry at the same second, and hit the limit a second time. Jitter breaks the lockstep. 20% random noise on each delay spreads the next wave across a window. The server sees a trickle instead of a spike.",
+    "Part 02 divider. Shift from 'retry one call' to 'keep a poll loop alive for an hour.' The deadline matters more than any single retry.",
+    "Task lifecycle. Walk the arrows. CREATED when you submit. PENDING while the server queues it. IN_PROGRESS while training runs. COMPLETE when weights land in the registry. FAILED only when the server itself gives up. The poll loop is not the job — it is just a client checking in on this state machine.",
+    "A timeout on poll is not a job failure. This is the most important line of the whole module. A RequestTimeoutError during polling means the poll call timed out — the server-side state machine keeps moving. Retry the poll with the same task id and you pick up where you left off. Never re-submit on a timeout — you will double-bill the job and race yourself.",
+    "Code — resilient_poll_fit. Wall-clock deadline up top. Consecutive error counter resets on clean polls. Transient errors retry. Fatal errors surface. On deadline exceeded, save the task id and resume later.",
+    "Two-column — the full pipeline. Four steps. Submit, poll, predict, persist. The pipeline wrapper is where everything from this module plus Modules 02 and 05 combine.",
+    "Exercise. Learners wrap a real submit+poll+predict into one resilient function, then simulate a transient failure by monkey-patching the SDK. The anti-pattern to watch for: except Exception: retry — that catches TypeError, KeyError, and every input error and retries them. Push them to catch RETRYABLE_EXCEPTIONS specifically and to branch with isinstance on the typed classes. The third step (injecting the transient failure) is where the module's design proves out: if a learner's pipeline does not recover, they are catching the wrong class.",
+    "Takeaways. Three. Read aloud. Leave a breath after 'never discard a task id.' That rule will save a production pipeline at least once in every team.",
+    "Closing. Segue to Module 07 — diagnostics. Resilience keeps the pipeline running. Diagnostics let you investigate when it doesn't."
+  ]
+  </script>
+  <script src="../../fundamental_assets/deck-stage.js"></script>
+  <script src="../../fundamental_assets/deck-tweaks.js"></script>
+  <script>
+    // Capture-mode loader: ?slide=N jumps to a slide, ?noscale=1 renders at authored 1920x1080.
+    // Used by the companion PPTX exporter. Harmless when absent.
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const stage = document.querySelector('deck-stage');
+      if (params.get('noscale') === '1') {
+        stage.setAttribute('noscale', '');
+        Object.assign(document.documentElement.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden' });
+        Object.assign(document.body.style, { margin: 0, padding: 0, width: '1920px', height: '1080px', overflow: 'hidden', background: '#fff' });
+        Object.assign(stage.style, { display: 'block', position: 'absolute', top: 0, left: 0, width: '1920px', height: '1080px' });
+      }
+      const s = parseInt(params.get('slide'), 10);
+      if (!isNaN(s)) {
+        document.fonts.ready.then(() => stage.goTo(s));
+      }
+    });
+  </script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ============================================================
+     01  COVER — Paper
+     ============================================================ -->
+<section data-screen-label="01 Cover" class="cov-paper">
+  <div class="cov-lock">
+    <span class="partner">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-black.svg" alt="Fundamental">
+  </div>
+  <div class="cov-eb">Workshop &middot; Module 06</div>
+  <h1 class="cov-title">Resilient<br><em>pipelines.</em></h1>
+  <div class="cov-big-n">06 / 08</div>
+  <div class="cov-meta">300&#8209;level &middot; Hands-on notebook &middot; April 2026</div>
+</section>
+
+<!-- ============================================================
+     02  AGENDA — 2-card
+     ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <h2 class="ag-title">Agenda</h2>
+  <div class="ag-grid-2">
+    <div class="ag-card">
+      <div class="ag-eb"><span>ARC 1</span><span>THE ERROR MODEL</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Know what you're catching</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">The exception hierarchy</div><div class="ag-row-b">TypeError / ValueError for input; NEXUSError for task failures; structured metadata on both.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">trace_id and the exception class</div><div class="ag-row-b">Every NEXUSError carries a trace_id. The class itself tells you what to do next.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Three buckets, three actions</div><div class="ag-row-b">fix the input &rarr; transient retry &rarr; escalate any other NEXUSError.</div></div></div>
+      </div>
+    </div>
+    <div class="ag-card ag-card--grad">
+      <div class="ag-eb"><span>ARC 2</span><span>THE PATTERNS</span></div>
+      <div class="ag-rule"></div>
+      <h3 class="ag-h">Keep the pipeline alive</h3>
+      <div class="ag-list">
+        <div class="ag-row"><div class="ag-row-n">01</div><div><div class="ag-row-h">Exponential backoff with jitter</div><div class="ag-row-b">Double the wait. Add 20 percent noise. Prevents thundering herds when many clients fail at once.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">02</div><div><div class="ag-row-h">Resilient poll loop &mdash; deadlines and error caps</div><div class="ag-row-b">Wall-clock deadline, consecutive-error counter. Deadline exceeded means save the id and resume.</div></div></div>
+        <div class="ag-row"><div class="ag-row-n">03</div><div><div class="ag-row-h">Exercise &mdash; wrap the full pipeline</div><div class="ag-row-b">Submit, poll, predict, persist. Simulate a transient failure. Prove it recovers.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">02</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     03  LEARNING OBJECTIVES
+     ============================================================ -->
+<section data-screen-label="03 Learning Objectives">
+  <div class="lo-wrap">
+    <div class="lo-eb">By the end of this module, you'll be able to&hellip;</div>
+    <h2 class="lo-title">Three things you'll <em>leave with</em></h2>
+    <div class="lo-grid">
+      <div class="lo-item">
+        <div class="lo-n">A</div>
+        <h3 class="lo-h">Read the <em>exception class</em> &mdash; pick the right response</h3>
+        <p class="lo-b">Input errors mean fix your code. Transient errors mean retry with backoff. Any other NEXUSError means escalate to support. Three buckets, three actions &mdash; and the class tells you exactly which.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">B</div>
+        <h3 class="lo-h">Retry transients with <em>backoff and jitter</em></h3>
+        <p class="lo-b">Write a reusable @with_retry decorator. Exponential delay, 20 percent jitter, caps at two minutes. User errors and internal errors surface immediately &mdash; no blind retries.</p>
+      </div>
+      <div class="lo-item">
+        <div class="lo-n">C</div>
+        <h3 class="lo-h">Build a <em>deadline-based</em> poll loop</h3>
+        <p class="lo-b">Wall-clock deadline, consecutive-error cap, task id preserved on every failure. Wrap it with submit and predict to ship a pipeline that survives the network.</p>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">03</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     04  DIVIDER — Part 01 · Top-left illustration
+     ============================================================ -->
+<section data-screen-label="04 Divider Part 01">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/analyst.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="div-number">PART 01</div>
+  <h2 class="div-topleft">Works in a <em>notebook</em>.<br>Now make it <em>survive</em>.</h2>
+  <img class="mark-bl inv" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-white.svg" alt="">
+</section>
+
+<!-- ============================================================
+     05  KEY CONCEPT — Big idea
+     ============================================================ -->
+<section data-screen-label="05 Key Concept">
+  <div class="kc-wrap">
+    <div class="kc-eb">The one-sentence definition.</div>
+    <h2 class="kc-title">Every failure is a <em>typed exception</em>. The class picks the response &mdash; <em>fix</em>, <em>retry</em>, or <em>escalate</em>.</h2>
+  </div>
+  <div class="kc-cite">Fig. 06 &middot; The module in one sentence</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">05</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     06  THREE LAYERS — The defense model                         [NEW]
+     ============================================================ -->
+<section data-screen-label="06 Three Layers of Defense">
+  <h2 class="tk-title">Three layers. <em>Three places</em> things go wrong.</h2>
+  <div class="tk-sub">Where the error is raised decides what you do next. Before you write any retry, know which layer is failing.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">Client-side <em>validation</em></h3>
+      <p class="tk-card-b">Your code, before the request leaves. <code>TypeError</code> and <code>ValueError</code> catch bad inputs &mdash; wrong dtype, unknown column, null where a value is required. <em>Fix and re-run.</em></p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Server-reported <em>failures</em></h3>
+      <p class="tk-card-b">The server ran your task and it failed. A typed <code>NEXUSError</code> subclass with <code>trace_id</code> and a <code>details</code> dict attached &mdash; structured metadata, not a string to grep.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">The <em>decision rule</em></h3>
+      <p class="tk-card-b">The class picks the action: input errors &rarr; fix. transient &rarr; retry. any other <code>NEXUSError</code> &rarr; escalate. The rest of the module is tooling on top of this mental model.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">06</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     07  TWO-COLUMN — Error hierarchy
+     ============================================================ -->
+<section data-screen-label="07 Error Hierarchy">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE ERROR MODEL</div>
+      <h2 class="tc-title">Three <em>buckets</em>. One decision.</h2>
+      <p class="tc-body">Every NEXUSError carries a <em>trace_id</em> and a <em>details</em> dict; the exception class itself tells you what to do. TypeError and ValueError cover client-side validation before the call reaches the server.</p>
+      <p class="tc-body">ValidationError, AuthenticationError, AuthorizationError, NotFoundError mean <em>fix the input</em> &mdash; do not retry. RateLimitError, NetworkError, RequestTimeoutError, ServerError are <em>transient</em> &mdash; retry with backoff. Anything else inheriting from NEXUSError &mdash; <em>escalate</em>: save trace_id and contact support.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE DECISION RULE</div>
+      <h3 class="tc-right-h">Read the<br>class.<br>Pick the<br>action.</h3>
+      <p class="tc-right-b">Branch with isinstance(exc, RETRYABLE_EXCEPTIONS) against the typed exception classes &mdash; the class is the category.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">3 &rarr; 3</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">three categories map to<br>three actions, nothing else.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">07</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     08  CODE — backoff + @with_retry
+     ============================================================ -->
+<section data-screen-label="08 Code backoff and retry">
+  <h2 class="code-title">Backoff, then <em>decorate</em>.</h2>
+  <div class="code-sub">One helper. One decorator. Every SDK call becomes resilient.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_06_resilient_pipelines.ipynb &middot; the backoff and retry-decorator cells</span>
+      </div>
+<pre class="code-pre" style="font-size:18.5px">RETRYABLE_EXCEPTIONS = (RateLimitError, NetworkError,
+                        RequestTimeoutError, ServerError)
+
+<span class="c-key">def</span> <span class="c-fn">backoff_delay</span>(attempt, base=<span class="c-str">5.0</span>, cap=<span class="c-str">120.0</span>):
+    delay = <span class="c-fn">min</span>(base * (<span class="c-str">2</span> ** (attempt - <span class="c-str">1</span>)), cap)
+    delay += random.<span class="c-fn">uniform</span>(<span class="c-str">0</span>, delay * <span class="c-str">0.2</span>)  <span class="c-com"># jitter</span>
+    <span class="c-key">return</span> delay
+
+<span class="c-key">def</span> <span class="c-fn">with_retry</span>(max_retries=<span class="c-str">3</span>, base_delay=<span class="c-str">5.0</span>):
+    <span class="c-key">def</span> <span class="c-fn">decorator</span>(fn):
+        @functools.<span class="c-fn">wraps</span>(fn)
+        <span class="c-key">def</span> <span class="c-fn">wrapper</span>(*args, **kwargs):
+            <span class="c-key">for</span> attempt <span class="c-key">in</span> <span class="c-fn">range</span>(<span class="c-str">1</span>, max_retries + <span class="c-str">2</span>):
+                <span class="c-key">try</span>:
+                    <span class="c-key">return</span> <span class="c-fn">fn</span>(*args, **kwargs)
+                <span class="c-key">except</span> RETRYABLE_EXCEPTIONS <span class="c-key">as</span> exc:
+                    <span class="c-key">if</span> attempt &gt; max_retries: <span class="c-key">raise</span>
+                    time.<span class="c-fn">sleep</span>(<span class="c-fn">backoff_delay</span>(attempt, base_delay))
+        <span class="c-key">return</span> wrapper
+    <span class="c-key">return</span> decorator</pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Transients retry. Others <em>surface</em>.</h3>
+      <p class="code-note-b">The wrapper catches only RETRYABLE_EXCEPTIONS &mdash; isinstance(exc, RETRYABLE_EXCEPTIONS) is the same test. Anything else raises immediately: input errors should not loop, and platform bugs need a human. The decorator keeps that rule in one place.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">08</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     09  TWO-COLUMN — Why jitter prevents thundering herds        [NEW P2]
+     ============================================================ -->
+<section data-screen-label="09 Why Jitter">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THUNDERING HERDS</div>
+      <h2 class="tc-title">The worst retry storm is the <em>synchronized</em> one.</h2>
+      <p class="tc-body">Ten clients all hit a rate limit at the same second. All retry at 5s. Then 10s. Then 20s. They arrive <em>together</em>, hit the limit again, and retry in lockstep. The server rate-limits them twice &mdash; once from the real overload, once from the retries stacking up behind it.</p>
+      <p class="tc-body">Jitter breaks the lockstep. A random 20% added to each delay spreads the next wave across a window. The server sees a <em>trickle</em> instead of a spike, and the same retries that were compounding the problem now ride the decay out.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE FIX</div>
+      <h3 class="tc-right-h">20% noise<br>turns a spike<br>into a<br>trickle</h3>
+      <p class="tc-right-b"><code>random.uniform(0, delay * 0.2)</code> on each attempt. Cheap to add, essential to include. Without it, synchronized failures compound; with it, they dissipate on their own.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">20% jitter</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">the difference between<br>recovery and cascading<br>failure.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">09</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     10  DIVIDER — Part 02 · Paper
+     ============================================================ -->
+<section data-screen-label="10 Divider Part 02" class="div-paper">
+  <div class="div-ch">PART 02 &middot; THE PATTERNS</div>
+  <h2 class="div-title">Now the <em>poll loop</em>.<br>Deadlines matter more than retries.</h2>
+  <div class="div-rule"></div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">10</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     10  TASK LIFECYCLE — State flow diagram                      [NEW]
+     ============================================================ -->
+<section data-screen-label="11 Task Lifecycle">
+  <h2 class="ch-title">The task <em>lives on the server</em>.</h2>
+  <div class="ch-eb">Your poll is just a client checking in on this state machine.</div>
+  <div class="lc-wrap">
+    <div class="lc-row">
+      <div class="lc-box lc-box--start">
+        <div class="lc-name">CREATED</div>
+        <div class="lc-note">submit returns a task id</div>
+      </div>
+      <div class="lc-arrow">&rarr;</div>
+      <div class="lc-box lc-box--wait">
+        <div class="lc-name">PENDING</div>
+        <div class="lc-note">queued, not yet running</div>
+      </div>
+      <div class="lc-arrow">&rarr;</div>
+      <div class="lc-box lc-box--run">
+        <div class="lc-name">IN_PROGRESS</div>
+        <div class="lc-note">training on Fundamental's infra</div>
+      </div>
+      <div class="lc-arrow">&rarr;</div>
+      <div class="lc-box lc-box--done">
+        <div class="lc-name">COMPLETE</div>
+        <div class="lc-note">weights land in the registry</div>
+      </div>
+    </div>
+    <div class="lc-split">
+      <div></div>
+      <div class="lc-box lc-box--fail">
+        <div class="lc-name">FAILED</div>
+        <div class="lc-note">server-side error &mdash; the only terminal that is not COMPLETE</div>
+      </div>
+    </div>
+  </div>
+  <div class="lc-foot">Your poll sees <strong>one</strong> of these states. Client-side errors (NetworkError, RequestTimeoutError) do not change which state the task is in.</div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">11</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     12  TWO-COLUMN — Timeout is not a failure                    [NEW]
+     ============================================================ -->
+<section data-screen-label="12 Timeout Not Failure">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE INSIGHT</div>
+      <h2 class="tc-title">A timeout on poll is <em>not</em> a job failure.</h2>
+      <p class="tc-body">A <code>RequestTimeoutError</code> during <em>polling</em> means the poll call's connection timed out. The task itself kept running. The server-side state machine did not move to FAILED &mdash; it stayed wherever it was.</p>
+      <p class="tc-body">Retry the poll with <em>the same task id</em>. Do not re-submit. Re-submission creates a second job, doubles billing, and races the first one. The id you already have is still valid.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE RULE</div>
+      <h3 class="tc-right-h">The job<br>keeps going.<br>So can<br>you.</h3>
+      <p class="tc-right-b">RequestTimeoutError is in <em>RETRYABLE_EXCEPTIONS</em> &mdash; exactly what @with_retry handles. The task id stays valid for 48 hours, so your next poll picks up the state change that was already in flight.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">same id</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">valid 48h &mdash; poll again,<br>never re-submit.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">12</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     13  CODE — resilient_poll_fit
+     ============================================================ -->
+<section data-screen-label="13 Code resilient poll">
+  <h2 class="code-title">The <em>resilient</em> poll.</h2>
+  <div class="code-sub">Wall-clock deadline. Consecutive-error cap. Task id preserved.</div>
+  <div class="code-grid">
+    <div class="code-block">
+      <div class="code-block-chrome">
+        <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
+        <span class="code-block-name">module_06_resilient_pipelines.ipynb &middot; the resilient-poll cell</span>
+      </div>
+<pre class="code-pre"><span class="c-key">def</span> <span class="c-fn">resilient_poll_fit</span>(nexus, task_id, poll_interval=<span class="c-str">20</span>,
+                       max_poll_errors=<span class="c-str">5</span>, deadline_seconds=<span class="c-str">3600</span>):
+    start, errs = time.<span class="c-fn">time</span>(), <span class="c-str">0</span>
+    <span class="c-key">while</span> <span class="c-str">True</span>:
+        <span class="c-key">if</span> time.<span class="c-fn">time</span>() - start &gt; deadline_seconds:
+            <span class="c-key">raise</span> <span class="c-fn">RuntimeError</span>(<span class="c-str">f"deadline exceeded &mdash; save {task_id}"</span>)
+        <span class="c-key">try</span>:
+            result = nexus.<span class="c-fn">poll_fit_result</span>(task_id)
+            errs = <span class="c-str">0</span>  <span class="c-com"># reset on clean poll</span>
+            <span class="c-key">if</span> result <span class="c-key">is</span> <span class="c-key">not</span> <span class="c-str">None</span>: <span class="c-key">return</span> result
+            time.<span class="c-fn">sleep</span>(poll_interval)
+        <span class="c-key">except</span> RETRYABLE_EXCEPTIONS <span class="c-key">as</span> exc:
+            errs += <span class="c-str">1</span>
+            <span class="c-key">if</span> errs &gt;= max_poll_errors: <span class="c-key">raise</span>
+            time.<span class="c-fn">sleep</span>(<span class="c-fn">backoff_delay</span>(errs, base=<span class="c-str">10.0</span>))
+        <span class="c-key">except</span> <span class="c-fn">NEXUSError</span>: <span class="c-key">raise</span>  <span class="c-com"># non-retryable: fix or escalate</span></pre>
+    </div>
+    <div class="code-note">
+      <div class="code-note-eb">WHY THIS MATTERS</div>
+      <h3 class="code-note-h">Deadlines beat <em>infinite loops</em>.</h3>
+      <p class="code-note-b">A transient storm can't trap you &mdash; the error counter caps it. A slow job can't trap you &mdash; the wall-clock deadline caps it. On deadline exceeded, the task id is in the message, the job keeps running, and a later session resumes the poll.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">13</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     14  TWO-COLUMN — The full pipeline
+     ============================================================ -->
+<section data-screen-label="14 Full Pipeline">
+  <div class="tc-wrap">
+    <div class="tc-left">
+      <div class="tc-eb">THE FULL PIPELINE</div>
+      <h2 class="tc-title">Submit. Poll. Predict. <em>Persist.</em></h2>
+      <p class="tc-body">run_pipeline is where every pattern in this module clicks into place. Submit the fit task, catch user errors at the input layer, hand the id off to resilient_poll_fit, wrap predict in @with_retry, and write the model_id plus AUC to a registry file.</p>
+      <p class="tc-body">The invariant: the <em>task id is saved before the poll</em>, not after. Poll failures do not kill the job &mdash; the server keeps running it. A crashed client can always resume with the id it already wrote to disk.</p>
+    </div>
+    <div class="tc-right">
+      <div class="tc-right-eb">THE LOAD-BEARING RULE</div>
+      <h3 class="tc-right-h">Save the<br>task id<br>before<br>you poll</h3>
+      <p class="tc-right-b">Not after. Not on success. Before. The one line that separates a pipeline that survives a restart from one that loses an hour of training.</p>
+      <div class="tc-stat" style="align-items: flex-start;">
+        <div class="tc-stat-n">4 steps</div>
+        <div class="tc-stat-l" style="padding-top: 18px;">submit, poll, predict,<br>persist &mdash; one function.</div>
+      </div>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">14</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     15  EXERCISE — Wrap and survive
+     ============================================================ -->
+<section data-screen-label="15 Exercise">
+  <div class="ex-wrap">
+    <div class="ex-side">
+      <span class="ex-side-tag">Exercise</span>
+      <div class="ex-side-n">06</div>
+      <h3 class="ex-side-h">Wrap it.<br>Break it.<br>Watch it<br>recover.</h3>
+      <div class="ex-side-meta">
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Format</div>
+          <div class="ex-side-meta-v">Solo, at your laptop</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Materials</div>
+          <div class="ex-side-meta-v">The notebook, your SLIM_MODEL_ID from Module 05</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Output</div>
+          <div class="ex-side-meta-v">A working run_pipeline() + a log showing recovery</div>
+        </div>
+        <div class="ex-side-meta-row">
+          <div class="ex-side-meta-k">Difficulty</div>
+          <div class="ex-side-meta-v">Advanced &middot; <span style="opacity:.5;">&#9679;&#9679;&#9679;&#9679;</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-body-eb">PARTICIPANT INSTRUCTIONS</div>
+      <h2 class="ex-body-h">Wrap submit + poll + predict into one resilient pipeline.<br>Inject a transient failure. <em>Prove it recovers.</em></h2>
+      <div class="ex-steps">
+        <div class="ex-step"><div class="ex-step-n">01</div><p class="ex-step-b">Build run_pipeline(X_train, y_train, X_eval, y_eval). Use @with_retry on submit and predict, resilient_poll_fit between them.</p></div>
+        <div class="ex-step"><div class="ex-step-n">02</div><p class="ex-step-b">Persist the task id to a registry file <em>before</em> the poll call &mdash; not after.</p></div>
+        <div class="ex-step"><div class="ex-step-n">03</div><p class="ex-step-b">Monkey-patch poll_fit_result to raise a <em>transient</em> NEXUSError on the first two calls. Re-run. Read the logs.</p></div>
+        <div class="ex-step"><div class="ex-step-n">04</div><p class="ex-step-b">In one paragraph: what would change if the failure were an <em>input error</em> like ValidationError instead. Paste into the notebook.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num"><span class="cur">15</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     16  TAKEAWAYS
+     ============================================================ -->
+<section data-screen-label="16 Takeaways">
+  <h2 class="tk-title">Three <em>takeaways</em></h2>
+  <div class="tk-sub">If you forget everything else, remember these.</div>
+  <div class="tk-grid">
+    <div class="tk-card">
+      <div class="tk-card-n">01</div>
+      <h3 class="tk-card-h">The <em>exception class</em> picks the action</h3>
+      <p class="tk-card-b">Three buckets, three responses. Branch with isinstance against the typed exception classes &mdash; retry RETRYABLE_EXCEPTIONS, fix the input on the rest, escalate any other NEXUSError.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">02</div>
+      <h3 class="tk-card-h">Backoff with <em>jitter</em></h3>
+      <p class="tk-card-b">Double the wait. Add 20 percent noise. Cap at two minutes. Synchronized clients failing at once is worse than any single client failure &mdash; jitter prevents the stampede.</p>
+    </div>
+    <div class="tk-card">
+      <div class="tk-card-n">03</div>
+      <h3 class="tk-card-h">Never <em>discard</em> a task id</h3>
+      <p class="tk-card-b">Save the id before you poll, not after. Poll failures do not kill the job. A fresh NEXUSClassifier instance with the saved id resumes the work from anywhere.</p>
+    </div>
+  </div>
+  <img class="mark-bl" src="../../fundamental_assets/assets/logo/fundamental-logomark-only-black.svg" alt="">
+  <div class="page-num"><span class="cur">16</span> / 17</div>
+</section>
+
+<!-- ============================================================
+     17  CLOSING
+     ============================================================ -->
+<section data-screen-label="17 Closing">
+  <div class="sunset-bg" style="background-image:url(../../fundamental_assets/assets/illustrations/night-ride.jpg);"></div>
+  <div class="sunset-scrim"></div>
+  <div class="cov-lock">
+    <span class="partner" style="color:#fff;">NEXUS onboarding</span>
+    <span class="sep"></span>
+    <img class="fund" src="../../fundamental_assets/assets/logo/fundamental-logo-white.svg" alt="Fundamental">
+  </div>
+  <h1 class="closing-title">Next &mdash; <em>diagnostics.</em></h1>
+  <div class="closing-meta">Module 07 &middot; Verbose logs, diagnose() context, five failure fingerprints &middot; 300&#8209;level</div>
+  <div class="closing-cta">Resilience keeps the pipeline <em>running</em>. Diagnostics let you investigate when it doesn't.</div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>

@@ -1,0 +1,392 @@
+/* ============================================================
+   Fundamental — Deck base
+   Shared primitives for every <deck-stage> deck (workshop,
+   pitch, social). Layered on top of colors_and_type.css.
+   Deck-specific layouts (learning objectives, exercises,
+   nutshell cards, benchmark bars, …) live in their own
+   per-deck stylesheet.
+   ============================================================ */
+
+:root {
+  /* Local aliases — the deck system's private token set.
+     colors_and_type.css owns the brand-wide --font-*, --ink,
+     --paper tokens; the --wk-* set below is the deck-layout
+     palette (cards, gradients, violet scale, runtime tweaks). */
+  --wk-paper:    #FFFFFF;
+  --wk-ink:      #1A1A1A;
+  --wk-card:     #EDE9F5;
+  --wk-card-2:   #E0DAED;
+  --wk-card-3:   #F4F1FA;
+  --wk-card-pink:#F6EAF0;
+  --wk-v-deep:   #2B2358;
+  --wk-v-ink:    #4D3F91;
+  --wk-v:        #6B5EB0;
+  --wk-v-soft:   #9B87CC;
+  --wk-v-pale:   #C096C3;
+  --wk-lilac:    #B5AED6;
+  --wk-magenta:  #A04080;
+  --wk-hair:     #E7E2F0;
+  --wk-rule:     #D6D1E6;
+
+  --wk-grad-card:  linear-gradient(135deg,#7D6EBD 0%,#9B87CC 50%,#C096C3 100%);
+  --wk-grad-pill:  linear-gradient(100deg,#8172BE 0%,#A58FCC 45%,#D3A3C3 100%);
+  --wk-grad-word:  linear-gradient(90deg,#6B5EB0 0%,#9B87CC 45%,#C096C3 100%);
+
+  --wk-serif: "Reckless", Georgia, serif;
+  --wk-serif-display: "Reckless Standard M-TRIAL", "Reckless", Georgia, serif;
+  --wk-mono:  "Roobert Mono", ui-monospace, Menlo, monospace;
+  --wk-druk:  "Druk Wide", Impact, sans-serif;
+  --wk-sans:  "Roobert", "Inter", system-ui, sans-serif;
+
+  /* Tweaks — overridden at runtime by deck-tweaks.js */
+  --wk-scale: 1;            /* font-size multiplier */
+  --wk-accent: #4D3F91;     /* accent color */
+  --wk-accent-deep: #2B2358;
+  --wk-accent-soft: #9B87CC;
+  --wk-wireframe: 0;        /* 0 or 1 */
+}
+
+/* ------------------------------------------------------------
+   Slide canvas defaults
+   ------------------------------------------------------------ */
+section {
+  position: relative;
+  width: 1920px; height: 1080px;
+  background: var(--wk-paper);
+  color: var(--wk-ink);
+  font-family: var(--wk-serif);
+  letter-spacing: -0.008em;
+  overflow: hidden;
+}
+
+/* Bottom-left logomark (re-used on content slides) */
+.mark-bl { position: absolute; left: 72px; bottom: 60px; height: 44px; z-index: 5; }
+.mark-bl.inv { filter: brightness(0) invert(1); }
+
+/* Page-number chrome, bottom-right */
+.page-num {
+  position: absolute; right: 96px; bottom: 72px;
+  font-family: var(--wk-mono); font-size: 16px;
+  color: var(--wk-v); letter-spacing: .12em;
+  text-transform: uppercase;
+  z-index: 5;
+}
+.page-num .cur { color: var(--wk-v-ink); }
+
+/* Global wireframe overlay — hidden by default, toggled by tweak */
+.wk-grid-overlay {
+  position: absolute; inset: 80px;
+  pointer-events: none; z-index: 0;
+  opacity: calc(var(--wk-wireframe) * 0.35);
+  background-image:
+    linear-gradient(to right, #4D3F9120 1px, transparent 1px),
+    linear-gradient(to bottom, #4D3F9120 1px, transparent 1px);
+  background-size: 96px 72px;
+  transition: opacity 220ms cubic-bezier(0.2,0.6,0.2,1);
+}
+section.dark .wk-grid-overlay {
+  background-image:
+    linear-gradient(to right, #ffffff22 1px, transparent 1px),
+    linear-gradient(to bottom, #ffffff22 1px, transparent 1px);
+}
+
+/* ------------------------------------------------------------
+   Sunset gradient + illustration backdrops (covers / dividers)
+   ------------------------------------------------------------ */
+.sunset {
+  background: linear-gradient(180deg,
+    #1E1746 0%, #342A6A 18%, #6B4F95 38%,
+    #B26AA0 58%, #E58C8C 78%, #F0A680 92%, #F2B178 100%);
+}
+.sunset-bg {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+}
+.sunset-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 55%, #00000055 85%, #00000088 100%);
+}
+
+/* ------------------------------------------------------------
+   COVER
+   ------------------------------------------------------------ */
+.cov-lock {
+  position: absolute; top: 110px; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center; gap: 28px; z-index: 4;
+}
+.cov-lock .partner {
+  color: #fff; font-family: var(--wk-serif); font-weight: 500;
+  font-size: calc(34px * var(--wk-scale));
+  letter-spacing: -.012em; line-height: 1;
+}
+.cov-lock .sep { width: 1px; height: 36px; background: #ffffff80; }
+.cov-lock .fund { height: 36px; width: auto; display: block; }
+
+.cov-eb {
+  position: absolute; top: 220px; left: 0; right: 0; text-align: center;
+  font-family: var(--wk-serif); font-style: italic; font-weight: 400;
+  font-size: calc(28px * var(--wk-scale));
+  color: #ffffffdd; letter-spacing: -.004em; z-index: 4;
+}
+.cov-title {
+  position: absolute; top: 310px; left: 0; right: 0; text-align: center;
+  font-family: var(--wk-serif-display); font-weight: 400;
+  font-size: calc(140px * var(--wk-scale));
+  line-height: .98; color: #fff; margin: 0; letter-spacing: -.024em; z-index: 4;
+}
+.cov-title em { font-style: italic; color: #fff; }
+
+.cov-meta {
+  position: absolute; bottom: 120px; left: 0; right: 0; text-align: center;
+  font-family: var(--wk-mono); font-size: calc(22px * var(--wk-scale));
+  letter-spacing: .16em; text-transform: uppercase;
+  color: #ffffffcc; z-index: 4;
+}
+.cov-meta .dot { display: inline-block; margin: 0 18px; opacity: .7; }
+
+/* Cover variation — paper/editorial (no illustration) */
+.cov-paper { background: var(--wk-paper); }
+.cov-paper .cov-title { color: var(--wk-ink); }
+.cov-paper .cov-title em { color: var(--wk-v-ink); }
+.cov-paper .cov-eb { color: var(--wk-v-ink); }
+.cov-paper .cov-meta { color: var(--wk-v); }
+.cov-paper .cov-lock .partner { color: var(--wk-ink); }
+.cov-paper .cov-lock .sep { background: #00000033; }
+.cov-paper .cov-lock .fund { filter: none; }
+.cov-paper .cov-big-n {
+  position: absolute; left: 96px; bottom: 220px;
+  font-family: var(--wk-serif); font-style: italic; font-weight: 400;
+  font-size: calc(56px * var(--wk-scale));
+  color: var(--wk-v-ink); line-height: 1; letter-spacing: -.02em;
+}
+
+/* Cover variation — ink (dark with violet rule accent) */
+.cov-ink { background: #0E0B1F; }
+.cov-ink .cov-title { color: #fff; }
+.cov-ink .cov-title em { color: var(--wk-v-pale); }
+.cov-ink .cov-eb { color: var(--wk-v-pale); }
+.cov-ink .cov-meta { color: #ffffffaa; }
+.cov-ink .cov-accent {
+  position: absolute; left: 96px; right: 96px; top: 260px;
+  height: 1px; background: linear-gradient(90deg, transparent, var(--wk-v-soft), transparent);
+  z-index: 3;
+}
+
+/* ------------------------------------------------------------
+   SECTION DIVIDERS
+   ------------------------------------------------------------ */
+.div-topleft {
+  position: absolute; top: 96px; left: 96px; right: 96px; color: #fff; margin: 0; z-index: 3;
+  font-family: var(--wk-serif-display); font-weight: 400;
+  font-size: calc(88px * var(--wk-scale));
+  line-height: 1.02; letter-spacing: -.022em;
+}
+.div-topleft em { font-style: italic; color: #fff; }
+.div-number {
+  position: absolute; top: 96px; right: 96px; z-index: 3;
+  font-family: var(--wk-druk); font-weight: 500;
+  font-size: calc(28px * var(--wk-scale));
+  color: #ffffffcc; letter-spacing: .1em;
+}
+.div-center {
+  position: absolute; top: 45%; transform: translateY(-50%);
+  left: 0; right: 0; text-align: center; color: #fff; margin: 0; z-index: 3;
+  font-family: var(--wk-serif-display); font-weight: 400;
+  font-size: calc(104px * var(--wk-scale));
+  line-height: 1; letter-spacing: -.024em;
+}
+.div-center em { font-style: italic; }
+
+/* Paper divider (no illustration) — upright violet pull */
+.div-paper { background: var(--wk-paper); }
+.div-paper .div-ch {
+  position: absolute; top: 96px; left: 96px;
+  font-family: var(--wk-druk); font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v-ink); letter-spacing: .14em;
+}
+.div-paper .div-title {
+  position: absolute; top: 44%; transform: translateY(-50%);
+  left: 96px; right: 96px; margin: 0;
+  font-family: var(--wk-serif-display); font-weight: 400;
+  font-size: calc(120px * var(--wk-scale));
+  line-height: .98; color: var(--wk-ink); letter-spacing: -.024em;
+}
+.div-paper .div-title em { font-style: italic; color: var(--wk-v-ink); }
+.div-paper .div-rule {
+  position: absolute; left: 96px; width: 120px; height: 2px;
+  background: var(--wk-v-ink); top: 44%; margin-top: 180px;
+}
+
+/* ------------------------------------------------------------
+   AGENDA / SCHEDULE
+   ------------------------------------------------------------ */
+.ag-title {
+  position: absolute; top: 96px; left: 96px; margin: 0;
+  font-family: var(--wk-serif-display); font-style: italic; font-weight: 400;
+  font-size: calc(72px * var(--wk-scale));
+  color: var(--wk-v-ink); line-height: 1; letter-spacing: -.018em;
+}
+.ag-sub {
+  position: absolute; top: 200px; left: 96px;
+  font-family: var(--wk-serif); font-weight: 400;
+  font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v); letter-spacing: -.006em;
+}
+
+/* Schedule-style agenda — timeline with timestamps on left */
+.ag-sched {
+  position: absolute; top: 260px; left: 96px; right: 96px; bottom: 140px;
+  display: flex; flex-direction: column; gap: 0;
+}
+.ag-sched-row {
+  display: grid;
+  grid-template-columns: 200px 64px 1fr 180px;
+  align-items: baseline; gap: 28px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--wk-hair);
+}
+.ag-sched-row:last-child { border-bottom: 0; }
+.ag-time {
+  font-family: var(--wk-mono); font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v); letter-spacing: .04em;
+}
+.ag-idx {
+  font-family: var(--wk-serif); font-weight: 400;
+  font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v-ink);
+}
+.ag-sched-h {
+  font-family: var(--wk-serif); font-weight: 500;
+  font-size: calc(36px * var(--wk-scale));
+  color: var(--wk-v-deep); margin: 0 0 6px 0; letter-spacing: -.014em; line-height: 1.15;
+}
+.ag-sched-b {
+  font-family: var(--wk-serif); font-weight: 400;
+  font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v); line-height: 1.3; letter-spacing: -.006em;
+}
+.ag-sched-meta {
+  font-family: var(--wk-mono); font-size: calc(13px * var(--wk-scale));
+  color: var(--wk-v); letter-spacing: .12em; text-transform: uppercase;
+  text-align: right;
+}
+
+/* 2-card agenda (inherited from reference deck, tightened spacing) */
+.ag-grid-2 {
+  position: absolute; top: 96px; left: 340px; right: 96px; bottom: 140px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+}
+.ag-card {
+  background: var(--wk-card); border-radius: var(--r-3);
+  padding: 56px 64px 64px; display: flex; flex-direction: column;
+}
+.ag-card--grad { background: var(--wk-grad-card); color: #fff; }
+.ag-eb {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--wk-serif); font-weight: 400;
+  font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v-ink); letter-spacing: .08em; text-transform: uppercase;
+}
+.ag-card--grad .ag-eb { color: #fff; }
+.ag-rule { height: 1px; background: var(--wk-v-ink); opacity: .35; margin: 16px 0 52px 0; }
+.ag-card--grad .ag-rule { background: #ffffff; opacity: .55; }
+.ag-h {
+  font-family: var(--wk-serif); font-weight: 500;
+  font-size: calc(40px * var(--wk-scale));
+  line-height: 1.18; color: var(--wk-v-deep); margin: 0 0 40px 0;
+  max-width: 580px; letter-spacing: -.014em;
+}
+.ag-card--grad .ag-h { color: #fff; }
+.ag-list { display: flex; flex-direction: column; gap: 26px; }
+.ag-row { display: grid; grid-template-columns: 64px 1fr; gap: 20px; align-items: baseline; }
+.ag-row-n {
+  font-family: var(--wk-serif); font-size: calc(22px * var(--wk-scale));
+  color: var(--wk-v-ink); line-height: 1.2;
+}
+.ag-card--grad .ag-row-n { color: #fff; }
+.ag-row-h {
+  font-family: var(--wk-serif); font-weight: 500;
+  font-size: calc(26px * var(--wk-scale));
+  color: var(--wk-v-deep); margin: 0 0 4px 0; line-height: 1.2; letter-spacing: -.012em;
+}
+.ag-card--grad .ag-row-h { color: #fff; }
+.ag-row-b {
+  font-family: var(--wk-serif); font-weight: 400;
+  font-size: calc(20px * var(--wk-scale));
+  color: var(--wk-v); line-height: 1.3;
+}
+.ag-card--grad .ag-row-b { color: #ffffffcc; }
+
+/* ------------------------------------------------------------
+   CLOSING
+   ------------------------------------------------------------ */
+.closing-title {
+  position: absolute; top: 40%; transform: translateY(-50%);
+  left: 0; right: 0; text-align: center; color: #fff; margin: 0; z-index: 3;
+  font-family: var(--wk-serif-display); font-style: italic; font-weight: 400;
+  font-size: calc(156px * var(--wk-scale));
+  line-height: 1; letter-spacing: -.028em;
+}
+.closing-meta {
+  position: absolute; top: 62%; left: 0; right: 0; text-align: center; color: #ffffffdd; margin: 0; z-index: 3;
+  font-family: var(--wk-serif); font-size: calc(26px * var(--wk-scale));
+  letter-spacing: -.006em;
+}
+.closing-cta {
+  position: absolute; bottom: 120px; left: 0; right: 0; text-align: center;
+  font-family: var(--wk-mono); font-size: calc(14px * var(--wk-scale));
+  letter-spacing: .2em; text-transform: uppercase; color: #ffffff99; z-index: 3;
+}
+
+/* ------------------------------------------------------------
+   Tweaks panel — chrome only; behavior lives in deck-tweaks.js
+   ------------------------------------------------------------ */
+#tweaks-panel {
+  position: fixed; right: 20px; bottom: 20px; z-index: 9999;
+  width: 300px;
+  background: #FFFFFF; color: var(--wk-ink);
+  border: 1px solid #E7E2F0;
+  border-radius: var(--r-3);
+  box-shadow: 0 14px 48px #00000020;
+  font-family: var(--wk-sans);
+  padding: 20px 22px 22px;
+  display: none;
+}
+#tweaks-panel.open { display: block; }
+#tweaks-panel h4 {
+  font-family: var(--wk-serif); font-style: italic; font-weight: 400;
+  font-size: 22px; color: var(--wk-v-ink); margin: 0 0 16px 0;
+  letter-spacing: -.012em;
+}
+.tw-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.tw-row label {
+  font-family: var(--wk-mono); font-size: 10px;
+  color: var(--wk-v); letter-spacing: .14em; text-transform: uppercase;
+}
+.tw-row input[type="range"] { width: 100%; accent-color: var(--wk-v-ink); }
+.tw-row .swatches { display: flex; gap: 8px; }
+.tw-row .sw {
+  width: 32px; height: 32px; border-radius: 999px;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform 120ms ease;
+}
+.tw-row .sw.active { border-color: var(--wk-v-ink); }
+.tw-row .sw:hover { transform: scale(1.08); }
+.tw-toggle {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--wk-serif); font-size: 16px; color: var(--wk-ink);
+}
+.tw-switch {
+  position: relative; width: 40px; height: 22px;
+  background: #DDD9E6; border-radius: 999px; cursor: pointer; transition: background 160ms;
+}
+.tw-switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  transition: transform 160ms;
+}
+.tw-switch.on { background: var(--wk-v-ink); }
+.tw-switch.on::after { transform: translateX(18px); }
+.tw-scale-val {
+  font-family: var(--wk-mono); font-size: 11px; color: var(--wk-v-ink);
+  letter-spacing: .04em; align-self: flex-end;
+}

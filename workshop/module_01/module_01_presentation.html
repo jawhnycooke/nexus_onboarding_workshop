@@ -322,10 +322,12 @@
         <span class="code-block-dot"></span><span class="code-block-dot"></span><span class="code-block-dot"></span>
         <span class="code-block-name">module_01_your_first_nexus_model.ipynb &middot; cells 16 &amp; 19</span>
       </div>
-<pre class="code-pre">FEATURES = [<span class="c-str">"age"</span>, <span class="c-str">"distance_from_branch_miles"</span>,
-            <span class="c-str">"num_previous_lenders"</span>, <span class="c-str">"total_employment_years"</span>]
+<pre class="code-pre">NUMERIC_FEATURES = [
+    <span class="c-str">"age"</span>, <span class="c-str">"distance_from_branch_miles"</span>,
+    <span class="c-str">"num_previous_lenders"</span>, <span class="c-str">"total_employment_years"</span>,
+]
 
-X_train = train_df[FEATURES]
+X_train = train_df[NUMERIC_FEATURES]
 y_train = train_df[<span class="c-str">"default_flag"</span>]
 
 nexus = <span class="c-fn">NEXUSClassifier</span>(mode=<span class="c-str">"quality"</span>)
@@ -359,13 +361,13 @@ MODEL_ID = nexus.trained_model_id_
       </div>
 <pre class="code-pre"><span class="c-key">from</span> sklearn.metrics <span class="c-key">import</span> classification_report, roc_auc_score
 
-X_holdout = holdout_df[FEATURES]
+X_holdout = holdout_df[NUMERIC_FEATURES]
 y_holdout = holdout_df[<span class="c-str">"default_flag"</span>]
 
 y_pred = nexus.<span class="c-fn">predict</span>(X_holdout)
 
 <span class="c-fn">print</span>(<span class="c-fn">classification_report</span>(y_holdout, y_pred,
-    target_names=[<span class="c-str">"No default"</span>, <span class="c-str">"Default"</span>]))
+    target_names=[<span class="c-str">"No Default (0)"</span>, <span class="c-str">"Default (1)"</span>]))
 
 auc = <span class="c-fn">roc_auc_score</span>(y_holdout, y_pred)
 <span class="c-fn">print</span>(<span class="c-fn">f"ROC AUC: {auc:.4f}"</span>)</pre>

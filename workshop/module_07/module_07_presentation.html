@@ -337,7 +337,7 @@ proba = nexus.<span class="c-fn">predict_proba</span>(X_holdout)
 <pre class="code-pre" style="font-size:20.5px">@dataclass
 <span class="c-key">class</span> <span class="c-fn">DiagnosticHarness</span>:
     events: <span class="c-fn">list</span> = <span class="c-fn">field</span>(default_factory=<span class="c-fn">list</span>)
-    <span class="c-key">def</span> <span class="c-fn">record</span>(self, operation, status, error=<span class="c-str">None</span>):
+    <span class="c-key">def</span> <span class="c-fn">record</span>(self, operation, status, duration_ms=<span class="c-str">None</span>, error=<span class="c-str">None</span>):
         self.events.<span class="c-fn">append</span>({
             <span class="c-str">"operation"</span>:      operation,
             <span class="c-str">"status"</span>:         status,

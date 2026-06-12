@@ -245,7 +245,7 @@
 <pre class="code-pre" style="font-size:18.5px">RETRYABLE_EXCEPTIONS = (RateLimitError, NetworkError,
                         RequestTimeoutError, ServerError)
 
-<span class="c-key">def</span> <span class="c-fn">backoff_delay</span>(attempt, base=<span class="c-str">5.0</span>, cap=<span class="c-str">120.0</span>):
+<span class="c-key">def</span> <span class="c-fn">backoff_delay</span>(attempt, base=<span class="c-str">5.0</span>, cap=<span class="c-str">120.0</span>, jitter=<span class="c-str">True</span>):
     delay = <span class="c-fn">min</span>(base * (<span class="c-str">2</span> ** (attempt - <span class="c-str">1</span>)), cap)
     delay += random.<span class="c-fn">uniform</span>(<span class="c-str">0</span>, delay * <span class="c-str">0.2</span>)  <span class="c-com"># jitter</span>
     <span class="c-key">return</span> delay
